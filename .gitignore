@@ -1,0 +1,14 @@
+# Ignore .env files in IVR-api subfolder
+IVR-api/.env
+IVR-api/.env.*
+
+# Ignore environment-specific configs
+IVR-api/src/main/resources/application-*.yml
+IVR-api/src/main/resources/application-*.properties
+
+
+# Standard ignores (optional but recommended)
+**/target/
+**/.idea/
+**/*.iml
+.DS_Store
