@@ -14,7 +14,7 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("API IVR")
                         .version("1.0")
-                        .description("documentation de l'API"));
+                        .description("documentation de l'API IVR"));
 
     }
 
