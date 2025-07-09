@@ -24,5 +24,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void deleteByEmail(String email);
 
 
-    List<UserDto> findAllByActive(boolean active);
+    List<User> findAllByActive(boolean active);
 }

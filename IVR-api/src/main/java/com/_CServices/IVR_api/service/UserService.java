@@ -12,7 +12,7 @@ public interface UserService {
     //GESTION DES USERS
 
     List<UserDto> getAllUsers();
-    List<UserDto> getUsersByActiveStatus(boolean active);
+    List<UserDto> getUsersByActiveStatus(Boolean active);
     UserDto getUserById(Long id);
     UserDto getUserByEmail(String email);
     UserDto getUserByUsername(String username);

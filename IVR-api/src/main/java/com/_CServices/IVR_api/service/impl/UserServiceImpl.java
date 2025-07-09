@@ -39,8 +39,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getUsersByActiveStatus(boolean active) {
-        return userRepository.findAllByActive(active);
+    public List<UserDto> getUsersByActiveStatus(Boolean active) {
+        log.info("inside getUsersByActiveStatus()");
+
+        List<User> userList = userRepository.findAllByActive(active);
+        List<UserDto> users = userList.stream()
+                .map(user -> userMapper.toDto(user))
+                .toList();
+        return users;
     }
 
     @Override
@@ -82,6 +88,7 @@ public class UserServiceImpl implements UserService {
                     .username(userDto.getUsername())
                     .email(userDto.getEmail())
                     .password(passwordEncoder.encode(userDto.getPassword()))
+                    .active(userDto.getActive())
                     .build();
             userRepository.save(user);
             return userMapper.toDto(user);
@@ -127,13 +134,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(UserDto userDto, Long id) {
         User userToUpdate = userRepository.findById(id).map(user->{
-            if(null != userDto.getEmail())
+            if(null != userDto.getFirstName()) {
+                user.setFirstName(userDto.getFirstName());
+            }
+            if(null != userDto.getLastName()) {
+                user.setLastName(userDto.getLastName());
+            }
+            if(null != userDto.getEmail()){
                 user.setEmail(userDto.getEmail());
-            if(null != userDto.getUsername())
+            }
+            if(null != userDto.getUsername()){
                 user.setUsername(userDto.getUsername());
-            if(null != userDto.getPassword())
+            }
+            if(null != userDto.getPassword()){
                 user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-            return user;
+            }
+            if(null != userDto.getActive()){
+                user.setActive(userDto.getActive());
+            }
+            return userRepository.save(user);
         }).orElseThrow(()-> new ResourceNotFoundException(""));
 
         return userMapper.toDto(userToUpdate);

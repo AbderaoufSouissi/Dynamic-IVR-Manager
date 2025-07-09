@@ -24,7 +24,7 @@ public class UserController {
 
     @GetMapping("/status")
     public ResponseEntity<List<UserDto>> getUsersByActiveStatus(@RequestParam boolean active) {
-        return  new ResponseEntity<>(userService.getUsersByActiveStatus(active), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getUsersByActiveStatus(active), HttpStatus.OK);
 
     }
 

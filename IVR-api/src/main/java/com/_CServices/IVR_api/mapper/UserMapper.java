@@ -9,11 +9,13 @@ public class UserMapper {
 
     public UserDto toDto(User user) {
         return UserDto.builder()
+                .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .password(user.getPassword())
+                .active(user.getActive())
                 .build();
 
     }

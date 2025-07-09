@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -32,16 +31,13 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Column(name = "is_active",nullable = false)
     private Boolean active;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
 
-
-    public boolean isActive() {
-        return active;
-    }
 
 
     @Override

@@ -14,7 +14,7 @@ public class RequestContext {
     }
 
     public static void setUserId(Long userId){
-        USER_ID.set(userId);
+        USER_ID.set(0L);
     }
     public static Long getUserId(){
         log.info("inside getUserId()");
