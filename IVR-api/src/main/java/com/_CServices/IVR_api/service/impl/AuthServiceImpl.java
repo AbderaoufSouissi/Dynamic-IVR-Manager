@@ -24,6 +24,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String getCurrentUser() {
+        log.info("inside getCurrentUser()");
 
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
