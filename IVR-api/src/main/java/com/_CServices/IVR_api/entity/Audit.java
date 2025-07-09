@@ -1,5 +1,6 @@
 package com._CServices.IVR_api.entity;
 
+
 import com._CServices.IVR_api.domain.RequestContext;
 import com._CServices.IVR_api.exception.ApiException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -10,9 +11,6 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 
@@ -26,6 +24,7 @@ public abstract class Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_generator")
     @SequenceGenerator(name="id_generator", sequenceName="id_seq", allocationSize=1)
+    @Column(name = "id",updatable = false)
     private Long id;
 
     @NotNull
@@ -47,33 +46,27 @@ public abstract class Audit {
 
     @PrePersist
     protected void onCreate() {
+        Long userId = RequestContext.getUserId();
+        //RECUPERER L'ID DU USER ACTUEL
+        //Long userId = 1L;
 
-        // récuperer l'ID du User connecté
-        //Long userId = RequestContext.getUserId();
-        Long userId =1L;
-
-        if(userId==null) {
+        if (userId == null) {
             throw new ApiException("Cannot persist entity when user ID is null");
         }
         setCreatedBy(userId);
-        setCreatedAt(LocalDateTime.now());
         setUpdatedBy(userId);
-        setUpdatedAt(LocalDateTime.now());
-
     }
 
     @PreUpdate
     protected void onUpdate() {
-        // récuperer l'ID du User connecté
-        //Long userId = RequestContext.getUserId();
-        Long userId =1L;
+        //RECUPERER L'ID DU USER ACTUEL
+        Long userId = RequestContext.getUserId();
+        //Long userId = 1L;
 
-        if(userId==null) {
+        if (userId == null) {
             throw new ApiException("Cannot update entity when user ID is null");
         }
         setUpdatedBy(userId);
-        setUpdatedAt(LocalDateTime.now());
-
     }
 
 
