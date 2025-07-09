@@ -16,17 +16,25 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Table(name = "ROLES")
-public class Role extends Audit implements GrantedAuthority {
-
-    @Column(name= "role_name", nullable = false, unique = true)
+public class Role extends BaseEntity implements GrantedAuthority {
+    @Column(name = "role_name", nullable = false, unique = true, length = 50)
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "ROLE_PERMISSIONS",
-            joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id")
+            joinColumns = @JoinColumn(
+                    name = "role_id",
+                    referencedColumnName = "id",
+                    foreignKey = @ForeignKey(name = "fk_role_permissions_role")
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "permission_id",
+                    referencedColumnName = "id",
+                    foreignKey = @ForeignKey(name = "fk_role_permissions_permission")
+            )
     )
+    @Builder.Default
     private Set<Permissions> permissions = new HashSet<>();
 
 

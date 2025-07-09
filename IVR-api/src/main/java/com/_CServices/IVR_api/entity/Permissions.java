@@ -14,7 +14,8 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Table(name = "PERMISSIONS")
-public class Permissions extends Audit implements GrantedAuthority {
+public class Permissions extends BaseEntity implements GrantedAuthority {
+
 
     @Column(name="permission_name",nullable = false, unique = true)
     private String name;
