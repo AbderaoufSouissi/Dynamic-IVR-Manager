@@ -4,10 +4,13 @@ package com._CServices.IVR_api.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -21,7 +24,7 @@ import java.util.Set;
         sequenceName = "shared_id_seq",     // Actual database sequence name
         allocationSize = 1                  // Adjust based on performance needs
 )
-public class Role extends BaseEntity implements GrantedAuthority {
+public class Role extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "shared_seq_generator")
     @Column(name = "role_id")
@@ -48,10 +51,7 @@ public class Role extends BaseEntity implements GrantedAuthority {
 
 
 
-    @Override
-    public String getAuthority() {
-        return "ROLE_" + this.name;
-    }
+
 
 
     public void addPermission(Permissions permission) {
@@ -76,4 +76,6 @@ public class Role extends BaseEntity implements GrantedAuthority {
         this.permissions.forEach(permission -> permission.getRoles().remove(this));
         this.permissions.clear();
     }
+
+
 }

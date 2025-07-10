@@ -33,19 +33,16 @@ public class Audit{
     @Column(nullable = true)
     private String msisdn;
 
-    @Column(nullable = false, updatable = false)
     private LocalDateTime actionTimeStamp;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)  // Creates `user_id` column in DB
+    @JoinColumn(name = "user_id")  // Creates `user_id` column in DB
     private User user;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private EntityType entityType;
 
 
-    @Column(nullable = false)
     private Long entityId;
 
 
