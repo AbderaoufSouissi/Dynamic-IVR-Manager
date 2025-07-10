@@ -23,10 +23,17 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public String getCurrentUser() {
-        log.info("inside getCurrentUser()");
-
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+    public User getCurrentLoggedInUser() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getPrincipal() instanceof User) {
+                return (User) authentication.getPrincipal();
+            }
+            return null; // Or consider returning a "SYSTEM" user
+        } catch (Exception e) {
+            log.error("Failed to get current user", e);
+            return null;
+        }
     }
 
 
