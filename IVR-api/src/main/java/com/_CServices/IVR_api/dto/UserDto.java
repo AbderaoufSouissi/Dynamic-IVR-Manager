@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class UserDto {
-    private Long id;
+    private Long userId;
 
     @NotBlank(message = "First name is required")
     private String firstName;
@@ -32,5 +32,7 @@ public class UserDto {
 
     @NotNull(message = "Active status is required")
     private Boolean active;
+
+    private String role;
 
 }
