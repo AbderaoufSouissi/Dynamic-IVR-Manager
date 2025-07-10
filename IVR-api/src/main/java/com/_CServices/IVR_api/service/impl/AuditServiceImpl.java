@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AuditService {
+public class AuditServiceImpl{
 
     private final AuditRepository auditRepository;
     private final UserRepository userRepository;
