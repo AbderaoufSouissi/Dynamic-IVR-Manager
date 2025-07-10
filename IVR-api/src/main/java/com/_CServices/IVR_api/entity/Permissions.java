@@ -14,8 +14,16 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Table(name = "PERMISSIONS")
+@SequenceGenerator(
+        name = "shared_seq_generator",      // Internal name used by Hibernate
+        sequenceName = "shared_id_seq",     // Actual database sequence name
+        allocationSize = 1                  // Adjust based on performance needs
+)
 public class Permissions extends BaseEntity implements GrantedAuthority {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "shared_seq_generator")
+    @Column(name = "permission_id")
+    private Long id;
 
     @Column(name="permission_name",nullable = false, unique = true)
     private String name;

@@ -16,7 +16,16 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Table(name = "ROLES")
+@SequenceGenerator(
+        name = "shared_seq_generator",      // Internal name used by Hibernate
+        sequenceName = "shared_id_seq",     // Actual database sequence name
+        allocationSize = 1                  // Adjust based on performance needs
+)
 public class Role extends BaseEntity implements GrantedAuthority {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "shared_seq_generator")
+    @Column(name = "role_id")
+    private Long id;
     @Column(name = "role_name", nullable = false, unique = true, length = 50)
     private String name;
 
@@ -25,12 +34,12 @@ public class Role extends BaseEntity implements GrantedAuthority {
             name = "ROLE_PERMISSIONS",
             joinColumns = @JoinColumn(
                     name = "role_id",
-                    referencedColumnName = "id",
+                    referencedColumnName = "role_id",
                     foreignKey = @ForeignKey(name = "fk_role_permissions_role")
             ),
             inverseJoinColumns = @JoinColumn(
                     name = "permission_id",
-                    referencedColumnName = "id",
+                    referencedColumnName = "permission_id",
                     foreignKey = @ForeignKey(name = "fk_role_permissions_permission")
             )
     )
