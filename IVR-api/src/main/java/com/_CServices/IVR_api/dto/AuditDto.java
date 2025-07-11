@@ -1,7 +1,6 @@
 package com._CServices.IVR_api.dto;
 
-import com._CServices.IVR_api.enumeration.ActionType;
-import com._CServices.IVR_api.enumeration.EntityType;
+
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,8 +11,8 @@ import java.time.LocalDateTime;
 public class AuditDto {
     private Long auditId;
     private Long userId;
-    private ActionType actionType;
-    private EntityType entityType;
+    private String actionType;
+    private String entityType;
     private Long entityId;
     private LocalDateTime actionTimestamp;
 
