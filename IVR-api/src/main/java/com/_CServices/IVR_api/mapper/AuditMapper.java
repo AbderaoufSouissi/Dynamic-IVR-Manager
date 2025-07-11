@@ -2,6 +2,8 @@ package com._CServices.IVR_api.mapper;
 
 import com._CServices.IVR_api.dto.AuditDto;
 import com._CServices.IVR_api.entity.Audit;
+import com._CServices.IVR_api.enumeration.ActionType;
+import com._CServices.IVR_api.enumeration.EntityType;
 import org.springframework.stereotype.Component;
 
 @Component
