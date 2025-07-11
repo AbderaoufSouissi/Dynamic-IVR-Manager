@@ -7,21 +7,26 @@ public enum ActionType {
     CREATE_USER(CREATE_USER_DESCRIPTION),
     UPDATE_USER(UPDATE_USER_DESCRIPTION),
     DELETE_USER(DELETE_USER_DESCRIPTION),
+
     CREATE_ROLE(CREATE_ROLE_DESCRIPTION),
     UPDATE_ROLE(UPDATE_ROLE_DESCRIPTION),
     DELETE_ROLE(DELETE_ROLE_DESCRIPTION),
+
+    CREATE_PERMISSION(CREATE_PERMISSION_DESCRIPTION),
+    DELETE_PERMISSION(DELETE_PERMISSION_DESCRIPTION),
+
     BLACKLIST_CUSTOMER(BLACKLIST_CUSTOMER_DESCRIPTION),
     WHITELIST_CUSTOMER(WHITELIST_CUSTOMER_DESCRIPTION),
     RESET_NB_CALLS(RESET_NB_CALLS_DESCRIPTION);
 
-    private final String description;
+    private final String value;
 
 
     ActionType(String value) {
-        this.description = value;
+        this.value = value;
     }
 
     public String getValue() {
-        return this.description;
+        return this.value;
     }
 }
