@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,13 +29,13 @@ public class AuditServiceImpl implements AuditService {
     private final UserRepository userRepository;
     private final AuditMapper auditMapper;
 
-    public void logAction(User user, ActionType actionType, EntityType entityType, Long entityId) {
+    public void logAction(User user, String actionType, String entityType, Long entityId) {
         log.info("inside logAction()");
 
         Audit auditLog = Audit.builder()
                 .user(user)
                 .actionType(actionType)
-                .entityType(entityType)
+                .entityType(user.getClass().getSimpleName())
                 .entityId(entityId)
                 .build();
 

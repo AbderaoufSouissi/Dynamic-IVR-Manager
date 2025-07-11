@@ -80,9 +80,9 @@ public class RoleServiceImpl implements RoleService {
 
         auditService.logAction(
                 currentUser,
-                ActionType.CREATE_ROLE,
-                EntityType.ROLE,
-                role.getId()
+                ActionType.CREATE_ROLE.toString(),
+                EntityType.ROLE.toString(),
+                createdRole.getId()
         );
 
         return roleMapper.toDto(createdRole);
@@ -106,8 +106,8 @@ public class RoleServiceImpl implements RoleService {
 
         auditService.logAction(
                 currentUser,
-                ActionType.UPDATE_ROLE,
-                EntityType.ROLE,
+                ActionType.UPDATE_ROLE.toString(),
+                EntityType.ROLE.toString(),
                 roleToUpdate.getId()
         );
         return roleMapper.toDto(updatedRole);
@@ -129,8 +129,8 @@ public class RoleServiceImpl implements RoleService {
 
         auditService.logAction(
                 currentUser,
-                ActionType.UPDATE_ROLE,
-                EntityType.ROLE,
+                ActionType.UPDATE_ROLE.toString(),
+                EntityType.ROLE.toString(),
                 id
         );
 
@@ -150,8 +150,8 @@ public class RoleServiceImpl implements RoleService {
 
         auditService.logAction(
                 currentUser,
-                ActionType.DELETE_ROLE,
-                EntityType.ROLE,
+                ActionType.DELETE_ROLE.toString(),
+                EntityType.ROLE.toString(),
                 roleToDelete.getId()
         );
     }
@@ -168,8 +168,8 @@ public class RoleServiceImpl implements RoleService {
 
         auditService.logAction(
                 currentUser,
-                ActionType.DELETE_ROLE,
-                EntityType.ROLE,
+                ActionType.DELETE_ROLE.toString(),
+                EntityType.ROLE.toString(),
                 roleToDelete.getId()
         );
 
