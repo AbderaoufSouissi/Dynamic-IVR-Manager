@@ -28,20 +28,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public User getCurrentLoggedInUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return userRepository.findByUsername("SYSTEM");
-        }
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof User) {
-            return (User) principal;
-        } else if (principal instanceof String) {
-            String username = (String) principal;
-            return userRepository.findByUsername(username);
-        }
-
-        return userRepository.findByUsername(authentication.getName());
+        return userRepository.findByUsername("SYSTEM");
     }
 
 
