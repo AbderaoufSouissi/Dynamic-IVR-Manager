@@ -1,8 +1,9 @@
 spring:
+
   application:
     name: IVR-api
   profiles:
-    active: ${SPRING_PROFILE_ACTIVE:default}
+    active: ${SPRING_PROFILE_ACTIVE:dev}
 
   datasource:
     url: ${SPRING_DATASOURCE_URL}
@@ -10,12 +11,43 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: oracle.jdbc.driver.OracleDriver
 
+
+
+
   jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.OracleDialect
+
     hibernate:
       ddl-auto: update
 
+    properties:
+      hibernate:
+        query:
+          mutation_strategy: org.hibernate.query.sqm.mutation.internal.inline.InlineMutationStrategy
+        hql:
+          bulk_id_strategy: org.hibernate.hql.spi.id.inline.InlineIdsInClauseBulkIdStrategy
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.OracleDialect
+        jdbc:
+          batch_size: 0
+          batch_versioned_data: false
+        order_inserts: false
+        order_updates: false
+        temp:
+          use_jdbc_metadata_defaults: false
+
+
+
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: default
+
 server:
   port: ${SERVER_PORT:8080}
+
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type: TRACE
