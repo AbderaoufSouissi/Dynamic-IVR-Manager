@@ -17,8 +17,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,14 @@ public class PermissionsServiceImpl implements PermissionsService {
     private final PermissionsMapper permissionsMapper;
     private final AuditService auditService;
     private final AuthService authService;
+
+    @Override
+    public List<PermissionsDto> getAllPermissions() {
+        log.info("inside getAllPermissions");
+        List<Permissions> permissions = permissionsRepository.findAll();
+        List<PermissionsDto> permissionsDtos = permissions.stream().map(permissionsMapper::toDto).toList();
+        return permissionsDtos;
+    }
 
     @Override
     public PermissionsDto createPermission(PermissionsDto permissionsDto) {
@@ -48,7 +59,7 @@ public class PermissionsServiceImpl implements PermissionsService {
         auditService.logAction(
                 currentUser,
                 ActionType.CREATE_PERMISSION.toString(),
-                createdPermission.getClass().getSimpleName(),
+                EntityType.PERMISSION.toString(),
                 createdPermission.getId()
         );
 
@@ -68,7 +79,7 @@ public class PermissionsServiceImpl implements PermissionsService {
         auditService.logAction(
                 currentUser,
                 ActionType.DELETE_PERMISSION.toString(),
-                permissionToDelete.getClass().getSimpleName(),
+                EntityType.PERMISSION.toString(),
                 permissionToDelete.getId()
         );
 
@@ -87,7 +98,7 @@ public class PermissionsServiceImpl implements PermissionsService {
         auditService.logAction(
                 currentUser,
                 ActionType.DELETE_PERMISSION.toString(),
-                permissionToDelete.getClass().getSimpleName(),
+                EntityType.PERMISSION.toString(),
                 permissionToDelete.getId()
         );
 
