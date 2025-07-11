@@ -1,7 +1,6 @@
 package com._CServices.IVR_api.entity;
 
-import com._CServices.IVR_api.enumeration.ActionType;
-import com._CServices.IVR_api.enumeration.EntityType;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,8 +25,7 @@ public class Audit{
     private Long id;
 
     @Column(nullable = false, updatable = false, length = 15)
-    @Enumerated(EnumType.STRING)
-    private ActionType actionType;
+    private String actionType;
 
 
     @Column(nullable = true)
@@ -36,11 +34,10 @@ public class Audit{
     private LocalDateTime actionTimeStamp;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")  // Creates `user_id` column in DB
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @Enumerated(EnumType.STRING)
-    private EntityType entityType;
+    private String entityType;
 
 
     private Long entityId;

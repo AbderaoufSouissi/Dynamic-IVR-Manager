@@ -27,9 +27,9 @@ public class Permissions extends BaseEntity{
     private Long id;
 
     @Column(name="permission_name",nullable = false, unique = true)
-    @Enumerated(EnumType.STRING)
-    private ActionType name;
+    private String name;
 
+    @Builder.Default
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
     private Set<Role> roles = new HashSet<>();
 

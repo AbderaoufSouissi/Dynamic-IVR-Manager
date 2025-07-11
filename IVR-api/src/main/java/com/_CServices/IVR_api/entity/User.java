@@ -51,7 +51,7 @@ public class User extends BaseEntity implements UserDetails {
     private Role role;
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     private List<Audit> auditLogs = new ArrayList<>();
 
 
