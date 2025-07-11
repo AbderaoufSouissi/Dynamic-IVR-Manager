@@ -33,6 +33,7 @@ public class UserDto {
     @NotNull(message = "Active status is required")
     private Boolean active;
 
-    private String role;
+    private String roleName = "DEFAULT_ROLE";
+
 
 }

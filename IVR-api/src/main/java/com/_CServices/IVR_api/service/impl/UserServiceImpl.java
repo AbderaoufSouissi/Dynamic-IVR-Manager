@@ -1,6 +1,6 @@
 package com._CServices.IVR_api.service.impl;
 
-import com._CServices.IVR_api.dao.AuditRepository;
+import com._CServices.IVR_api.dao.RoleRepository;
 import com._CServices.IVR_api.dao.UserRepository;
 import com._CServices.IVR_api.dto.UserDto;
 import com._CServices.IVR_api.enumeration.ActionType;
@@ -14,7 +14,6 @@ import com._CServices.IVR_api.service.AuthService;
 import com._CServices.IVR_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +28,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final AuditService auditService;
     private final AuthService authService;
     private final UserMapper userMapper;
@@ -86,6 +86,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto createUser(UserDto userDto) {
+        if(null == userDto.getRoleName()){
+            userDto.setRoleName("DEFAULT_ROLE");
+        }
+        if(null == roleRepository.findByName(userDto.getRoleName())){
+            throw new ResourceNotFoundException("Cannot assign non existing Role : "+userDto.getRoleName()+" to user");
+        }
         if(userRepository.existsByUsername(userDto.getUsername())) {
             throw new ResourceAlreadyExistsException("User with Username : "+userDto.getUsername()+" Already Exists");
 
@@ -100,16 +106,15 @@ public class UserServiceImpl implements UserService {
                     .email(userDto.getEmail())
                     .password(passwordEncoder.encode(userDto.getPassword()))
                     .active(userDto.getActive())
+                    .role(roleRepository.findByName(userDto.getRoleName()))
                     .build();
             user = userRepository.save(user);
-            User loggedInUser = authService.getCurrentLoggedInUser();
-            if (loggedInUser == null) {
-                loggedInUser = user;
-            }
+            User currentUser = authService.getCurrentLoggedInUser();
             auditService.logAction(
-                    loggedInUser,
+                    currentUser,
                     ActionType.CREATE_USER,
-                    EntityType.USER,user.getId()
+                    EntityType.USER,
+                    user.getId()
             );
 
             return userMapper.toDto(user);
@@ -127,19 +132,15 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID " + id + " not found"));
 
         // 2. Get the currently authenticated user (deleter)
-        User deletingUser = authService.getCurrentLoggedInUser();
-        if (deletingUser == null) {
-            deletingUser = userToDelete;
-        }
+        User currentUser = authService.getCurrentLoggedInUser();
+
 
         // 3. Perform deletion first
         userRepository.delete(userToDelete);
-        userRepository.flush();
 
 
-        // 4. Log the action AFTER successful deletion
         auditService.logAction(
-                deletingUser,                    // Who performed the action
+                currentUser,                    // Who performed the action
                 ActionType.DELETE_USER,          // Action type
                 EntityType.USER,                 // Entity type being acted upon
                 userToDelete.getId()             // ID of the deleted user
@@ -149,22 +150,34 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUserByEmail(String email) {
         log.info("inside deleteUserByEmail()");
-        if (!userRepository.existsByEmail(email)){
-            throw new ResourceNotFoundException("User with Email : "+email+" Not Found");
-        }
-        User user = userRepository.findByEmail(email);
-        userRepository.delete(user);
 
+        User userToDelete = Optional.ofNullable(userRepository.findByEmail(email))
+                .orElseThrow(() -> new ResourceNotFoundException("User with Email : "+email+" Not Found"));
+        userRepository.delete(userToDelete);
+        User currentUser = authService.getCurrentLoggedInUser();
+
+        auditService.logAction(
+                currentUser,
+                ActionType.DELETE_USER,
+                EntityType.USER,
+                userToDelete.getId()
+        );
     }
 
     @Override
     public void deleteUserByUsername(String username) {
         log.info("inside deleteUserByUsername()");
-        if(!userRepository.existsByUsername(username)){
-            throw new ResourceNotFoundException("User with Username : "+username+" Not Found");
-        }
-        User user = userRepository.findByUsername(username);
-        userRepository.delete(user);
+        User userToDelete = Optional.ofNullable(userRepository.findByUsername(username))
+                .orElseThrow(() -> new ResourceNotFoundException("User with Username : "+username+" Not Found"));
+        userRepository.delete(userToDelete);
+        User currentUser = authService.getCurrentLoggedInUser();
+
+        auditService.logAction(
+                currentUser,
+                ActionType.DELETE_USER,
+                EntityType.USER,
+                userToDelete.getId()
+        );
 
     }
 
@@ -191,6 +204,15 @@ public class UserServiceImpl implements UserService {
             }
             return userRepository.save(user);
         }).orElseThrow(()-> new ResourceNotFoundException(""));
+
+        User currentUser = authService.getCurrentLoggedInUser();
+
+        auditService.logAction(
+                currentUser,
+                ActionType.UPDATE_USER,
+                EntityType.USER,
+                userToUpdate.getId()
+        );
 
         return userMapper.toDto(userToUpdate);
 
