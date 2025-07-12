@@ -1,5 +1,6 @@
 package com._CServices.IVR_api.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,7 @@ import java.util.Set;
 @Builder
 public class RoleDto {
     private Long id;
+    @NotBlank(message = "Role name is required")
     private String name;
     @Builder.Default
     private Set<String> Permissions = new HashSet<>();
