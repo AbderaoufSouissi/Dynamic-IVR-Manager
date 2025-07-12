@@ -17,6 +17,6 @@ public class RoleDto {
     @NotBlank(message = "Role name is required")
     private String name;
     @Builder.Default
-    private Set<String> Permissions = new HashSet<>();
+    private Set<String> permissions = new HashSet<>();
 
 }

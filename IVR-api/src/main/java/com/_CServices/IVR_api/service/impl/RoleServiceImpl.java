@@ -1,9 +1,11 @@
 package com._CServices.IVR_api.service.impl;
 
+import com._CServices.IVR_api.dao.PermissionsRepository;
 import com._CServices.IVR_api.dao.RoleRepository;
 
 import com._CServices.IVR_api.dto.RoleDto;
 
+import com._CServices.IVR_api.entity.Permissions;
 import com._CServices.IVR_api.entity.Role;
 import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.enumeration.ActionType;
@@ -17,19 +19,21 @@ import com._CServices.IVR_api.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
+    private final PermissionsRepository permissionsRepository;
     private final AuditService auditService;
     private final RoleMapper roleMapper;
     private final AuthService authService;
+
 
     @Override
     public List<RoleDto> getAllRoles() {
@@ -65,12 +69,28 @@ public class RoleServiceImpl implements RoleService {
 
         log.info("inside createRole()");
 
+        log.debug("Requested permissions: {}", roleDto.getPermissions());
+
         if (roleRepository.findByName(roleDto.getName()) != null) {
             throw new ResourceAlreadyExistsException("Role with name : "+roleDto.getName()+" already exists");
         }
+        Set<Permissions> permissions = new HashSet<>();
+        if(!roleDto.getPermissions().isEmpty()){
+
+            roleDto.getPermissions().forEach(permissionName -> {
+                if(!permissionsRepository.existsByName(permissionName)){
+                    throw new ResourceNotFoundException("Permission with name : "+permissionName+" doesnt exist");
+                }
+                Permissions permission = permissionsRepository.findByName(permissionName);
+                permissions.add(permission);
+
+            });
+
+        }
+
         Role role = Role.builder()
                 .name(roleDto.getName())
-                .permissions(new HashSet<>())
+                .permissions(permissions)
                 .build();
         Role createdRole = roleRepository.save(role);
 

@@ -13,9 +13,9 @@ public class RoleMapper {
         RoleDto roleDto = new RoleDto();
         if(null != role.getId()) roleDto.setId(role.getId());
         if(null != role.getName() ) roleDto.setName(role.getName());
-        if(null != role.getPermissions()){
+        if (null != role.getPermissions()) {
             Set<String> permissions = new HashSet<>();
-            role.getPermissions().stream().map(perm-> permissions.add(String.valueOf(perm.getName())));
+            role.getPermissions().forEach(perm -> permissions.add(perm.getName()));
             roleDto.setPermissions(permissions);
         }
         else{
