@@ -34,10 +34,37 @@ public class PermissionsServiceImpl implements PermissionsService {
 
     @Override
     public List<PermissionsDto> getAllPermissions() {
-        log.info("inside getAllPermissions");
+        log.info("inside getAllPermissions()");
         List<Permissions> permissions = permissionsRepository.findAll();
         List<PermissionsDto> permissionsDtos = permissions.stream().map(permissionsMapper::toDto).toList();
         return permissionsDtos;
+    }
+
+    @Override
+    public PermissionsDto getPermissionById(Long id) {
+        log.info("inside getPermissionById()");
+
+        Permissions permissions = permissionsRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Permission with id : "+id+" Not found"));
+        return permissionsMapper.toDto(permissions);
+    }
+
+    @Override
+    public PermissionsDto getPermissionByName(String name) {
+        log.info("inside getPermissionByName()");
+
+        Permissions permissions = Optional.ofNullable(permissionsRepository.findByName(name))
+                .orElseThrow(()-> new ResourceNotFoundException("Permission with name : "+name+" Not found"));
+        return permissionsMapper.toDto(permissions);
+    }
+
+    @Override
+    public PermissionsDto getPermissionByDescription(String description) {
+        log.info("inside getPermissionByDescription()");
+        Permissions permissions = Optional.ofNullable(permissionsRepository.findByDescription(description))
+                .orElseThrow(()-> new ResourceNotFoundException("Permission with description : "+description+" Not found"));
+
+        return permissionsMapper.toDto(permissions);
     }
 
     @Override
@@ -69,7 +96,7 @@ public class PermissionsServiceImpl implements PermissionsService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deletePermissionById(Long id) {
         log.info("inside deleteById()");
 
         Permissions permissionToDelete = permissionsRepository.findById(id)
@@ -87,7 +114,7 @@ public class PermissionsServiceImpl implements PermissionsService {
     }
 
     @Override
-    public void deleteByName(String permissionName) {
+    public void deletePermissionByName(String permissionName) {
         log.info("inside deleteByName()");
 
         Permissions permissionToDelete = Optional.ofNullable(permissionsRepository.findByName(permissionName))

@@ -7,8 +7,11 @@ import java.util.List;
 
 public interface PermissionsService {
     List<PermissionsDto> getAllPermissions();
+    PermissionsDto getPermissionById(Long id);
+    PermissionsDto getPermissionByName(String name);
+    PermissionsDto getPermissionByDescription(String description);
     PermissionsDto createPermission(PermissionsDto permissionsDto);
-    void deleteById(Long id);
-    void deleteByName(String permissionName);
+    void deletePermissionById(Long id);
+    void deletePermissionByName(String permissionName);
 
 }
