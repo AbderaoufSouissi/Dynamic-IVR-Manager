@@ -115,48 +115,75 @@ public class RoleServiceImpl implements RoleService {
         log.info("inside updateRoleByName()");
 
         Role roleToUpdate = Optional.ofNullable(roleRepository.findByName(roleName))
-                .orElseThrow(()-> new ResourceNotFoundException("Role with name : "+roleName+" not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role with name: " + roleName + " not found"));
+
+
         roleToUpdate.setName(roleDto.getName());
-        //TO DO ADD LOGIC TO UPDATE PERMISSIONS
-//        Set<String> permissionsToAdd = roleDto.getPermissions();
-//        Set<Permissions> newPermissions = permissionsToAdd.stream().map(permission-> new Permissions())
+
+
+        Set<Permissions> newPermissions = new HashSet<>();
+
+        if (roleDto.getPermissions() != null && !roleDto.getPermissions().isEmpty()) {
+            roleDto.getPermissions().forEach(permissionName -> {
+                Permissions permission = Optional.ofNullable(permissionsRepository.findByName(permissionName))
+                        .orElseThrow(() -> new ResourceNotFoundException("Permission with name: " + permissionName + " doesn't exist"));
+                newPermissions.add(permission);
+            });
+        }
+
+
+        roleToUpdate.clearPermissions();
+        roleToUpdate.setPermissions(newPermissions);
+
+
+        Role updatedRole = roleRepository.save(roleToUpdate);
+
 
         User currentUser = authService.getCurrentLoggedInUser();
-        Role updatedRole =roleRepository.save(roleToUpdate);
-
         auditService.logAction(
                 currentUser,
                 ActionType.UPDATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
-                roleToUpdate.getId()
+                updatedRole.getId()
         );
+
         return roleMapper.toDto(updatedRole);
     }
+
 
     @Override
     public RoleDto updateRoleById(Long id, RoleDto roleDto) {
         log.info("inside updateRoleById()");
 
         Role roleToUpdate = roleRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Role with id : "+id+" not found"));
-        roleToUpdate.setName(roleDto.getName());
-        //TO DO ADD LOGIC TO UPDATE PERMISSIONS
-//        Set<String> permissionsToAdd = roleDto.getPermissions();
-//        Set<Permissions> newPermissions = permissionsToAdd.stream().map(permission-> new Permissions())
+                .orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " not found"));
 
-        User currentUser = authService.getCurrentLoggedInUser();
+        roleToUpdate.setName(roleDto.getName());
+
+        Set<Permissions> newPermissions = new HashSet<>();
+
+        if (roleDto.getPermissions() != null && !roleDto.getPermissions().isEmpty()) {
+            roleDto.getPermissions().forEach(permissionName -> {
+                Permissions permission = Optional.ofNullable(permissionsRepository.findByName(permissionName))
+                        .orElseThrow(() -> new ResourceNotFoundException("Permission with name: " + permissionName + " doesn't exist"));
+                newPermissions.add(permission);
+            });
+        }
+
+        roleToUpdate.clearPermissions();
+        roleToUpdate.setPermissions(newPermissions);
+
         Role updatedRole = roleRepository.save(roleToUpdate);
 
+        User currentUser = authService.getCurrentLoggedInUser();
         auditService.logAction(
                 currentUser,
                 ActionType.UPDATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
-                id
+                updatedRole.getId()
         );
 
         return roleMapper.toDto(updatedRole);
-
-
     }
 
     @Override
