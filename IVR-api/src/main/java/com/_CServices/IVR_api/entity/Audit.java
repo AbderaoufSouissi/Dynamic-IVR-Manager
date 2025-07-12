@@ -24,7 +24,7 @@ public class Audit{
     @Column(name = "audit_id",nullable = false)
     private Long id;
 
-    @Column(nullable = false, updatable = false, length = 15)
+    @Column(nullable = false, updatable = false)
     private String actionType;
 
 
