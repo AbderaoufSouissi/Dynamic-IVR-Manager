@@ -35,7 +35,7 @@ public class AuditServiceImpl implements AuditService {
         Audit auditLog = Audit.builder()
                 .user(user)
                 .actionType(actionType)
-                .entityType(user.getClass().getSimpleName())
+                .entityType(entityType)
                 .entityId(entityId)
                 .build();
 
