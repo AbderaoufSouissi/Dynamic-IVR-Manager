@@ -63,6 +63,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserDto> getUsersByRoleName(String roleName) {
+        log.info("inside getUsersByRoleName()");
+
+        Role role = Optional.ofNullable(roleRepository.findByName(roleName)).orElseThrow(()-> new ResourceNotFoundException("Role "+roleName+" not found"));
+        List<User> userList = userRepository.findAllByRole(role);
+        List<UserDto> users = userList.stream()
+                .map(user -> userMapper.toDto(user))
+                .toList();
+        return users;
+    }
+
+    @Override
     public UserDto getUserById(Long id) {
         log.info("inside getUserById()");
         User user = userRepository.findById(id)

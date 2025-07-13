@@ -1,6 +1,7 @@
 package com._CServices.IVR_api.dao;
 
 import com._CServices.IVR_api.dto.UserDto;
+import com._CServices.IVR_api.entity.Role;
 import com._CServices.IVR_api.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +26,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
     List<User> findAllByActive(boolean active);
+
+    List<User> findAllByRole(Role role);
 }

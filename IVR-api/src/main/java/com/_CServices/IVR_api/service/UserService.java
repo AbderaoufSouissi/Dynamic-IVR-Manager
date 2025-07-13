@@ -13,6 +13,7 @@ public interface UserService {
 
     List<UserDto> getAllUsers();
     List<UserDto> getUsersByActiveStatus(Boolean active);
+    List<UserDto> getUsersByRoleName(String roleName);
     UserDto getUserById(Long id);
     UserDto getUserByEmail(String email);
     UserDto getUserByUsername(String username);
