@@ -101,7 +101,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto createUser(UserDto userDto) {
-        User currentUser = authService.getCurrentLoggedInUser();
         if(null == userDto.getRoleName()){
             userDto.setRoleName("DEFAULT_ROLE");
         }

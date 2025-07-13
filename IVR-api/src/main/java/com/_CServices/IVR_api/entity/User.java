@@ -20,7 +20,7 @@ import java.util.List;
 @SequenceGenerator(
         name = "shared_seq_generator",      // Internal name used by Hibernate
         sequenceName = "shared_id_seq",     // Actual database sequence name
-        allocationSize = 1                  // Adjust based on performance needs
+        allocationSize = 1// Adjust based on performance needs
 )
 public class User extends BaseEntity implements UserDetails {
     @Id
