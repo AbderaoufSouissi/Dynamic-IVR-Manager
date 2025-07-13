@@ -16,19 +16,14 @@ public class RoleController {
     private final RoleService roleService;
 
     @GetMapping
-    public ResponseEntity<List<RoleDto>> getAllRoles() {
+    public ResponseEntity<List<RoleDto>> getAllRoles(@RequestParam(required = false) String name) {
+        if(name!=null ) return ResponseEntity.ok(List.of(roleService.getRoleByName(name)));
         return ResponseEntity.ok(roleService.getAllRoles());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RoleDto> getRoleById(@PathVariable Long id) {
         return ResponseEntity.ok(roleService.getRoleById(id));
-
-    }
-
-    @GetMapping("/name")
-    public ResponseEntity<RoleDto> getRoleByName(@RequestParam String name) {
-        return ResponseEntity.ok(roleService.getRoleByName(name));
 
     }
 

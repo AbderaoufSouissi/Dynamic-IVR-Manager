@@ -1,10 +1,7 @@
 package com._CServices.IVR_api.controller;
 
-import com._CServices.IVR_api.dto.UserDto;
-import com._CServices.IVR_api.dto.request.LoginRequest;
 import com._CServices.IVR_api.entity.User;
-import com._CServices.IVR_api.service.AuthService;
-import jakarta.validation.Valid;
+import com._CServices.IVR_api.security.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

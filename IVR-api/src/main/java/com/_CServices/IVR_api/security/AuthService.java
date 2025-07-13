@@ -1,48 +1,46 @@
-package com._CServices.IVR_api.service.impl;
+package com._CServices.IVR_api.security;
 
 import com._CServices.IVR_api.dao.UserRepository;
-import com._CServices.IVR_api.dto.request.LoginRequest;
 import com._CServices.IVR_api.entity.User;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
-public class AuthService{
+public class AuthService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
 
-
-
-
-    public User getCurrentUser() {
+    public User getCurrentLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated() ||
-                !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+        if (authentication == null || !authentication.isAuthenticated()) {
             throw new IllegalStateException("No authenticated user found");
         }
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        return userRepository.findById(userDetails.getId())
+        Object principal = authentication.getPrincipal();
+
+        if (!(principal instanceof User)) {
+            throw new IllegalStateException("Principal is not an instance of User");
+        }
+
+        User user = (User) principal;
+
+        return userRepository.findById(user.getId())
                 .orElseThrow(() -> new IllegalStateException("User not found in DB"));
     }
 
     public Long getCurrentUserId() {
-        return getCurrentUser().getId();
+        return getCurrentLoggedInUser().getId();
     }
-
-
-
-
 }
+
+
+
+
+
+
