@@ -18,15 +18,15 @@ public class UserController {
 
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+    public ResponseEntity<List<UserDto>> getUsers(
+            @RequestParam(required = false) String role,
+            @RequestParam(required = false) Boolean active
+    ) {
+        if (role != null) return ResponseEntity.ok(userService.getUsersByRoleName(role));
+        if (active != null) return ResponseEntity.ok(userService.getUsersByActiveStatus(active));
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("/status")
-    public ResponseEntity<List<UserDto>> getUsersByActiveStatus(@RequestParam boolean active) {
-        return new ResponseEntity<>(userService.getUsersByActiveStatus(active), HttpStatus.OK);
-
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {

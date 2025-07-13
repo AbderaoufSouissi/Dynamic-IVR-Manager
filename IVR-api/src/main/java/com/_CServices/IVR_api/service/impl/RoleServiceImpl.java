@@ -1,9 +1,11 @@
 package com._CServices.IVR_api.service.impl;
 
+import com._CServices.IVR_api.dao.PermissionsRepository;
 import com._CServices.IVR_api.dao.RoleRepository;
 
 import com._CServices.IVR_api.dto.RoleDto;
 
+import com._CServices.IVR_api.entity.Permissions;
 import com._CServices.IVR_api.entity.Role;
 import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.enumeration.ActionType;
@@ -11,25 +13,27 @@ import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.RoleMapper;
+import com._CServices.IVR_api.security.AuthService;
 import com._CServices.IVR_api.service.AuditService;
-import com._CServices.IVR_api.service.AuthService;
 import com._CServices.IVR_api.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
+    private final PermissionsRepository permissionsRepository;
     private final AuditService auditService;
     private final RoleMapper roleMapper;
     private final AuthService authService;
+
 
     @Override
     public List<RoleDto> getAllRoles() {
@@ -65,24 +69,35 @@ public class RoleServiceImpl implements RoleService {
 
         log.info("inside createRole()");
 
+        log.debug("Requested permissions: {}", roleDto.getPermissions());
+
         if (roleRepository.findByName(roleDto.getName()) != null) {
             throw new ResourceAlreadyExistsException("Role with name : "+roleDto.getName()+" already exists");
         }
+        Set<Permissions> permissions = new HashSet<>();
+        if(!roleDto.getPermissions().isEmpty()){
+
+            roleDto.getPermissions().forEach(permissionName -> {
+                if(!permissionsRepository.existsByName(permissionName)){
+                    throw new ResourceNotFoundException("Permission with name : "+permissionName+" doesnt exist");
+                }
+                Permissions permission = permissionsRepository.findByName(permissionName);
+                permissions.add(permission);
+
+            });
+
+        }
+
         Role role = Role.builder()
                 .name(roleDto.getName())
-                .permissions(new HashSet<>())
+                .permissions(permissions)
                 .build();
         Role createdRole = roleRepository.save(role);
 
-
-
-        User currentUser = authService.getCurrentLoggedInUser();
-
         auditService.logAction(
-                currentUser,
-                ActionType.CREATE_ROLE,
-                EntityType.ROLE,
-                role.getId()
+                ActionType.CREATE_ROLE.toString(),
+                EntityType.ROLE.toString(),
+                createdRole.getId()
         );
 
         return roleMapper.toDto(createdRole);
@@ -95,48 +110,73 @@ public class RoleServiceImpl implements RoleService {
         log.info("inside updateRoleByName()");
 
         Role roleToUpdate = Optional.ofNullable(roleRepository.findByName(roleName))
-                .orElseThrow(()-> new ResourceNotFoundException("Role with name : "+roleName+" not found"));
-        roleToUpdate.setName(roleDto.getName());
-        //TO DO ADD LOGIC TO UPDATE PERMISSIONS
-//        Set<String> permissionsToAdd = roleDto.getPermissions();
-//        Set<Permissions> newPermissions = permissionsToAdd.stream().map(permission-> new Permissions())
+                .orElseThrow(() -> new ResourceNotFoundException("Role with name: " + roleName + " not found"));
 
-        User currentUser = authService.getCurrentLoggedInUser();
-        Role updatedRole =roleRepository.save(roleToUpdate);
+
+        roleToUpdate.setName(roleDto.getName());
+
+
+        Set<Permissions> newPermissions = new HashSet<>();
+
+        if (roleDto.getPermissions() != null && !roleDto.getPermissions().isEmpty()) {
+            roleDto.getPermissions().forEach(permissionName -> {
+                Permissions permission = Optional.ofNullable(permissionsRepository.findByName(permissionName))
+                        .orElseThrow(() -> new ResourceNotFoundException("Permission with name: " + permissionName + " doesn't exist"));
+                newPermissions.add(permission);
+            });
+        }
+
+
+        roleToUpdate.clearPermissions();
+        roleToUpdate.setPermissions(newPermissions);
+
+
+        Role updatedRole = roleRepository.save(roleToUpdate);
+
+
 
         auditService.logAction(
-                currentUser,
-                ActionType.UPDATE_ROLE,
-                EntityType.ROLE,
-                roleToUpdate.getId()
+                ActionType.UPDATE_ROLE.toString(),
+                EntityType.ROLE.toString(),
+                updatedRole.getId()
         );
+
         return roleMapper.toDto(updatedRole);
     }
+
 
     @Override
     public RoleDto updateRoleById(Long id, RoleDto roleDto) {
         log.info("inside updateRoleById()");
 
         Role roleToUpdate = roleRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Role with id : "+id+" not found"));
-        roleToUpdate.setName(roleDto.getName());
-        //TO DO ADD LOGIC TO UPDATE PERMISSIONS
-//        Set<String> permissionsToAdd = roleDto.getPermissions();
-//        Set<Permissions> newPermissions = permissionsToAdd.stream().map(permission-> new Permissions())
+                .orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " not found"));
 
-        User currentUser = authService.getCurrentLoggedInUser();
+        roleToUpdate.setName(roleDto.getName());
+
+        Set<Permissions> newPermissions = new HashSet<>();
+
+        if (roleDto.getPermissions() != null && !roleDto.getPermissions().isEmpty()) {
+            roleDto.getPermissions().forEach(permissionName -> {
+                Permissions permission = Optional.ofNullable(permissionsRepository.findByName(permissionName))
+                        .orElseThrow(() -> new ResourceNotFoundException("Permission with name: " + permissionName + " doesn't exist"));
+                newPermissions.add(permission);
+            });
+        }
+
+        roleToUpdate.clearPermissions();
+        roleToUpdate.setPermissions(newPermissions);
+
         Role updatedRole = roleRepository.save(roleToUpdate);
 
+
         auditService.logAction(
-                currentUser,
-                ActionType.UPDATE_ROLE,
-                EntityType.ROLE,
-                id
+                ActionType.UPDATE_ROLE.toString(),
+                EntityType.ROLE.toString(),
+                updatedRole.getId()
         );
 
         return roleMapper.toDto(updatedRole);
-
-
     }
 
     @Override
@@ -146,12 +186,11 @@ public class RoleServiceImpl implements RoleService {
         Role roleToDelete = roleRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Role with id : "+id+" not found"));
         roleRepository.delete(roleToDelete);
-        User currentUser = authService.getCurrentLoggedInUser();
+
 
         auditService.logAction(
-                currentUser,
-                ActionType.DELETE_ROLE,
-                EntityType.ROLE,
+                ActionType.DELETE_ROLE.toString(),
+                EntityType.ROLE.toString(),
                 roleToDelete.getId()
         );
     }
@@ -164,12 +203,10 @@ public class RoleServiceImpl implements RoleService {
                         .orElseThrow(()-> new ResourceNotFoundException("Role with name : "+roleName+" not found"));
 
         roleRepository.delete(roleToDelete);
-        User currentUser = authService.getCurrentLoggedInUser();
 
         auditService.logAction(
-                currentUser,
-                ActionType.DELETE_ROLE,
-                EntityType.ROLE,
+                ActionType.DELETE_ROLE.toString(),
+                EntityType.ROLE.toString(),
                 roleToDelete.getId()
         );
 

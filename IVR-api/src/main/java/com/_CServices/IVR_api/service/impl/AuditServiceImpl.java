@@ -3,13 +3,13 @@ package com._CServices.IVR_api.service.impl;
 import com._CServices.IVR_api.dao.AuditRepository;
 import com._CServices.IVR_api.dao.UserRepository;
 import com._CServices.IVR_api.dto.AuditDto;
-import com._CServices.IVR_api.dto.UserDto;
 import com._CServices.IVR_api.entity.Audit;
 import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.enumeration.ActionType;
 import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.AuditMapper;
+import com._CServices.IVR_api.security.AuthService;
 import com._CServices.IVR_api.service.AuditService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -26,15 +25,17 @@ import java.util.List;
 @Slf4j
 public class AuditServiceImpl implements AuditService {
 
+
     private final AuditRepository auditRepository;
-    private final UserRepository userRepository;
+    private final AuthService authService;
     private final AuditMapper auditMapper;
 
-    public void logAction(User user, ActionType actionType, EntityType entityType, Long entityId) {
+    public void logAction(String actionType, String entityType, Long entityId) {
+        final User loggedInUser = authService.getCurrentLoggedInUser();
         log.info("inside logAction()");
 
         Audit auditLog = Audit.builder()
-                .user(user)
+                .user(loggedInUser)
                 .actionType(actionType)
                 .entityType(entityType)
                 .entityId(entityId)

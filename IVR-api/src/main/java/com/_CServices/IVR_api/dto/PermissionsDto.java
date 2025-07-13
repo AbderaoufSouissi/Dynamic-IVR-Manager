@@ -6,17 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RoleDto {
+public class PermissionsDto {
     private Long id;
-    @NotBlank(message = "Role name is required")
+    @NotBlank(message = "Permission name cannot be empty")
     private String name;
-    @Builder.Default
-    private Set<String> permissions = new HashSet<>();
+    @NotBlank(message = "Permission description cannot be empty")
+    private String description;
 
 }

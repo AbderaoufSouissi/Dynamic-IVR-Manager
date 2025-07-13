@@ -1,5 +1,6 @@
 package com._CServices.IVR_api.entity;
 
+import com._CServices.IVR_api.domain.RequestContext;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,8 +28,8 @@ public abstract class BaseEntity {
 
     @CreatedBy
     @Column(nullable = false, updatable = false)
-    private Long createdBy = 0L; // Default system user
+    private Long createdBy;
 
     @LastModifiedBy
-    private Long updatedBy = 0L;
+    private Long updatedBy;
 }

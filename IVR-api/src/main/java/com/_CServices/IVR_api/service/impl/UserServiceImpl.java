@@ -3,14 +3,15 @@ package com._CServices.IVR_api.service.impl;
 import com._CServices.IVR_api.dao.RoleRepository;
 import com._CServices.IVR_api.dao.UserRepository;
 import com._CServices.IVR_api.dto.UserDto;
+import com._CServices.IVR_api.entity.Role;
 import com._CServices.IVR_api.enumeration.ActionType;
 import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.UserMapper;
 import com._CServices.IVR_api.entity.User;
+import com._CServices.IVR_api.security.AuthService;
 import com._CServices.IVR_api.service.AuditService;
-import com._CServices.IVR_api.service.AuthService;
 import com._CServices.IVR_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -60,6 +63,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserDto> getUsersByRoleName(String roleName) {
+        log.info("inside getUsersByRoleName()");
+
+        Role role = Optional.ofNullable(roleRepository.findByName(roleName)).orElseThrow(()-> new ResourceNotFoundException("Role "+roleName+" not found"));
+        List<User> userList = userRepository.findAllByRole(role);
+        List<UserDto> users = userList.stream()
+                .map(user -> userMapper.toDto(user))
+                .toList();
+        return users;
+    }
+
+    @Override
     public UserDto getUserById(Long id) {
         log.info("inside getUserById()");
         User user = userRepository.findById(id)
@@ -89,9 +104,27 @@ public class UserServiceImpl implements UserService {
         if(null == userDto.getRoleName()){
             userDto.setRoleName("DEFAULT_ROLE");
         }
+        if(Objects.equals(userDto.getRoleName(), "DEFAULT_ROLE") &&
+                null == roleRepository.findByName(userDto.getRoleName())){
+            Role role = Role.builder()
+                    .name(userDto.getRoleName())
+                    .permissions(new HashSet<>())
+                    .build();
+            Role newRole = roleRepository.save(role);
+
+            auditService.logAction(
+                    ActionType.CREATE_ROLE.toString(),
+                    EntityType.ROLE.toString(),
+                    newRole.getId()
+            );
+
+
+        }
+
         if(null == roleRepository.findByName(userDto.getRoleName())){
             throw new ResourceNotFoundException("Cannot assign non existing Role : "+userDto.getRoleName()+" to user");
         }
+
         if(userRepository.existsByUsername(userDto.getUsername())) {
             throw new ResourceAlreadyExistsException("User with Username : "+userDto.getUsername()+" Already Exists");
 
@@ -108,13 +141,12 @@ public class UserServiceImpl implements UserService {
                     .active(userDto.getActive())
                     .role(roleRepository.findByName(userDto.getRoleName()))
                     .build();
-            user = userRepository.save(user);
-            User currentUser = authService.getCurrentLoggedInUser();
+            User newUser = userRepository.save(user);
+
             auditService.logAction(
-                    currentUser,
-                    ActionType.CREATE_USER,
-                    EntityType.USER,
-                    user.getId()
+                    ActionType.CREATE_USER.toString(),
+                    EntityType.USER.toString(),
+                    newUser.getId()
             );
 
             return userMapper.toDto(user);
@@ -140,10 +172,10 @@ public class UserServiceImpl implements UserService {
 
 
         auditService.logAction(
-                currentUser,                    // Who performed the action
-                ActionType.DELETE_USER,          // Action type
-                EntityType.USER,                 // Entity type being acted upon
-                userToDelete.getId()             // ID of the deleted user
+
+                ActionType.DELETE_USER.toString(),
+                EntityType.USER.toString(),
+                userToDelete.getId()
         );
     }
 
@@ -157,9 +189,8 @@ public class UserServiceImpl implements UserService {
         User currentUser = authService.getCurrentLoggedInUser();
 
         auditService.logAction(
-                currentUser,
-                ActionType.DELETE_USER,
-                EntityType.USER,
+                ActionType.DELETE_USER.toString(),
+                EntityType.USER.toString(),
                 userToDelete.getId()
         );
     }
@@ -173,9 +204,8 @@ public class UserServiceImpl implements UserService {
         User currentUser = authService.getCurrentLoggedInUser();
 
         auditService.logAction(
-                currentUser,
-                ActionType.DELETE_USER,
-                EntityType.USER,
+                ActionType.DELETE_USER.toString(),
+                EntityType.USER.toString(),
                 userToDelete.getId()
         );
 
@@ -208,9 +238,8 @@ public class UserServiceImpl implements UserService {
         User currentUser = authService.getCurrentLoggedInUser();
 
         auditService.logAction(
-                currentUser,
-                ActionType.UPDATE_USER,
-                EntityType.USER,
+                ActionType.UPDATE_USER.toString(),
+                EntityType.USER.toString(),
                 userToUpdate.getId()
         );
 

@@ -34,17 +34,15 @@
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             return http
                     .csrf(csrf -> csrf.disable())
-                    .authorizeHttpRequests(auth -> auth
-                            .anyRequest().permitAll()
+//                    .headers(headers -> headers.frameOptions(frame -> frame.disable())) // ← allow frames
+                    .authorizeHttpRequests(auth -> auth.requestMatchers("/h2-console/**").permitAll()
+                            .anyRequest().authenticated()
                     )
-                    .sessionManagement(session -> session
-                            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                            .maximumSessions(1)
-                            .sessionRegistry(sessionRegistry())
-                    )
+                    .httpBasic(Customizer.withDefaults())
                     .userDetailsService(userDetailsService)
                     .build();
         }
+
 
 
         @Bean
