@@ -15,6 +15,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,7 +29,7 @@ public class IvrApiApplication {
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
 	private final PermissionsRepository permissionsRepository;
-	private final AuditService auditService;
+	private final PasswordEncoder passwordEncoder;
 
 
 
@@ -155,11 +156,11 @@ public class IvrApiApplication {
 
 
 				User SYSTEM_USER = User.builder()
-						.username("SYSTEM")
-						.password("SYSTEM")
+						.username("SYSTEM_USER")
+						.password(passwordEncoder.encode("system"))
 						.email("system@system")
-						.firstName("SYSTEM")
-						.lastName("SYSTEM")
+						.firstName("system")
+						.lastName("system")
 						.active(true)
 						.role(SYSTEM_ROLE)
 						.build();
