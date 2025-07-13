@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface AuditService {
-    void logAction(User user, String actionType, String entityType, Long entityId);
+    void logAction(String actionType, String entityType, Long entityId);
     List<AuditDto> getAllAudits();
     List<AuditDto> getAuditsByEntityType(@NotNull EntityType entityType);
     List<AuditDto> getAuditsByActionType(@NotNull ActionType actionType);

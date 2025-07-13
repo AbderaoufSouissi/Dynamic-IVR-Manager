@@ -11,6 +11,7 @@ import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.AuditMapper;
 import com._CServices.IVR_api.service.AuditService;
+import com._CServices.IVR_api.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,15 +26,18 @@ import java.util.List;
 @Slf4j
 public class AuditServiceImpl implements AuditService {
 
+
     private final AuditRepository auditRepository;
+    private final AuthService authService;
     private final UserRepository userRepository;
     private final AuditMapper auditMapper;
 
-    public void logAction(User user, String actionType, String entityType, Long entityId) {
+    public void logAction(String actionType, String entityType, Long entityId) {
+        final User loggedInUser = authService.getCurrentLoggedInUser();
         log.info("inside logAction()");
 
         Audit auditLog = Audit.builder()
-                .user(user)
+                .user(loggedInUser)
                 .actionType(actionType)
                 .entityType(entityType)
                 .entityId(entityId)

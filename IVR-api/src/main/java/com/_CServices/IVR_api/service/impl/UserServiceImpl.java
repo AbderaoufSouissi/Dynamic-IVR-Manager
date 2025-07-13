@@ -102,7 +102,6 @@ public class UserServiceImpl implements UserService {
             Role newRole = roleRepository.save(role);
 
             auditService.logAction(
-                    currentUser,
                     ActionType.CREATE_ROLE.toString(),
                     EntityType.ROLE.toString(),
                     newRole.getId()
@@ -134,7 +133,6 @@ public class UserServiceImpl implements UserService {
             User newUser = userRepository.save(user);
 
             auditService.logAction(
-                    currentUser,
                     ActionType.CREATE_USER.toString(),
                     EntityType.USER.toString(),
                     newUser.getId()
@@ -163,7 +161,7 @@ public class UserServiceImpl implements UserService {
 
 
         auditService.logAction(
-                currentUser,
+
                 ActionType.DELETE_USER.toString(),
                 EntityType.USER.toString(),
                 userToDelete.getId()
@@ -180,7 +178,6 @@ public class UserServiceImpl implements UserService {
         User currentUser = authService.getCurrentLoggedInUser();
 
         auditService.logAction(
-                currentUser,
                 ActionType.DELETE_USER.toString(),
                 EntityType.USER.toString(),
                 userToDelete.getId()
@@ -196,7 +193,6 @@ public class UserServiceImpl implements UserService {
         User currentUser = authService.getCurrentLoggedInUser();
 
         auditService.logAction(
-                currentUser,
                 ActionType.DELETE_USER.toString(),
                 EntityType.USER.toString(),
                 userToDelete.getId()
@@ -231,7 +227,6 @@ public class UserServiceImpl implements UserService {
         User currentUser = authService.getCurrentLoggedInUser();
 
         auditService.logAction(
-                currentUser,
                 ActionType.UPDATE_USER.toString(),
                 EntityType.USER.toString(),
                 userToUpdate.getId()

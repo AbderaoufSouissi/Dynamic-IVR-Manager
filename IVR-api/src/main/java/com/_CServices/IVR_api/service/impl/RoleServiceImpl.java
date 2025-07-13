@@ -99,7 +99,6 @@ public class RoleServiceImpl implements RoleService {
         User currentUser = authService.getCurrentLoggedInUser();
 
         auditService.logAction(
-                currentUser,
                 ActionType.CREATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
                 createdRole.getId()
@@ -141,7 +140,6 @@ public class RoleServiceImpl implements RoleService {
 
         User currentUser = authService.getCurrentLoggedInUser();
         auditService.logAction(
-                currentUser,
                 ActionType.UPDATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
                 updatedRole.getId()
@@ -177,7 +175,6 @@ public class RoleServiceImpl implements RoleService {
 
         User currentUser = authService.getCurrentLoggedInUser();
         auditService.logAction(
-                currentUser,
                 ActionType.UPDATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
                 updatedRole.getId()
@@ -196,7 +193,6 @@ public class RoleServiceImpl implements RoleService {
         User currentUser = authService.getCurrentLoggedInUser();
 
         auditService.logAction(
-                currentUser,
                 ActionType.DELETE_ROLE.toString(),
                 EntityType.ROLE.toString(),
                 roleToDelete.getId()
@@ -214,7 +210,6 @@ public class RoleServiceImpl implements RoleService {
         User currentUser = authService.getCurrentLoggedInUser();
 
         auditService.logAction(
-                currentUser,
                 ActionType.DELETE_ROLE.toString(),
                 EntityType.ROLE.toString(),
                 roleToDelete.getId()

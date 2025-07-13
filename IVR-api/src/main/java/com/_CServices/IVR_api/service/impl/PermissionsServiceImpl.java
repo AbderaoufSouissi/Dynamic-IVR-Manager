@@ -84,7 +84,6 @@ public class PermissionsServiceImpl implements PermissionsService {
         Permissions createdPermission = permissionsRepository.save(newPermissions);
 
         auditService.logAction(
-                currentUser,
                 ActionType.CREATE_PERMISSION.toString(),
                 EntityType.PERMISSION.toString(),
                 createdPermission.getId()
@@ -104,7 +103,6 @@ public class PermissionsServiceImpl implements PermissionsService {
         permissionsRepository.delete(permissionToDelete);
         User currentUser = authService.getCurrentLoggedInUser();
         auditService.logAction(
-                currentUser,
                 ActionType.DELETE_PERMISSION.toString(),
                 EntityType.PERMISSION.toString(),
                 permissionToDelete.getId()
@@ -123,7 +121,6 @@ public class PermissionsServiceImpl implements PermissionsService {
         permissionsRepository.delete(permissionToDelete);
         User currentUser = authService.getCurrentLoggedInUser();
         auditService.logAction(
-                currentUser,
                 ActionType.DELETE_PERMISSION.toString(),
                 EntityType.PERMISSION.toString(),
                 permissionToDelete.getId()
