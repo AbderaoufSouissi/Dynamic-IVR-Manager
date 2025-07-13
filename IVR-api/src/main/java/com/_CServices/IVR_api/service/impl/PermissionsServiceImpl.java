@@ -10,18 +10,16 @@ import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.PermissionsMapper;
+import com._CServices.IVR_api.security.AuthService;
 import com._CServices.IVR_api.service.AuditService;
-import com._CServices.IVR_api.service.AuthService;
 import com._CServices.IVR_api.service.PermissionsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -80,7 +78,7 @@ public class PermissionsServiceImpl implements PermissionsService {
                 .roles(new HashSet<>())
                 .build();
 
-        User currentUser = authService.getCurrentLoggedInUser();
+
         Permissions createdPermission = permissionsRepository.save(newPermissions);
 
         auditService.logAction(
@@ -101,7 +99,7 @@ public class PermissionsServiceImpl implements PermissionsService {
         Permissions permissionToDelete = permissionsRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Permission with ID: "+id+" not found"));
         permissionsRepository.delete(permissionToDelete);
-        User currentUser = authService.getCurrentLoggedInUser();
+
         auditService.logAction(
                 ActionType.DELETE_PERMISSION.toString(),
                 EntityType.PERMISSION.toString(),
@@ -119,7 +117,7 @@ public class PermissionsServiceImpl implements PermissionsService {
                 .orElseThrow(()-> new ResourceNotFoundException("Permission : "+permissionName+" not found"));
 
         permissionsRepository.delete(permissionToDelete);
-        User currentUser = authService.getCurrentLoggedInUser();
+
         auditService.logAction(
                 ActionType.DELETE_PERMISSION.toString(),
                 EntityType.PERMISSION.toString(),

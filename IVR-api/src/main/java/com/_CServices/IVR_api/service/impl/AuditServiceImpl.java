@@ -3,15 +3,14 @@ package com._CServices.IVR_api.service.impl;
 import com._CServices.IVR_api.dao.AuditRepository;
 import com._CServices.IVR_api.dao.UserRepository;
 import com._CServices.IVR_api.dto.AuditDto;
-import com._CServices.IVR_api.dto.UserDto;
 import com._CServices.IVR_api.entity.Audit;
 import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.enumeration.ActionType;
 import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.AuditMapper;
+import com._CServices.IVR_api.security.AuthService;
 import com._CServices.IVR_api.service.AuditService;
-import com._CServices.IVR_api.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,6 @@ public class AuditServiceImpl implements AuditService {
 
     private final AuditRepository auditRepository;
     private final AuthService authService;
-    private final UserRepository userRepository;
     private final AuditMapper auditMapper;
 
     public void logAction(String actionType, String entityType, Long entityId) {

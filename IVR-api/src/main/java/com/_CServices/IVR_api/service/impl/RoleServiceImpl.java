@@ -13,8 +13,8 @@ import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.RoleMapper;
+import com._CServices.IVR_api.security.AuthService;
 import com._CServices.IVR_api.service.AuditService;
-import com._CServices.IVR_api.service.AuthService;
 import com._CServices.IVR_api.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -94,10 +94,6 @@ public class RoleServiceImpl implements RoleService {
                 .build();
         Role createdRole = roleRepository.save(role);
 
-
-
-        User currentUser = authService.getCurrentLoggedInUser();
-
         auditService.logAction(
                 ActionType.CREATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
@@ -138,7 +134,7 @@ public class RoleServiceImpl implements RoleService {
         Role updatedRole = roleRepository.save(roleToUpdate);
 
 
-        User currentUser = authService.getCurrentLoggedInUser();
+
         auditService.logAction(
                 ActionType.UPDATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
@@ -173,7 +169,7 @@ public class RoleServiceImpl implements RoleService {
 
         Role updatedRole = roleRepository.save(roleToUpdate);
 
-        User currentUser = authService.getCurrentLoggedInUser();
+
         auditService.logAction(
                 ActionType.UPDATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
@@ -190,7 +186,7 @@ public class RoleServiceImpl implements RoleService {
         Role roleToDelete = roleRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Role with id : "+id+" not found"));
         roleRepository.delete(roleToDelete);
-        User currentUser = authService.getCurrentLoggedInUser();
+
 
         auditService.logAction(
                 ActionType.DELETE_ROLE.toString(),
@@ -207,7 +203,6 @@ public class RoleServiceImpl implements RoleService {
                         .orElseThrow(()-> new ResourceNotFoundException("Role with name : "+roleName+" not found"));
 
         roleRepository.delete(roleToDelete);
-        User currentUser = authService.getCurrentLoggedInUser();
 
         auditService.logAction(
                 ActionType.DELETE_ROLE.toString(),
