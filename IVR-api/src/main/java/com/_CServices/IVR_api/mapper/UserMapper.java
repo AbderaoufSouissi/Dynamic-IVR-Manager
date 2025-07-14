@@ -19,6 +19,10 @@ public class UserMapper {
         if (user.getPassword() != null) userDto.setPassword(user.getPassword());
         if (user.getActive() != null) userDto.setActive(user.getActive());
         if (user.getRole() != null) userDto.setRoleName(user.getRole().getName());
+        if(user.getCreatedAt() != null) userDto.setCreatedAt(user.getCreatedAt());
+        if(user.getUpdatedAt() != null) userDto.setUpdatedAt(user.getUpdatedAt());
+        if(user.getCreatedBy() != null) userDto.setCreatedBy(user.getCreatedBy());
+        if(user.getUpdatedBy() != null) userDto.setUpdatedBy(user.getUpdatedBy());
         return userDto;
     }
 

@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -34,6 +36,18 @@ public class UserDto {
     private Boolean active;
 
     private String roleName = "DEFAULT_ROLE";
+
+
+    private Long createdBy;
+
+
+    private LocalDateTime createdAt;
+
+
+    private LocalDateTime updatedAt;
+
+
+    private Long updatedBy;
 
 
 }
