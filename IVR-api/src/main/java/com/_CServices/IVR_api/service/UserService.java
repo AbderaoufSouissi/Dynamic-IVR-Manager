@@ -13,12 +13,13 @@ public interface UserService {
 
     List<UserDto> getAllUsers();
     List<UserDto> getUsersByActiveStatus(Boolean active);
-    List<UserDto> getUsersByRoleName(String roleName);
+    List<UserDto> getUsersByRole(String roleName);
+    List<UserDto> getUsersByRoleAndActiveStatus(String role, Boolean active);
     UserDto getUserById(Long id);
     UserDto getUserByEmail(String email);
     UserDto getUserByUsername(String username);
-    UserDto createUser(@Valid UserDto userDto);
-    UserDto updateUser(@Valid UserDto userDto, Long id);
+    UserDto createUser(UserDto userDto);
+    UserDto updateUser(UserDto userDto, Long id);
     void deleteUserById(Long id);
     void deleteUserByEmail(String email);
     void deleteUserByUsername(String username);
