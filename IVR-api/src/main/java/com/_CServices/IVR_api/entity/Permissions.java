@@ -1,9 +1,8 @@
 package com._CServices.IVR_api.entity;
 
-import com._CServices.IVR_api.enumeration.ActionType;
+
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -169,7 +169,7 @@ public class Application {
 							.build();
 					userRepository.save(SYSTEM_USER);
 
-					log.info("Created User {}", SYSTEM_USER.getUsername());
+					log.info("system_authorities are"+SYSTEM_USER.getAuthorities());
 
 				}
 			}finally {
