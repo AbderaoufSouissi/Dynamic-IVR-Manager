@@ -11,7 +11,7 @@ import java.util.Set;
 public class RoleMapper {
     public RoleDto toDto(Role role) {
         RoleDto roleDto = new RoleDto();
-        if(null != role.getId()) roleDto.setId(role.getId());
+        if(null != role.getId()) roleDto.setRoleId(role.getId());
         if(null != role.getName() ) roleDto.setName(role.getName());
         if(null != role.getCreatedAt() ) roleDto.setCreatedAt(role.getCreatedAt());
         if(null != role.getCreatedBy() ) roleDto.setCreatedBy(role.getCreatedBy());

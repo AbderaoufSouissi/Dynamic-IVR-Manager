@@ -1,20 +1,19 @@
 package com._CServices.IVR_api.dto;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserDto {
+@JsonPropertyOrder({"userId", "firstName", "lastName", "username", "email", "password", "active", "roleName",  "createdAt", "createdBy", "updatedAt",  "updatedBy"})
+public class UserDto extends BaseDto {
     private Long userId;
 
     @NotBlank(message = "First name is required")
@@ -37,17 +36,6 @@ public class UserDto {
 
     private String roleName = "DEFAULT_ROLE";
 
-
-    private Long createdBy;
-
-
-    private LocalDateTime createdAt;
-
-
-    private LocalDateTime updatedAt;
-
-
-    private Long updatedBy;
 
 
 }
