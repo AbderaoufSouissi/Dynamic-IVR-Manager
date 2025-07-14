@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 @Data
@@ -18,5 +19,16 @@ public class RoleDto {
     private String name;
     @Builder.Default
     private Set<String> permissions = new HashSet<>();
+
+    private Long createdBy;
+
+
+    private LocalDateTime createdAt;
+
+
+    private LocalDateTime updatedAt;
+
+
+    private Long updatedBy;
 
 }
