@@ -58,9 +58,16 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(
-                new SimpleGrantedAuthority("ROLE_DEFAULT")
-        );
+        if (role != null) {
+            return List.of(new SimpleGrantedAuthority(role.getName().toUpperCase()));
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_DEFAULT"));
+    }
+
+
+    @Override
+    public boolean isEnabled() {
+        return this.active != null && this.active;
     }
 
 
