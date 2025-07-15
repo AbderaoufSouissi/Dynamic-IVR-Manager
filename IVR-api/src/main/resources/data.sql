@@ -36,8 +36,8 @@ BEGIN
         role_name,
         created_at,
         updated_at,
-        created_by,
-        updated_by
+        CREATED_BY_ID,
+        UPDATED_BY_ID
     )
     VALUES (
                system_role_id,
@@ -59,8 +59,8 @@ BEGIN
         IS_ACTIVE,
         created_at,
         updated_at,
-        created_by,
-        updated_by,
+        CREATED_BY_ID,
+        UPDATED_BY_ID,
         role_id
     )
     VALUES (
@@ -79,7 +79,7 @@ BEGIN
            );
 
     -- Insert permissions (will continue from ID 2)
-    INSERT INTO PERMISSIONS (PERMISSION_ID, PERMISSION_NAME, description, created_at, updated_at, created_by, updated_by)
+    INSERT INTO PERMISSIONS (PERMISSION_ID, PERMISSION_NAME, description, created_at, updated_at, CREATED_BY_ID,UPDATED_BY_ID)
     SELECT SHARED_ID_SEQ.NEXTVAL, p_name, p_desc, SYSTIMESTAMP, SYSTIMESTAMP, system_user_id, system_user_id
     FROM (
              SELECT 'CREATE_USER' AS p_name, 'Create User' AS p_desc FROM DUAL UNION ALL

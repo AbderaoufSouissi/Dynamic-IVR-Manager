@@ -28,11 +28,11 @@ public abstract class BaseEntity {
 
     @CreatedBy
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by", nullable = false, updatable = false)
-    private User createdById;
+    @JoinColumn(name = "created_by_id", nullable = false, updatable = false)
+    private User createdBy;
 
     @LastModifiedBy
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "updated_by")
-    private User updatedById;
+    @JoinColumn(name = "updated_by_id")
+    private User updatedBy;
 }

@@ -11,9 +11,9 @@ public class PermissionsMapper {
         if(permissions.getId() != null) permissionsDto.setPermissionId(permissions.getId());
         if(permissions.getName() != null) permissionsDto.setName(permissions.getName());
         if(permissions.getDescription() != null) permissionsDto.setDescription(permissions.getDescription());
-        if(permissions.getCreatedBy() != null) permissionsDto.setCreatedBy(permissions.getCreatedBy());
+        if(permissions.getCreatedBy() != null) permissionsDto.setCreatedBy(permissions.getCreatedBy().getUsername());
         if(permissions.getCreatedAt() != null) permissionsDto.setCreatedAt(permissions.getCreatedAt());
-        if(permissions.getUpdatedBy() != null) permissionsDto.setUpdatedBy(permissions.getUpdatedBy());
+        if(permissions.getUpdatedBy() != null) permissionsDto.setUpdatedBy(permissions.getUpdatedBy().getUsername());
         if(permissions.getUpdatedAt() != null) permissionsDto.setUpdatedAt(permissions.getUpdatedAt());
         return permissionsDto;
     }
