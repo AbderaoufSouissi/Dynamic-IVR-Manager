@@ -16,7 +16,8 @@ import java.util.Set;
 @SequenceGenerator(
         name = "shared_seq_generator",      // Internal name used by Hibernate
         sequenceName = "shared_id_seq",     // Actual database sequence name
-        allocationSize = 1                  // Adjust based on performance needs
+        allocationSize = 1,// Adjust based on performance needs
+        initialValue = 0
 )
 public class Role extends BaseEntity{
     @Id

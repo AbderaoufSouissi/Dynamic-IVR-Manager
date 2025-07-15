@@ -18,8 +18,9 @@ import java.util.*;
 @SequenceGenerator(
         name = "shared_seq_generator",      // Internal name used by Hibernate
         sequenceName = "shared_id_seq",     // Actual database sequence name
-        allocationSize = 1// Adjust based on performance needs
-)
+        allocationSize = 1,// Adjust based on performance needs
+        initialValue = 0
+        )
 public class User extends BaseEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "shared_seq_generator")
