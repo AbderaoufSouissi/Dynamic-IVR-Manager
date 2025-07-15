@@ -1,45 +1,46 @@
 package com._CServices.IVR_api.controller;
 
-import com._CServices.IVR_api.entity.User;
+
+
+import com._CServices.IVR_api.dto.request.ForgetPasswordRequest;
+import com._CServices.IVR_api.dto.request.ResetPasswordRequest;
+import com._CServices.IVR_api.dto.response.MessageResponse;
 import com._CServices.IVR_api.security.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Validated
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
-    private SecurityContextRepository securityContextRepository =
-            new HttpSessionSecurityContextRepository();
 
+    @PostMapping("/forget-password")
+    public ResponseEntity<MessageResponse> forgotPassword(@Valid @RequestBody ForgetPasswordRequest request) {
+        log.info("Password reset requested for email: {}", request.getEmail());
 
+        authService.sendPasswordResetEmail(request.getEmail());
 
-    @GetMapping("/current")
-    public ResponseEntity<?> getCurrentUser() {
-        User currentUser = authService.getCurrentLoggedInUser();
-
-        if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    Map.of("message", "No authenticated user found")
-            );
-        }
-
-        return ResponseEntity.ok(currentUser);
+        // Always return success message to prevent email enumeration
+        return ResponseEntity.ok(new MessageResponse("If the email exists, reset instructions have been sent"));
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest request) {
-//        return new ResponseEntity<>(authService.login(request), HttpStatus.OK);
-//    }
+    @PostMapping("/reset-password")
+    public ResponseEntity<MessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        log.info("Password reset attempt with token");
 
+        authService.resetPassword(request.getToken(), request.getNewPassword());
 
-
+        return ResponseEntity.ok(new MessageResponse("Password reset successful"));
+    }
 }
+

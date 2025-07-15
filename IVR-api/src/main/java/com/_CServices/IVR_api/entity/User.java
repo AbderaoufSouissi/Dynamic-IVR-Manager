@@ -6,9 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -20,8 +18,9 @@ import java.util.List;
 @SequenceGenerator(
         name = "shared_seq_generator",      // Internal name used by Hibernate
         sequenceName = "shared_id_seq",     // Actual database sequence name
-        allocationSize = 1// Adjust based on performance needs
-)
+        allocationSize = 1,// Adjust based on performance needs
+        initialValue = 0
+        )
 public class User extends BaseEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "shared_seq_generator")
@@ -58,9 +57,23 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(
-                new SimpleGrantedAuthority("ROLE_DEFAULT")
-        );
+        Set<GrantedAuthority> authorities = new HashSet<>();
+
+        if (role != null) {
+            role.getPermissions().forEach(permission -> {
+                if(permission != null && permission.getName() != null) {}
+                authorities.add(new SimpleGrantedAuthority(permission.getName().toUpperCase()));
+            });
+
+        }
+
+        return authorities;
+    }
+
+
+    @Override
+    public boolean isEnabled() {
+        return this.active != null && this.active;
     }
 
 

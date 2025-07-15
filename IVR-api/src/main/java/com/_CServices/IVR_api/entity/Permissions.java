@@ -1,9 +1,8 @@
 package com._CServices.IVR_api.entity;
 
-import com._CServices.IVR_api.enumeration.ActionType;
+
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +17,8 @@ import java.util.Set;
 @SequenceGenerator(
         name = "shared_seq_generator",      // Internal name used by Hibernate
         sequenceName = "shared_id_seq",     // Actual database sequence name
-        allocationSize = 1                  // Adjust based on performance needs
+        allocationSize = 1,// Adjust based on performance needs
+        initialValue = 0
 )
 public class Permissions extends BaseEntity{
     @Id

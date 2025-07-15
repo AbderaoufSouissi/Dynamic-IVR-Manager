@@ -3,6 +3,7 @@ package com._CServices.IVR_api.controller;
 import com._CServices.IVR_api.dto.UserDto;
 import com._CServices.IVR_api.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,8 @@ public class UserController {
             @RequestParam(required = false) String role,
             @RequestParam(required = false) Boolean active
     ) {
-        if (role != null) return ResponseEntity.ok(userService.getUsersByRoleName(role));
+        if(role!=null && active!=null) return ResponseEntity.ok(userService.getUsersByRoleAndActiveStatus(role, active));
+        if (role != null) return ResponseEntity.ok(userService.getUsersByRole(role));
         if (active != null) return ResponseEntity.ok(userService.getUsersByActiveStatus(active));
         return ResponseEntity.ok(userService.getAllUsers());
     }
@@ -40,13 +42,13 @@ public class UserController {
     }
 
     @GetMapping("/username")
-    public ResponseEntity<UserDto> getUserByUsername(@RequestParam String username) {
-        return new ResponseEntity<>(userService.getUserByUsername(username), HttpStatus.OK);
+    public ResponseEntity<UserDto> getUserByUsername(@RequestParam @NotBlank String username) {
+        return ResponseEntity.ok(userService.getUserByUsername(username));
     }
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto userDto) {
-        return new ResponseEntity<>(userService.createUser(userDto), HttpStatus.CREATED);
+        return ResponseEntity.ok(userService.createUser(userDto));
     }
 
     @DeleteMapping("/{id}")
@@ -56,13 +58,13 @@ public class UserController {
     }
 
     @DeleteMapping("/email")
-    public ResponseEntity<Void> deleteUserByEmail(@RequestParam String email) {
+    public ResponseEntity<Void> deleteUserByEmail(@RequestParam @NotBlank String email) {
         userService.deleteUserByEmail(email);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/username")
-    public ResponseEntity<Void> deleteUserByUsername(@RequestParam String username) {
+    public ResponseEntity<Void> deleteUserByUsername(@RequestParam @NotBlank String username) {
         userService.deleteUserByUsername(username);
         return ResponseEntity.noContent().build();
 
@@ -70,7 +72,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUserById(@PathVariable Long id, @RequestBody @Valid UserDto userDto) {
-        return new ResponseEntity<>(userService.updateUser(userDto, id), HttpStatus.OK);
+        return ResponseEntity.ok(userService.updateUser(userDto, id));
     }
 
 

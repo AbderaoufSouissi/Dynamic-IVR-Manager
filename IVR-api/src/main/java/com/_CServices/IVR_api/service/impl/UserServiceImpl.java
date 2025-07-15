@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -63,7 +64,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getUsersByRoleName(String roleName) {
+    public List<UserDto> getUsersByRole(String roleName) {
         log.info("inside getUsersByRoleName()");
 
         Role role = Optional.ofNullable(roleRepository.findByName(roleName)).orElseThrow(()-> new ResourceNotFoundException("Role "+roleName+" not found"));
@@ -72,6 +73,16 @@ public class UserServiceImpl implements UserService {
                 .map(user -> userMapper.toDto(user))
                 .toList();
         return users;
+    }
+
+    @Override
+    public List<UserDto> getUsersByRoleAndActiveStatus(String role, Boolean active) {
+        log.info("inside getUsersByRoleAndActiveStatus()");
+        List<User> users = userRepository.findByRoleNameAndActive(role, active);
+        return users.stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
+
     }
 
     @Override

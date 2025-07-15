@@ -1,6 +1,6 @@
 package com._CServices.IVR_api.entity;
 
-import com._CServices.IVR_api.domain.RequestContext;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,9 +27,12 @@ public abstract class BaseEntity {
     private LocalDateTime updatedAt;
 
     @CreatedBy
-    @Column(nullable = false, updatable = false)
-    private Long createdBy;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_id", nullable = false, updatable = false)
+    private User createdBy;
 
     @LastModifiedBy
-    private Long updatedBy;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "updated_by_id")
+    private User updatedBy;
 }

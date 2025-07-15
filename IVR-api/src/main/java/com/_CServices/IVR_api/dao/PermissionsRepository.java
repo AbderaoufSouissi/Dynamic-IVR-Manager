@@ -2,13 +2,18 @@ package com._CServices.IVR_api.dao;
 
 import com._CServices.IVR_api.entity.Permissions;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PermissionsRepository extends JpaRepository<Permissions,Long>{
-    Boolean existsByName(String name);
+    @Query("SELECT COUNT(p) > 0 FROM Permissions p WHERE p.name = :name")
+    boolean existsByName(@Param("name") String name);
 
-    Permissions findByName(String name);
+    @Query("SELECT p FROM Permissions p WHERE p.name = :name AND ROWNUM = 1")
+    Permissions findByName(@Param("name") String name);
 
-    Permissions findByDescription(String description);
+    @Query("SELECT p FROM Permissions p WHERE p.description = :description AND ROWNUM = 1")
+    Permissions findByDescription(@Param("description") String description);
 }
