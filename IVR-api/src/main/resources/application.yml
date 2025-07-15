@@ -13,12 +13,9 @@ spring:
 
 
 
-
   jpa:
-
     hibernate:
       ddl-auto: update
-
     properties:
       hibernate:
         query:
@@ -42,12 +39,38 @@ spring:
     jpa:
       repositories:
         bootstrap-mode: default
+  mail:
 
-server:
-  port: ${SERVER_PORT:8080}
+    host: ${SPRING_EMAIL_HOST}
+    port: ${SPRING_EMAIL_PORT}
+    username: ${SPRING_EMAIL_USERNAME}
+    password: ${SPRING_EMAIL_PASSWORD}
+    default-encoding: UTF-8
+    properties:
+      mail:
+        mime:
+          charset: UTF
+
+        smtp:
+          writetimeout: 10000
+          connectiontimeout: 10000
+          timeout: 10000
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+    verify:
+      host: ${SPRING_MAIL_VERIFY_HOST}
+
 
 
 logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type: TRACE
+
+
+
+server:
+  port: ${SERVER_PORT:8080}
