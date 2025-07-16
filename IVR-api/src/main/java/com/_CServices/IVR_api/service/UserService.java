@@ -23,7 +23,7 @@ public interface UserService {
     void deleteUserById(Long id);
     void deleteUserByEmail(String email);
     void deleteUserByUsername(String username);
-
-
-
+    Page<UserDto> getUsersByLastName(String lastName, Pageable pageable);
+    Page<UserDto> getUsersByFirstName(String firstName, Pageable pageable);
+    Page<UserDto> getUsersByFirstNameAndLastName(String firstName, String lastName, Pageable pageable);
 }

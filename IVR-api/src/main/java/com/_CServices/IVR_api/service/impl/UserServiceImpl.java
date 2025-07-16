@@ -49,8 +49,11 @@ public class UserServiceImpl implements UserService {
         log.info("inside getAllUsers()");
 
         String sortBy = SortUtils.sanitizeSortField(
-                pageable.getSort().iterator().next().getProperty()
+                pageable.getSort().iterator().next().getProperty(),
+                SortUtils.getAllowedUserFields(),
+                "user_id"
         );
+
         String sortDir = SortUtils.sanitizeSortDirection(
                 pageable.getSort().iterator().next().getDirection().name()
         );
@@ -74,6 +77,47 @@ public class UserServiceImpl implements UserService {
         List<User> users = query.getResultList();
 
         long total = userRepository.count();
+
+        List<UserDto> userDtos = users.stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(userDtos, pageable, total);
+    }
+
+    @Override
+    public Page<UserDto> getUsersByFirstName(String firstName, Pageable pageable) {
+        int[] bounds = getRowBounds(pageable);
+        List<User> users = userRepository.findUsersByFirstName(firstName, bounds[0], bounds[1]);
+        long total = userRepository.countUsersByFirstName(firstName);
+
+        List<UserDto> userDtos = users.stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(userDtos, pageable, total);
+    }
+
+    @Override
+    public Page<UserDto> getUsersByLastName(String lastName, Pageable pageable) {
+        int[] bounds = getRowBounds(pageable);
+        List<User> users = userRepository.findUsersByLastName(lastName, bounds[0], bounds[1]);
+        long total = userRepository.countUsersByLastName(lastName);
+
+        List<UserDto> userDtos = users.stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(userDtos, pageable, total);
+    }
+
+
+
+    @Override
+    public Page<UserDto> getUsersByFirstNameAndLastName(String firstName, String lastName, Pageable pageable) {
+        int[] bounds = getRowBounds(pageable);
+        List<User> users = userRepository.findUsersByFirstNameAndLastName(firstName, lastName, bounds[0], bounds[1]);
+        long total = userRepository.countUsersByFirstNameAndLastName(firstName, lastName);
 
         List<UserDto> userDtos = users.stream()
                 .map(userMapper::toDto)
@@ -262,6 +306,8 @@ public class UserServiceImpl implements UserService {
         );
 
     }
+
+
 
     @Override
     public UserDto updateUser(UserDto userDto, Long id) {

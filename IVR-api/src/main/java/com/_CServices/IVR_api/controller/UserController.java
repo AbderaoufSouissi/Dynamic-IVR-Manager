@@ -5,13 +5,13 @@ import com._CServices.IVR_api.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -23,10 +23,14 @@ public class UserController {
     public ResponseEntity<Page<UserDto>> getUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "user_id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir,
             @RequestParam(required = false) String role,
-            @RequestParam(required = false) Boolean active
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName
     ) {
         // Create sort direction
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ?
@@ -35,16 +39,39 @@ public class UserController {
         // Create Pageable object
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        // Call service methods with pagination
         if (role != null && active != null) {
             return ResponseEntity.ok(userService.getUsersByRoleAndActiveStatus(role, active, pageable));
         }
+
+        if (firstName != null && lastName != null) {
+            return ResponseEntity.ok(userService.getUsersByFirstNameAndLastName(firstName, lastName, pageable));
+        }
+
+        if (username != null) {
+            UserDto user = userService.getUserByUsername(username);
+            return ResponseEntity.ok(new PageImpl<>(List.of(user), pageable, 1));
+        }
+
+        if (email != null) {
+            UserDto user = userService.getUserByEmail(email);
+            return ResponseEntity.ok(new PageImpl<>(List.of(user), pageable, 1));
+        }
+
+        if (firstName != null) {
+            return ResponseEntity.ok(userService.getUsersByFirstName(firstName, pageable));
+        }
+
+        if (lastName != null) {
+            return ResponseEntity.ok(userService.getUsersByLastName(lastName, pageable));
+        }
+
         if (role != null) {
             return ResponseEntity.ok(userService.getUsersByRole(role, pageable));
         }
         if (active != null) {
             return ResponseEntity.ok(userService.getUsersByActiveStatus(active, pageable));
         }
+
         return ResponseEntity.ok(userService.getAllUsers(pageable));
     }
 
