@@ -5,6 +5,7 @@ import com._CServices.IVR_api.dao.RoleRepository;
 
 import com._CServices.IVR_api.dto.RoleDto;
 
+import com._CServices.IVR_api.dto.UserDto;
 import com._CServices.IVR_api.entity.Permissions;
 import com._CServices.IVR_api.entity.Role;
 import com._CServices.IVR_api.entity.User;
@@ -16,13 +17,20 @@ import com._CServices.IVR_api.mapper.RoleMapper;
 import com._CServices.IVR_api.security.AuthService;
 import com._CServices.IVR_api.service.AuditService;
 import com._CServices.IVR_api.service.RoleService;
+import com._CServices.IVR_api.utils.SortUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,19 +40,49 @@ public class RoleServiceImpl implements RoleService {
     private final PermissionsRepository permissionsRepository;
     private final AuditService auditService;
     private final RoleMapper roleMapper;
-    private final AuthService authService;
+    private final EntityManager entityManager;
 
 
     @Override
-    public List<RoleDto> getAllRoles() {
-        log.info("inside getAllRoles()");
+    public Page<RoleDto> getAllRoles(Pageable pageable) {
+        log.info("inside getRoles()");
 
-        List<Role> roles = roleRepository.findAll();
-        List<RoleDto> rolesList = roles.stream()
-                .map(role -> roleMapper.toDto(role))
-                .toList();
-        return rolesList;
+        String sortBy = SortUtils.sanitizeSortField(
+                pageable.getSort().iterator().next().getProperty(),
+                SortUtils.getAllowedRoleFields(),
+                "role_id"
+        );
+
+        String sortDir = SortUtils.sanitizeSortDirection(
+                pageable.getSort().iterator().next().getDirection().name()
+        );
+
+        int[] bounds = getRowBounds(pageable);
+        int startRow = bounds[0];
+        int endRow = bounds[1];
+
+        String sql = """
+        SELECT * FROM (
+            SELECT r.*, ROWNUM rn FROM (
+                SELECT * FROM roles ORDER BY %s %s
+            ) r WHERE ROWNUM <= :endRow
+        ) WHERE rn > :startRow
+    """.formatted(sortBy, sortDir);
+
+        Query query = entityManager.createNativeQuery(sql, Role.class)
+                .setParameter("startRow", startRow)
+                .setParameter("endRow", endRow);
+
+        List<Role> roles = query.getResultList();
+        long total = roleRepository.count();
+
+        List<RoleDto> roleDtos = roles.stream()
+                .map(roleMapper::toDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(roleDtos, pageable, total);
     }
+
 
     @Override
     public RoleDto getRoleById(Long id) {
@@ -191,7 +229,7 @@ public class RoleServiceImpl implements RoleService {
         auditService.logAction(
                 ActionType.DELETE_ROLE.toString(),
                 EntityType.ROLE.toString(),
-                roleToDelete.getId()
+                id
         );
     }
 
@@ -202,14 +240,23 @@ public class RoleServiceImpl implements RoleService {
         Role roleToDelete = Optional.ofNullable(roleRepository.findByName(roleName))
                         .orElseThrow(()-> new ResourceNotFoundException("Role with name : "+roleName+" not found"));
 
+        Long roleToDeleteId = roleToDelete.getId();
+
         roleRepository.delete(roleToDelete);
 
         auditService.logAction(
                 ActionType.DELETE_ROLE.toString(),
                 EntityType.ROLE.toString(),
-                roleToDelete.getId()
+                roleToDeleteId
         );
 
 
+    }
+
+
+    private int[] getRowBounds(Pageable pageable) {
+        int startRow = (int) pageable.getOffset(); // page * size
+        int endRow = startRow + pageable.getPageSize();
+        return new int[]{startRow, endRow};
     }
 }

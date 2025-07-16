@@ -2,12 +2,16 @@ package com._CServices.IVR_api.controller;
 
 import com._CServices.IVR_api.dto.RoleDto;
 import com._CServices.IVR_api.service.RoleService;
-import com._CServices.IVR_api.service.UserService;
+import com._CServices.IVR_api.utils.SortUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/v1/roles")
@@ -15,10 +19,38 @@ import java.util.List;
 public class RoleController {
     private final RoleService roleService;
 
+
     @GetMapping
-    public ResponseEntity<List<RoleDto>> getAllRoles(@RequestParam(required = false) String name) {
-        if(name!=null ) return ResponseEntity.ok(List.of(roleService.getRoleByName(name)));
-        return ResponseEntity.ok(roleService.getAllRoles());
+    public ResponseEntity<Page<RoleDto>> getRoles(
+            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "role_id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
+    ) {
+        String sanitizedSortBy = SortUtils.sanitizeSortField(sortBy, SortUtils.getAllowedRoleFields(), "role_id");
+        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
+
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                page,
+                size,
+                sanitizedSortDir.equalsIgnoreCase("desc")
+                        ? org.springframework.data.domain.Sort.by(sanitizedSortBy).descending()
+                        : org.springframework.data.domain.Sort.by(sanitizedSortBy).ascending()
+        );
+
+        if(name != null && !name.isBlank()) {
+            return ResponseEntity.ok(new PageImpl<>(List.of(roleService.getRoleByName(name)), pageable, 1));
+
+        }
+
+
+        return ResponseEntity.ok(roleService.getAllRoles(pageable));
+    }
+
+    @GetMapping("/name")
+    public ResponseEntity<RoleDto> getRoleByName(@RequestParam String roleName) {
+        return ResponseEntity.ok(roleService.getRoleByName(roleName));
     }
 
     @GetMapping("/{id}")
