@@ -1,12 +1,11 @@
 package com._CServices.IVR_api.service;
 
 import com._CServices.IVR_api.dto.PermissionsDto;
-
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface PermissionsService {
-    List<PermissionsDto> getAllPermissions();
+    Page<PermissionsDto> getAllPermissions(Pageable pageable);
     PermissionsDto getPermissionById(Long id);
     PermissionsDto getPermissionByName(String name);
     PermissionsDto getPermissionByDescription(String description);

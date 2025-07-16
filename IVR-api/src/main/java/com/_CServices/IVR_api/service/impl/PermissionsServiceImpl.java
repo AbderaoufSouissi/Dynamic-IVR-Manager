@@ -13,8 +13,13 @@ import com._CServices.IVR_api.mapper.PermissionsMapper;
 import com._CServices.IVR_api.security.AuthService;
 import com._CServices.IVR_api.service.AuditService;
 import com._CServices.IVR_api.service.PermissionsService;
+import com._CServices.IVR_api.utils.SortUtils;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -28,15 +33,49 @@ public class PermissionsServiceImpl implements PermissionsService {
     private final PermissionsRepository permissionsRepository;
     private final PermissionsMapper permissionsMapper;
     private final AuditService auditService;
-    private final AuthService authService;
+    private final EntityManager entityManager;
+
 
     @Override
-    public List<PermissionsDto> getAllPermissions() {
-        log.info("inside getAllPermissions()");
-        List<Permissions> permissions = permissionsRepository.findAll();
-        List<PermissionsDto> permissionsDtos = permissions.stream().map(permissionsMapper::toDto).toList();
-        return permissionsDtos;
+    public Page<PermissionsDto> getAllPermissions(Pageable pageable) {
+        log.info("inside getAllPermissions() with pagination");
+
+        String sortBy = SortUtils.sanitizeSortField(
+                pageable.getSort().iterator().next().getProperty(),
+                SortUtils.getAllowedPermissionFields(),
+                "permission_id"
+        );
+
+        String sortDir = SortUtils.sanitizeSortDirection(
+                pageable.getSort().iterator().next().getDirection().name()
+        );
+
+        int[] bounds = getRowBounds(pageable);
+        int startRow = bounds[0];
+        int endRow = bounds[1];
+
+        String sql = """
+        SELECT * FROM (
+            SELECT p.*, ROWNUM rn FROM (
+                SELECT * FROM permissions ORDER BY %s %s
+            ) p WHERE ROWNUM <= :endRow
+        ) WHERE rn > :startRow
+    """.formatted(sortBy, sortDir);
+
+        List<Permissions> permissions = entityManager.createNativeQuery(sql, Permissions.class)
+                .setParameter("startRow", startRow)
+                .setParameter("endRow", endRow)
+                .getResultList();
+
+        long total = permissionsRepository.count();
+
+        List<PermissionsDto> permissionDtos = permissions.stream()
+                .map(permissionsMapper::toDto)
+                .toList();
+
+        return new PageImpl<>(permissionDtos, pageable, total);
     }
+
 
     @Override
     public PermissionsDto getPermissionById(Long id) {
@@ -125,6 +164,12 @@ public class PermissionsServiceImpl implements PermissionsService {
         );
 
 
+    }
+
+    private int[] getRowBounds(Pageable pageable) {
+        int startRow = (int) pageable.getOffset(); // page * size
+        int endRow = startRow + pageable.getPageSize();
+        return new int[]{startRow, endRow};
     }
 
 

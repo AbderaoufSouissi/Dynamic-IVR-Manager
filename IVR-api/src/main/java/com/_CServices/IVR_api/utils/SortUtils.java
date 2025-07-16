@@ -26,4 +26,12 @@ public class SortUtils {
     public static Set<String> getAllowedRoleFields() {
         return ALLOWED_ROLE_SORT_FIELDS;
     }
+
+    public static Set<String> getAllowedAuditFields() {
+        return ALLOWED_AUDIT_SORT_FIELDS;
+    }
+
+    public static Set<String> getAllowedPermissionFields() {
+        return ALLOWED_PERMISSION_SORT_FIELDS;
+    }
 }
