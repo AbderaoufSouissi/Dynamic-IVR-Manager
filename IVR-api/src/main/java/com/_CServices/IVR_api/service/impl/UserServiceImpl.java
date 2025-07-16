@@ -10,11 +10,16 @@ import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.UserMapper;
 import com._CServices.IVR_api.entity.User;
-import com._CServices.IVR_api.security.AuthService;
 import com._CServices.IVR_api.service.AuditService;
 import com._CServices.IVR_api.service.UserService;
+import jakarta.persistence.EntityManager;
+import com._CServices.IVR_api.utils.SortUtils;
+import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,56 +39,93 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final AuditService auditService;
-    private final AuthService authService;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-
-
+    private final EntityManager entityManager;
 
 
     @Override
-    public List<UserDto> getAllUsers() {
+    public Page<UserDto> getAllUsers(Pageable pageable) {
         log.info("inside getAllUsers()");
-        List<User> userList = userRepository.findAll();
-        List<UserDto> users = userList.stream()
-                .map(user -> userMapper.toDto(user))
-                .toList();
-        return users;
 
-    }
+        String sortBy = SortUtils.sanitizeSortField(
+                pageable.getSort().iterator().next().getProperty()
+        );
+        String sortDir = SortUtils.sanitizeSortDirection(
+                pageable.getSort().iterator().next().getDirection().name()
+        );
 
-    @Override
-    public List<UserDto> getUsersByActiveStatus(Boolean active) {
-        log.info("inside getUsersByActiveStatus()");
+        int[] bounds = getRowBounds(pageable);
+        int startRow = bounds[0];
+        int endRow = bounds[1];
 
-        List<User> userList = userRepository.findAllByActive(active);
-        List<UserDto> users = userList.stream()
-                .map(user -> userMapper.toDto(user))
-                .toList();
-        return users;
-    }
+        String sql = """
+        SELECT * FROM (
+            SELECT u.*, ROWNUM rn FROM (
+                SELECT * FROM app_users ORDER BY %s %s
+            ) u WHERE ROWNUM <= :endRow
+        ) WHERE rn > :startRow
+        """.formatted(sortBy, sortDir);
 
-    @Override
-    public List<UserDto> getUsersByRole(String roleName) {
-        log.info("inside getUsersByRoleName()");
+        Query query = entityManager.createNativeQuery(sql, User.class)
+                .setParameter("startRow", startRow)
+                .setParameter("endRow", endRow);
 
-        Role role = Optional.ofNullable(roleRepository.findByName(roleName)).orElseThrow(()-> new ResourceNotFoundException("Role "+roleName+" not found"));
-        List<User> userList = userRepository.findAllByRole(role);
-        List<UserDto> users = userList.stream()
-                .map(user -> userMapper.toDto(user))
-                .toList();
-        return users;
-    }
+        List<User> users = query.getResultList();
 
-    @Override
-    public List<UserDto> getUsersByRoleAndActiveStatus(String role, Boolean active) {
-        log.info("inside getUsersByRoleAndActiveStatus()");
-        List<User> users = userRepository.findByRoleNameAndActive(role, active);
-        return users.stream()
+        long total = userRepository.count();
+
+        List<UserDto> userDtos = users.stream()
                 .map(userMapper::toDto)
                 .collect(Collectors.toList());
 
+        return new PageImpl<>(userDtos, pageable, total);
     }
+
+
+
+
+    @Override
+    public Page<UserDto> getUsersByActiveStatus(Boolean active, Pageable pageable) {
+        int[] bounds = getRowBounds(pageable);
+        List<User> users = userRepository.findUsersByActiveStatus(active, bounds[0], bounds[1]);
+        long total = userRepository.countUsersByActiveStatus(active);
+
+        List<UserDto> userDtos = users.stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(userDtos, pageable, total);
+    }
+
+
+    @Override
+    public Page<UserDto> getUsersByRole(String roleName, Pageable pageable) {
+        int[] bounds = getRowBounds(pageable);
+        List<User> users = userRepository.findUsersByRoleName(roleName, bounds[0], bounds[1]);
+        long total = userRepository.countUsersByRoleName(roleName);
+
+        List<UserDto> userDtos = users.stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(userDtos, pageable, total);
+    }
+
+
+    @Override
+    public Page<UserDto> getUsersByRoleAndActiveStatus(String role, Boolean active, Pageable pageable) {
+        int[] bounds = getRowBounds(pageable);
+        List<User> users = userRepository.findUsersByRoleNameAndActive(role, active, bounds[0], bounds[1]);
+        long total = userRepository.countUsersByRoleNameAndActive(role, active);
+
+        List<UserDto> userDtos = users.stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(userDtos, pageable, total);
+    }
+
 
     @Override
     public UserDto getUserById(Long id) {
@@ -121,12 +163,12 @@ public class UserServiceImpl implements UserService {
                     .name(userDto.getRoleName())
                     .permissions(new HashSet<>())
                     .build();
-            Role newRole = roleRepository.save(role);
+            Role defaultRole = roleRepository.save(role);
 
             auditService.logAction(
                     ActionType.CREATE_ROLE.toString(),
                     EntityType.ROLE.toString(),
-                    newRole.getId()
+                    defaultRole.getId()
             );
 
 
@@ -136,10 +178,10 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException("Cannot assign non existing Role : "+userDto.getRoleName()+" to user");
         }
 
-        if(userRepository.existsByUsername(userDto.getUsername())) {
+        if(null != userRepository.findByUsername(userDto.getUsername())) {
             throw new ResourceAlreadyExistsException("User with Username : "+userDto.getUsername()+" Already Exists");
 
-        } else if (userRepository.existsByEmail(userDto.getEmail())) {
+        } else if (null != userRepository.findByEmail(userDto.getEmail())) {
             throw new ResourceAlreadyExistsException("User with Email : "+userDto.getEmail()+" Already Exists");
         }
         else {
@@ -170,54 +212,53 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUserById(Long id) {
-        // 1. Get the user to be deleted (throws exception if not found)
         User userToDelete = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID " + id + " not found"));
 
-        // 2. Get the currently authenticated user (deleter)
-        User currentUser = authService.getCurrentLoggedInUser();
-
-
-        // 3. Perform deletion first
+        Long userToDeleteId = userToDelete.getId();
         userRepository.delete(userToDelete);
 
 
         auditService.logAction(
-
                 ActionType.DELETE_USER.toString(),
                 EntityType.USER.toString(),
-                userToDelete.getId()
+                userToDeleteId
         );
     }
 
     @Override
+    @Transactional
     public void deleteUserByEmail(String email) {
         log.info("inside deleteUserByEmail()");
 
         User userToDelete = Optional.ofNullable(userRepository.findByEmail(email))
                 .orElseThrow(() -> new ResourceNotFoundException("User with Email : "+email+" Not Found"));
+
+        Long userToDeleteId = userToDelete.getId();
+
         userRepository.delete(userToDelete);
-        User currentUser = authService.getCurrentLoggedInUser();
 
         auditService.logAction(
                 ActionType.DELETE_USER.toString(),
                 EntityType.USER.toString(),
-                userToDelete.getId()
+                userToDeleteId
         );
     }
 
     @Override
+    @Transactional
     public void deleteUserByUsername(String username) {
         log.info("inside deleteUserByUsername()");
         User userToDelete = Optional.ofNullable(userRepository.findByUsername(username))
                 .orElseThrow(() -> new ResourceNotFoundException("User with Username : "+username+" Not Found"));
+
+        Long userToDeleteId = userToDelete.getId();
         userRepository.delete(userToDelete);
-        User currentUser = authService.getCurrentLoggedInUser();
 
         auditService.logAction(
                 ActionType.DELETE_USER.toString(),
                 EntityType.USER.toString(),
-                userToDelete.getId()
+                userToDeleteId
         );
 
     }
@@ -243,10 +284,14 @@ public class UserServiceImpl implements UserService {
             if(null != userDto.getActive()){
                 user.setActive(userDto.getActive());
             }
+            if(null != userDto.getRoleName() && roleRepository.findByName(userDto.getRoleName()) != null){
+                Role updatedRole = roleRepository.findByName(userDto.getRoleName());
+                user.setRole(updatedRole);
+
+            }
             return userRepository.save(user);
         }).orElseThrow(()-> new ResourceNotFoundException(""));
 
-        User currentUser = authService.getCurrentLoggedInUser();
 
         auditService.logAction(
                 ActionType.UPDATE_USER.toString(),
@@ -256,6 +301,14 @@ public class UserServiceImpl implements UserService {
 
         return userMapper.toDto(userToUpdate);
 
+    }
+
+
+
+    private int[] getRowBounds(Pageable pageable) {
+        int startRow = (int) pageable.getOffset(); // page * size
+        int endRow = startRow + pageable.getPageSize();
+        return new int[]{startRow, endRow};
     }
 
 

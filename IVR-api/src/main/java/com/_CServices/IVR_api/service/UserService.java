@@ -1,8 +1,8 @@
 package com._CServices.IVR_api.service;
 
 import com._CServices.IVR_api.dto.UserDto;
-import jakarta.validation.Valid;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
 
@@ -11,10 +11,10 @@ public interface UserService {
 
     //GESTION DES USERS
 
-    List<UserDto> getAllUsers();
-    List<UserDto> getUsersByActiveStatus(Boolean active);
-    List<UserDto> getUsersByRole(String roleName);
-    List<UserDto> getUsersByRoleAndActiveStatus(String role, Boolean active);
+    Page<UserDto> getAllUsers(Pageable pageable);
+    Page<UserDto> getUsersByActiveStatus(Boolean active, Pageable pageable);
+    Page<UserDto> getUsersByRole(String roleName, Pageable pageable);
+    Page<UserDto> getUsersByRoleAndActiveStatus(String role, Boolean active, Pageable pageable);
     UserDto getUserById(Long id);
     UserDto getUserByEmail(String email);
     UserDto getUserByUsername(String username);

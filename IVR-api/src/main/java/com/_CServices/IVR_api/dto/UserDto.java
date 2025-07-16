@@ -34,7 +34,7 @@ public class UserDto extends BaseDto {
     @NotNull(message = "Active status is required")
     private Boolean active;
 
-    private String roleName = "DEFAULT_ROLE";
+    private String roleName;
 
 
 

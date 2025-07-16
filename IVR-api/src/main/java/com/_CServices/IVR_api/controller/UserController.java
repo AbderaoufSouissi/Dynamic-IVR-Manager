@@ -5,11 +5,13 @@ import com._CServices.IVR_api.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -17,18 +19,34 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-
     @GetMapping
-    public ResponseEntity<List<UserDto>> getUsers(
+    public ResponseEntity<Page<UserDto>> getUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir,
             @RequestParam(required = false) String role,
             @RequestParam(required = false) Boolean active
     ) {
-        if(role!=null && active!=null) return ResponseEntity.ok(userService.getUsersByRoleAndActiveStatus(role, active));
-        if (role != null) return ResponseEntity.ok(userService.getUsersByRole(role));
-        if (active != null) return ResponseEntity.ok(userService.getUsersByActiveStatus(active));
-        return ResponseEntity.ok(userService.getAllUsers());
-    }
+        // Create sort direction
+        Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ?
+                Sort.Direction.DESC : Sort.Direction.ASC;
 
+        // Create Pageable object
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        // Call service methods with pagination
+        if (role != null && active != null) {
+            return ResponseEntity.ok(userService.getUsersByRoleAndActiveStatus(role, active, pageable));
+        }
+        if (role != null) {
+            return ResponseEntity.ok(userService.getUsersByRole(role, pageable));
+        }
+        if (active != null) {
+            return ResponseEntity.ok(userService.getUsersByActiveStatus(active, pageable));
+        }
+        return ResponseEntity.ok(userService.getAllUsers(pageable));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
@@ -38,7 +56,6 @@ public class UserController {
     @GetMapping("/email")
     public ResponseEntity<UserDto> getUserByEmail(@RequestParam String email) {
         return new ResponseEntity<>(userService.getUserByEmail(email), HttpStatus.OK);
-
     }
 
     @GetMapping("/username")
@@ -67,13 +84,10 @@ public class UserController {
     public ResponseEntity<Void> deleteUserByUsername(@RequestParam @NotBlank String username) {
         userService.deleteUserByUsername(username);
         return ResponseEntity.noContent().build();
-
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUserById(@PathVariable Long id, @RequestBody @Valid UserDto userDto) {
         return ResponseEntity.ok(userService.updateUser(userDto, id));
     }
-
-
 }
