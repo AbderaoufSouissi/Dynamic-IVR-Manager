@@ -7,6 +7,7 @@ public class Constants {
     public static final String UPDATE_USER_DESCRIPTION="Mettre à jour un utilisateur";
     public static final String DELETE_USER_DESCRIPTION="Supprimer un utilisateur";
 
+
     public static final String CREATE_ROLE_DESCRIPTION="Creér un role";
     public static final String UPDATE_ROLE_DESCRIPTION="Mettre à jour un role";
     public static final String DELETE_ROLE_DESCRIPTION="Supprimer un role";
@@ -17,4 +18,6 @@ public class Constants {
     public static final String BLACKLIST_CUSTOMER_DESCRIPTION="Blacklister un client";
     public static final String WHITELIST_CUSTOMER_DESCRIPTION="Whitelister un client";
     public static final String RESET_NB_CALLS_DESCRIPTION="Réinitialiser le nombre d'appels d'un client";
+
+    public static final String FORGET_PASSWORD_DESCRIPTION = "Mot de passe oublié";
 }
