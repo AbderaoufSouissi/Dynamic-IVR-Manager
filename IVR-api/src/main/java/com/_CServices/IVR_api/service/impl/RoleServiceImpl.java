@@ -26,6 +26,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -43,45 +47,154 @@ public class RoleServiceImpl implements RoleService {
     private final EntityManager entityManager;
 
 
-    @Override
-    public Page<RoleDto> getAllRoles(Pageable pageable) {
-        log.info("inside getRoles()");
 
-        String sortBy = SortUtils.sanitizeSortField(
-                pageable.getSort().iterator().next().getProperty(),
+    @Override
+    public Page<RoleDto> getRolesWithFilters(
+            Long id,
+            String name,
+            String createdByUsername,
+            String updatedByUsername,
+            LocalDate createdAt,
+            LocalDate updatedAt,
+            String sortBy,
+            String sortDir,
+            Pageable pageable) {
+
+        log.info("Fetching roles with filters");
+
+        // Sanitize sorting
+        String sanitizedSortField = SortUtils.sanitizeSortField(
+                sortBy != null ? sortBy.toLowerCase() : "",
                 SortUtils.getAllowedRoleFields(),
                 "role_id"
         );
+        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
 
-        String sortDir = SortUtils.sanitizeSortDirection(
-                pageable.getSort().iterator().next().getDirection().name()
-        );
-
+        // Pagination bounds
         int[] bounds = getRowBounds(pageable);
         int startRow = bounds[0];
         int endRow = bounds[1];
 
-        String sql = """
-        SELECT * FROM (
-            SELECT r.*, ROWNUM rn FROM (
-                SELECT * FROM roles ORDER BY %s %s
-            ) r WHERE ROWNUM <= :endRow
-        ) WHERE rn > :startRow
-    """.formatted(sortBy, sortDir);
+        // Date-time filtering ranges
+        LocalDateTime startCreatedAt = null;
+        LocalDateTime endCreatedAt = null;
+        if (createdAt != null) {
+            startCreatedAt = createdAt.atStartOfDay();
+            endCreatedAt = createdAt.atTime(LocalTime.MAX);
+        }
 
-        Query query = entityManager.createNativeQuery(sql, Role.class)
-                .setParameter("startRow", startRow)
-                .setParameter("endRow", endRow);
+        LocalDateTime startUpdatedAt = null;
+        LocalDateTime endUpdatedAt = null;
+        if (updatedAt != null) {
+            startUpdatedAt = updatedAt.atStartOfDay();
+            endUpdatedAt = updatedAt.atTime(LocalTime.MAX);
+        }
 
-        List<Role> roles = query.getResultList();
-        long total = roleRepository.count();
+        // Main query SQL
+        String sql = "SELECT * FROM (" +
+                "  SELECT main_query.*, ROWNUM rn FROM (" +
+                "    SELECT r.role_id, r.role_name, r.created_at, r.updated_at, r.created_by_id, r.updated_by_id, " +
+                "           NVL(creator.username, '') AS created_by_username, " +
+                "           NVL(updater.username, '') AS updated_by_username " +
+                "    FROM roles r " +
+                "    LEFT JOIN app_users creator ON r.created_by_id = creator.user_id " +
+                "    LEFT JOIN app_users updater ON r.updated_by_id = updater.user_id " +
+                "    WHERE (? IS NULL OR r.role_id = ?) " +
+                "      AND (? IS NULL OR LOWER(r.role_name) LIKE '%' || LOWER(?) || '%') " +
+                "      AND ( " +
+                "            ? IS NULL OR ( " +
+                "              creator.username IS NOT NULL AND LOWER(creator.username) LIKE '%' || LOWER(?) || '%' " +
+                "            ) " +
+                "          ) " +
+                "      AND ( " +
+                "            ? IS NULL OR ( " +
+                "              updater.username IS NOT NULL AND LOWER(updater.username) LIKE '%' || LOWER(?) || '%' " +
+                "            ) " +
+                "          ) " +
+                "      AND ((? IS NULL AND ? IS NULL) OR (r.created_at BETWEEN ? AND ?)) " +
+                "      AND ((? IS NULL AND ? IS NULL) OR (r.updated_at BETWEEN ? AND ?)) " +
+                "    ORDER BY r." + sanitizedSortField + " " + sanitizedSortDir +
+                "  ) main_query WHERE ROWNUM <= ?" +
+                ") WHERE rn > ?";
 
-        List<RoleDto> roleDtos = roles.stream()
-                .map(roleMapper::toDto)
-                .collect(Collectors.toList());
+        try {
+            Query query = entityManager.createNativeQuery(sql, Role.class)
+                    .setParameter(1, id)
+                    .setParameter(2, id)
+                    .setParameter(3, name)
+                    .setParameter(4, name)
+                    .setParameter(5, createdByUsername)
+                    .setParameter(6, createdByUsername)
+                    .setParameter(7, updatedByUsername)
+                    .setParameter(8, updatedByUsername)
+                    .setParameter(9, startCreatedAt)
+                    .setParameter(10, endCreatedAt)
+                    .setParameter(11, startCreatedAt)
+                    .setParameter(12, endCreatedAt)
+                    .setParameter(13, startUpdatedAt)
+                    .setParameter(14, endUpdatedAt)
+                    .setParameter(15, startUpdatedAt)
+                    .setParameter(16, endUpdatedAt)
+                    .setParameter(17, endRow)
+                    .setParameter(18, startRow);
 
-        return new PageImpl<>(roleDtos, pageable, total);
+            List<Role> roles = query.getResultList();
+
+            // Count query
+            String countSql = "SELECT COUNT(r.role_id) " +
+                    "FROM roles r " +
+                    "LEFT JOIN app_users creator ON r.created_by_id = creator.user_id " +
+                    "LEFT JOIN app_users updater ON r.updated_by_id = updater.user_id " +
+                    "WHERE (? IS NULL OR r.role_id = ?) " +
+                    "  AND (? IS NULL OR LOWER(r.role_name) LIKE '%' || LOWER(?) || '%') " +
+                    "  AND ( " +
+                    "        ? IS NULL OR ( " +
+                    "          creator.username IS NOT NULL AND LOWER(creator.username) LIKE '%' || LOWER(?) || '%' " +
+                    "        ) " +
+                    "      ) " +
+                    "  AND ( " +
+                    "        ? IS NULL OR ( " +
+                    "          updater.username IS NOT NULL AND LOWER(updater.username) LIKE '%' || LOWER(?) || '%' " +
+                    "        ) " +
+                    "      ) " +
+                    "  AND ((? IS NULL AND ? IS NULL) OR (r.created_at BETWEEN ? AND ?)) " +
+                    "  AND ((? IS NULL AND ? IS NULL) OR (r.updated_at BETWEEN ? AND ?))";
+
+            Query countQuery = entityManager.createNativeQuery(countSql)
+                    .setParameter(1, id)
+                    .setParameter(2, id)
+                    .setParameter(3, name)
+                    .setParameter(4, name)
+                    .setParameter(5, createdByUsername)
+                    .setParameter(6, createdByUsername)
+                    .setParameter(7, updatedByUsername)
+                    .setParameter(8, updatedByUsername)
+                    .setParameter(9, startCreatedAt)
+                    .setParameter(10, endCreatedAt)
+                    .setParameter(11, startCreatedAt)
+                    .setParameter(12, endCreatedAt)
+                    .setParameter(13, startUpdatedAt)
+                    .setParameter(14, endUpdatedAt)
+                    .setParameter(15, startUpdatedAt)
+                    .setParameter(16, endUpdatedAt);
+
+            long total = ((Number) countQuery.getSingleResult()).longValue();
+
+            return new PageImpl<>(
+                    roles.stream().map(roleMapper::toDto).collect(Collectors.toList()),
+                    pageable,
+                    total
+            );
+
+        } catch (Exception e) {
+            log.error("Error fetching filtered roles", e);
+            throw new RuntimeException("Error fetching roles with filters", e);
+        }
     }
+
+
+
+
 
 
     @Override
@@ -93,14 +206,6 @@ public class RoleServiceImpl implements RoleService {
         return roleMapper.toDto(role);
     }
 
-    @Override
-    public RoleDto getRoleByName(String roleName) {
-        log.info("inside getRoleByName()");
-
-        Role role = Optional.ofNullable(roleRepository.findByName(roleName))
-                .orElseThrow(()-> new ResourceNotFoundException("Role with name : "+roleName+" not found"));
-        return roleMapper.toDto(role);
-    }
 
     @Override
     public RoleDto createRole(RoleDto roleDto) {

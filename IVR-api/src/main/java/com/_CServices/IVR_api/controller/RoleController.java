@@ -4,13 +4,12 @@ import com._CServices.IVR_api.dto.RoleDto;
 import com._CServices.IVR_api.service.RoleService;
 import com._CServices.IVR_api.utils.SortUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.LocalDate;
+
 
 
 @RestController
@@ -22,7 +21,12 @@ public class RoleController {
 
     @GetMapping
     public ResponseEntity<Page<RoleDto>> getRoles(
+            @RequestParam(required = false) Long id,
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) String createdBy,
+            @RequestParam(required = false) String updatedBy,
+            @RequestParam(required = false) LocalDate createdAt,
+            @RequestParam(required = false) LocalDate updatedAt,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "role_id") String sortBy,
@@ -31,27 +35,21 @@ public class RoleController {
         String sanitizedSortBy = SortUtils.sanitizeSortField(sortBy, SortUtils.getAllowedRoleFields(), "role_id");
         String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
 
-        Pageable pageable = org.springframework.data.domain.PageRequest.of(
+        Pageable pageable = PageRequest.of(
                 page,
                 size,
                 sanitizedSortDir.equalsIgnoreCase("desc")
-                        ? org.springframework.data.domain.Sort.by(sanitizedSortBy).descending()
-                        : org.springframework.data.domain.Sort.by(sanitizedSortBy).ascending()
+                        ? Sort.by(sanitizedSortBy).descending()
+                        : Sort.by(sanitizedSortBy).ascending()
         );
 
-        if(name != null && !name.isBlank()) {
-            return ResponseEntity.ok(new PageImpl<>(List.of(roleService.getRoleByName(name)), pageable, 1));
-
-        }
-
-
-        return ResponseEntity.ok(roleService.getAllRoles(pageable));
+        // No more getRoleByName shortcut, everything goes through the advanced filter
+        return ResponseEntity.ok(
+                roleService.getRolesWithFilters(id, name, createdBy, updatedBy, createdAt, updatedAt, sortBy, sortDir, pageable)
+        );
     }
 
-    @GetMapping("/name")
-    public ResponseEntity<RoleDto> getRoleByName(@RequestParam String roleName) {
-        return ResponseEntity.ok(roleService.getRoleByName(roleName));
-    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<RoleDto> getRoleById(@PathVariable Long id) {
