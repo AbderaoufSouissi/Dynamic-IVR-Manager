@@ -1,15 +1,19 @@
 package com._CServices.IVR_api.controller;
 
-import com._CServices.IVR_api.dto.PermissionsDto;
+import com._CServices.IVR_api.dto.request.PermissionsRequest;
+import com._CServices.IVR_api.dto.response.PermissionsResponse;
 import com._CServices.IVR_api.service.PermissionsService;
+import com._CServices.IVR_api.utils.SortUtils;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.LocalDate;
+
 
 
 @RestController
@@ -20,30 +24,56 @@ public class PermissionsController {
 
 
     @GetMapping
-    public ResponseEntity<List<PermissionsDto>> getAllPermissions() {
-        return ResponseEntity.ok(permissionsService.getAllPermissions());
+    public ResponseEntity<Page<PermissionsResponse>> getPermissions(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String createdBy,
+            @RequestParam(required = false) String updatedBy,
+            @RequestParam(required = false) LocalDate createdAt,
+            @RequestParam(required = false) LocalDate updatedAt,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "permission_id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
+    ) {
+        String sanitizedSortBy = SortUtils.sanitizeSortField(sortBy, SortUtils.getAllowedPermissionFields(), "permission_id");
+        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
 
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                page,
+                size,
+                sanitizedSortDir.equalsIgnoreCase("desc")
+                        ? org.springframework.data.domain.Sort.by(sanitizedSortBy).descending()
+                        : org.springframework.data.domain.Sort.by(sanitizedSortBy).ascending()
+        );
+
+        return ResponseEntity.ok(
+                permissionsService.getPermissionsWithFilters(
+                id, name, createdBy, updatedBy, createdAt, updatedAt, sanitizedSortBy, sanitizedSortDir,pageable
+                )
+        );
     }
 
+
     @GetMapping("/{id}")
-    public ResponseEntity<PermissionsDto> getPermissionById(@PathVariable Long id) {
+    public ResponseEntity<PermissionsResponse> getPermissionById(@PathVariable Long id) {
         return ResponseEntity.ok(permissionsService.getPermissionById(id));
 
     }
 
     @GetMapping("/name")
-    public ResponseEntity<PermissionsDto> getPermissionByName(@RequestParam @NotBlank String name) {
+    public ResponseEntity<PermissionsResponse> getPermissionByName(@RequestParam @NotBlank String name) {
         return ResponseEntity.ok(permissionsService.getPermissionByName(name));
 
     }
     @GetMapping("/description")
-    public ResponseEntity<PermissionsDto> getPermissionByDescription(@RequestParam @NotBlank String description) {
+    public ResponseEntity<PermissionsResponse> getPermissionByDescription(@RequestParam @NotBlank String description) {
         return ResponseEntity.ok(permissionsService.getPermissionByDescription(description));
     }
 
     @PostMapping
-    public ResponseEntity<PermissionsDto> createPermission(@RequestBody @Valid PermissionsDto permissionsDto) {
-        return ResponseEntity.ok(permissionsService.createPermission(permissionsDto));
+    public ResponseEntity<PermissionsResponse> createPermission(@RequestBody @Valid PermissionsRequest permissionsRequest) {
+        return ResponseEntity.ok(permissionsService.createPermission(permissionsRequest));
     }
 
     @DeleteMapping("/{id}")

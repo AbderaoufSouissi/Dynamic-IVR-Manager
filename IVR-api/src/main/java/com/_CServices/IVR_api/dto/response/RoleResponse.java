@@ -1,11 +1,10 @@
-package com._CServices.IVR_api.dto;
+package com._CServices.IVR_api.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com._CServices.IVR_api.dto.BaseDto;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,7 +24,7 @@ import java.util.Set;
         "updatedAt",
         "updatedBy"
 })
-public class RoleDto extends BaseDto {
+public class RoleResponse extends BaseDto {
     private Long roleId;
 
     @NotBlank(message = "Role name is required")
@@ -33,6 +32,4 @@ public class RoleDto extends BaseDto {
 
     @Builder.Default
     private Set<String> permissions = new HashSet<>();
-
-
 }

@@ -1,10 +1,9 @@
-package com._CServices.IVR_api.dto;
+package com._CServices.IVR_api.dto.response;
 
-
+import com._CServices.IVR_api.dto.BaseDto;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-
 
 @JsonPropertyOrder({"permissionId", "name", "description", "createdAt","createdBy", "updatedAt", "updatedBy"})
 @EqualsAndHashCode(callSuper = true)
@@ -12,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PermissionsDto extends BaseDto {
+public class PermissionsResponse extends BaseDto {
     private Long permissionId;
 
     @NotBlank(message = "Permission name cannot be empty")

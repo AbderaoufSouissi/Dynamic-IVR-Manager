@@ -14,6 +14,10 @@ public interface PermissionsRepository extends JpaRepository<Permissions,Long>{
     @Query("SELECT p FROM Permissions p WHERE p.name = :name AND ROWNUM = 1")
     Permissions findByName(@Param("name") String name);
 
+
     @Query("SELECT p FROM Permissions p WHERE p.description = :description AND ROWNUM = 1")
     Permissions findByDescription(@Param("description") String description);
+
+
+
 }

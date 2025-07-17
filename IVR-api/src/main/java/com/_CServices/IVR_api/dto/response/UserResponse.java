@@ -1,11 +1,11 @@
-package com._CServices.IVR_api.dto;
+package com._CServices.IVR_api.dto.response;
 
+import com._CServices.IVR_api.dto.BaseDto;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -13,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @JsonPropertyOrder({"userId", "firstName", "lastName", "username", "email", "password", "active", "roleName",  "createdAt", "createdBy", "updatedAt",  "updatedBy"})
-public class UserDto extends BaseDto {
+public class UserResponse extends BaseDto {
     private Long userId;
 
     @NotBlank(message = "First name is required")
@@ -34,8 +34,5 @@ public class UserDto extends BaseDto {
     @NotNull(message = "Active status is required")
     private Boolean active;
 
-    private String roleName = "DEFAULT_ROLE";
-
-
-
+    private String roleName;
 }

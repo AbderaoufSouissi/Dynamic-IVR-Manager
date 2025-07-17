@@ -1,17 +1,16 @@
 package com._CServices.IVR_api.controller;
 
-import com._CServices.IVR_api.dto.AuditDto;
-import com._CServices.IVR_api.enumeration.ActionType;
-import com._CServices.IVR_api.enumeration.EntityType;
+import com._CServices.IVR_api.dto.response.AuditResponse;
 import com._CServices.IVR_api.service.AuditService;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
+
+
+
 
 @RestController
 @RequestMapping("/api/v1/audits")
@@ -21,37 +20,42 @@ public class AuditController {
     private final AuditService auditService;
 
     @GetMapping
-    public ResponseEntity<List<AuditDto>> getAllAudits() {
-        return ResponseEntity.ok(auditService.getAllAudits());
+    public ResponseEntity<Page<AuditResponse>> getAudits(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) String action,
+            @RequestParam(required = false) String entity,
+            @RequestParam(required = false) LocalDate date,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "audit_id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ?
+                Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Page<AuditResponse> audits = auditService.getAuditsWithFilters(
+                id, userId, action, entity, date,   // <‑‑ extra param
+                sortBy, sortDir,
+                pageable
+        );
+
+        return ResponseEntity.ok(audits);
     }
 
+
+
     @GetMapping("/{id}")
-    public ResponseEntity<AuditDto> getAuditById(@PathVariable Long id) {
+    public ResponseEntity<AuditResponse> getAuditById(@PathVariable Long id) {
         return ResponseEntity.ok(auditService.getAuditById(id));
     }
 
-    @GetMapping("/by-date")
-    public ResponseEntity<List<AuditDto>> getAuditsByDate(
-            @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(auditService.getAuditsByDate(date));
-    }
 
-    @GetMapping("/by-action-type")
-    public ResponseEntity<List<AuditDto>> getAuditsByActionType(
-            @NotNull @RequestParam ActionType actionType) {
-        return ResponseEntity.ok(auditService.getAuditsByActionType(actionType));
-    }
 
-    @GetMapping("/by-entity-type")
-    public ResponseEntity<List<AuditDto>> getAuditsByEntityType(
-            @NotNull @RequestParam EntityType entityType) {
-        return ResponseEntity.ok(auditService.getAuditsByEntityType(entityType));
-    }
 
-    @GetMapping("/filter")
-    public ResponseEntity<List<AuditDto>> getAuditsByEntityAndActionType(
-            @NotNull @RequestParam EntityType entityType,
-            @NotNull @RequestParam ActionType actionType) {
-        return ResponseEntity.ok(auditService.getAuditsByEntityTypeAndActionType(entityType, actionType));
-    }
+
+
+
 }
