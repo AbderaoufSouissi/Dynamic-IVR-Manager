@@ -1,7 +1,7 @@
 package com._CServices.IVR_api.service.impl;
 
 import com._CServices.IVR_api.dao.AuditRepository;
-import com._CServices.IVR_api.dto.AuditDto;
+import com._CServices.IVR_api.dto.response.AuditResponse;
 import com._CServices.IVR_api.entity.Audit;
 import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
@@ -55,21 +55,21 @@ public class AuditServiceImpl implements AuditService {
 
 
     @Override
-    public AuditDto getAuditById(Long id) {
+    public AuditResponse getAuditById(Long id) {
         Audit audit = auditRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Audit record with id: "+ id +" not found"));
         return auditMapper.toDto(audit);
     }
 
     @Override
-    public Page<AuditDto> getAuditsWithFilters(Long auditId,
-                                               Long userId,
-                                               String actionType,
-                                               String entityType,
-                                               LocalDate actionDate,
-                                               String sortBy,
-                                               String sortDir,
-                                               Pageable pageable) {
+    public Page<AuditResponse> getAuditsWithFilters(Long auditId,
+                                                    Long userId,
+                                                    String actionType,
+                                                    String entityType,
+                                                    LocalDate actionDate,
+                                                    String sortBy,
+                                                    String sortDir,
+                                                    Pageable pageable) {
         log.info("isnide getAuditsWithFilters");
 
         int[] bounds = getRowBounds(pageable);
@@ -126,11 +126,11 @@ public class AuditServiceImpl implements AuditService {
                 auditId, userId, normalizedActionType, normalizedEntityType, startTimestamp, endTimestamp
         );
 
-        List<AuditDto> auditDtos = audits.stream()
+        List<AuditResponse> auditResponses = audits.stream()
                 .map(auditMapper::toDto)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(auditDtos, pageable, total);
+        return new PageImpl<>(auditResponses, pageable, total);
     }
 
 

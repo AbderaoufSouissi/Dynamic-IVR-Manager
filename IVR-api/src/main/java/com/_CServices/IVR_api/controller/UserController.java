@@ -1,6 +1,8 @@
 package com._CServices.IVR_api.controller;
 
-import com._CServices.IVR_api.dto.UserDto;
+
+import com._CServices.IVR_api.dto.request.UserRequest;
+import com._CServices.IVR_api.dto.response.UserResponse;
 import com._CServices.IVR_api.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -20,7 +22,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<Page<UserDto>> getUsers(
+    public ResponseEntity<Page<UserResponse>> getUsers(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
@@ -42,7 +44,7 @@ public class UserController {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<UserDto> users = userService.getUsersWithFilters(
+        Page<UserResponse> users = userService.getUsersWithFilters(
                 id,
                 firstName,
                 lastName,
@@ -64,7 +66,7 @@ public class UserController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
     }
 
@@ -73,8 +75,8 @@ public class UserController {
 
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto userDto) {
-        return ResponseEntity.ok(userService.createUser(userDto));
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest userRequest) {
+        return ResponseEntity.ok(userService.createUser(userRequest));
     }
 
     @DeleteMapping("/{id}")
@@ -96,7 +98,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUserById(@PathVariable Long id, @RequestBody @Valid UserDto userDto) {
-        return ResponseEntity.ok(userService.updateUser(userDto, id));
+    public ResponseEntity<UserResponse> updateUserById(@PathVariable Long id, @RequestBody @Valid UserRequest userRequest) {
+        return ResponseEntity.ok(userService.updateUser(userRequest, id));
     }
 }

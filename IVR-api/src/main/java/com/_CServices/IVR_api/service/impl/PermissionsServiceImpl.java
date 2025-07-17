@@ -2,7 +2,8 @@ package com._CServices.IVR_api.service.impl;
 
 
 import com._CServices.IVR_api.dao.PermissionsRepository;
-import com._CServices.IVR_api.dto.PermissionsDto;
+import com._CServices.IVR_api.dto.request.PermissionsRequest;
+import com._CServices.IVR_api.dto.response.PermissionsResponse;
 import com._CServices.IVR_api.entity.Permissions;
 import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.enumeration.ActionType;
@@ -42,7 +43,7 @@ public class PermissionsServiceImpl implements PermissionsService {
 
 
     @Override
-    public Page<PermissionsDto> getPermissionsWithFilters(
+    public Page<PermissionsResponse> getPermissionsWithFilters(
             Long id,
             String name,
             String createdByUsername,
@@ -162,49 +163,10 @@ public class PermissionsServiceImpl implements PermissionsService {
 
 
 
-    @Override
-    public Page<PermissionsDto> getAllPermissions(Pageable pageable) {
-        log.info("inside getAllPermissions() with pagination");
-
-        String sortBy = SortUtils.sanitizeSortField(
-                pageable.getSort().iterator().next().getProperty(),
-                SortUtils.getAllowedPermissionFields(),
-                "permission_id"
-        );
-
-        String sortDir = SortUtils.sanitizeSortDirection(
-                pageable.getSort().iterator().next().getDirection().name()
-        );
-
-        int[] bounds = getRowBounds(pageable);
-        int startRow = bounds[0];
-        int endRow = bounds[1];
-
-        String sql = """
-        SELECT * FROM (
-            SELECT p.*, ROWNUM rn FROM (
-                SELECT * FROM permissions ORDER BY %s %s
-            ) p WHERE ROWNUM <= :endRow
-        ) WHERE rn > :startRow
-    """.formatted(sortBy, sortDir);
-
-        List<Permissions> permissions = entityManager.createNativeQuery(sql, Permissions.class)
-                .setParameter("startRow", startRow)
-                .setParameter("endRow", endRow)
-                .getResultList();
-
-        long total = permissionsRepository.count();
-
-        List<PermissionsDto> permissionDtos = permissions.stream()
-                .map(permissionsMapper::toDto)
-                .toList();
-
-        return new PageImpl<>(permissionDtos, pageable, total);
-    }
 
 
     @Override
-    public PermissionsDto getPermissionById(Long id) {
+    public PermissionsResponse getPermissionById(Long id) {
         log.info("inside getPermissionById()");
 
         Permissions permissions = permissionsRepository.findById(id)
@@ -213,7 +175,7 @@ public class PermissionsServiceImpl implements PermissionsService {
     }
 
     @Override
-    public PermissionsDto getPermissionByName(String name) {
+    public PermissionsResponse getPermissionByName(String name) {
         log.info("inside getPermissionByName()");
 
         Permissions permissions = Optional.ofNullable(permissionsRepository.findByName(name))
@@ -222,7 +184,7 @@ public class PermissionsServiceImpl implements PermissionsService {
     }
 
     @Override
-    public PermissionsDto getPermissionByDescription(String description) {
+    public PermissionsResponse getPermissionByDescription(String description) {
         log.info("inside getPermissionByDescription()");
         Permissions permissions = Optional.ofNullable(permissionsRepository.findByDescription(description))
                 .orElseThrow(()-> new ResourceNotFoundException("Permission with description : "+description+" Not found"));
@@ -231,15 +193,15 @@ public class PermissionsServiceImpl implements PermissionsService {
     }
 
     @Override
-    public PermissionsDto createPermission(PermissionsDto permissionsDto) {
+    public PermissionsResponse createPermission(PermissionsRequest permissionsRequest) {
         log.info("inside createPermission()");
 
-        if(null != permissionsRepository.findByName(permissionsDto.getName())){
-            throw new ResourceAlreadyExistsException("Permission "+permissionsDto.getName()+ " already exists");
+        if(null != permissionsRepository.findByName(permissionsRequest.getName())){
+            throw new ResourceAlreadyExistsException("Permission "+permissionsRequest.getName()+ " already exists");
         }
         Permissions newPermissions = Permissions.builder()
-                .name(permissionsDto.getName())
-                .description(permissionsDto.getDescription())
+                .name(permissionsRequest.getName())
+                .description(permissionsRequest.getDescription())
                 .roles(new HashSet<>())
                 .build();
 

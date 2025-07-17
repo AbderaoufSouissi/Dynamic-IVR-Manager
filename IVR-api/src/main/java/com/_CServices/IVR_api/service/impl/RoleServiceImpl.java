@@ -3,12 +3,14 @@ package com._CServices.IVR_api.service.impl;
 import com._CServices.IVR_api.dao.PermissionsRepository;
 import com._CServices.IVR_api.dao.RoleRepository;
 
-import com._CServices.IVR_api.dto.RoleDto;
+import com._CServices.IVR_api.dto.response.RoleResponse;
 
-import com._CServices.IVR_api.dto.UserDto;
+
+import com._CServices.IVR_api.dto.request.RoleRequest;
+import com._CServices.IVR_api.dto.response.RoleResponse;
 import com._CServices.IVR_api.entity.Permissions;
 import com._CServices.IVR_api.entity.Role;
-import com._CServices.IVR_api.entity.User;
+
 import com._CServices.IVR_api.enumeration.ActionType;
 import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
@@ -49,7 +51,7 @@ public class RoleServiceImpl implements RoleService {
 
 
     @Override
-    public Page<RoleDto> getRolesWithFilters(
+    public Page<RoleResponse> getRolesWithFilters(
             Long id,
             String name,
             String createdByUsername,
@@ -198,7 +200,7 @@ public class RoleServiceImpl implements RoleService {
 
 
     @Override
-    public RoleDto getRoleById(Long id) {
+    public RoleResponse getRoleById(Long id) {
         log.info("inside getRoleById()");
 
         Role role = roleRepository.findById(id)
@@ -208,19 +210,19 @@ public class RoleServiceImpl implements RoleService {
 
 
     @Override
-    public RoleDto createRole(RoleDto roleDto) {
+    public RoleResponse createRole(RoleRequest roleRequest) {
 
         log.info("inside createRole()");
 
-        log.debug("Requested permissions: {}", roleDto.getPermissions());
+        log.debug("Requested permissions: {}", roleRequest.getPermissions());
 
-        if (roleRepository.findByName(roleDto.getName()) != null) {
-            throw new ResourceAlreadyExistsException("Role with name : "+roleDto.getName()+" already exists");
+        if (roleRepository.findByName(roleRequest.getName()) != null) {
+            throw new ResourceAlreadyExistsException("Role with name : "+roleRequest.getName()+" already exists");
         }
         Set<Permissions> permissions = new HashSet<>();
-        if(!roleDto.getPermissions().isEmpty()){
+        if(!roleRequest.getPermissions().isEmpty()){
 
-            roleDto.getPermissions().forEach(permissionName -> {
+            roleRequest.getPermissions().forEach(permissionName -> {
                 if(!permissionsRepository.existsByName(permissionName)){
                     throw new ResourceNotFoundException("Permission with name : "+permissionName+" doesnt exist");
                 }
@@ -232,7 +234,7 @@ public class RoleServiceImpl implements RoleService {
         }
 
         Role role = Role.builder()
-                .name(roleDto.getName())
+                .name(roleRequest.getName())
                 .permissions(permissions)
                 .build();
         Role createdRole = roleRepository.save(role);
@@ -249,20 +251,20 @@ public class RoleServiceImpl implements RoleService {
 
 
     @Override
-    public RoleDto updateRoleByName(String roleName, RoleDto roleDto) {
+    public RoleResponse updateRoleByName(String roleName, RoleRequest roleRequest) {
         log.info("inside updateRoleByName()");
 
         Role roleToUpdate = Optional.ofNullable(roleRepository.findByName(roleName))
                 .orElseThrow(() -> new ResourceNotFoundException("Role with name: " + roleName + " not found"));
 
 
-        roleToUpdate.setName(roleDto.getName());
+        roleToUpdate.setName(roleRequest.getName());
 
 
         Set<Permissions> newPermissions = new HashSet<>();
 
-        if (roleDto.getPermissions() != null && !roleDto.getPermissions().isEmpty()) {
-            roleDto.getPermissions().forEach(permissionName -> {
+        if (roleRequest.getPermissions() != null && !roleRequest.getPermissions().isEmpty()) {
+            roleRequest.getPermissions().forEach(permissionName -> {
                 Permissions permission = Optional.ofNullable(permissionsRepository.findByName(permissionName))
                         .orElseThrow(() -> new ResourceNotFoundException("Permission with name: " + permissionName + " doesn't exist"));
                 newPermissions.add(permission);
@@ -289,7 +291,7 @@ public class RoleServiceImpl implements RoleService {
 
 
     @Override
-    public RoleDto updateRoleById(Long id, RoleDto roleDto) {
+    public RoleResponse updateRoleById(Long id, RoleRequest roleDto) {
         log.info("inside updateRoleById()");
 
         Role roleToUpdate = roleRepository.findById(id)

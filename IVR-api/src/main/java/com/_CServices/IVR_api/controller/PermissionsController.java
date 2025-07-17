@@ -1,6 +1,7 @@
 package com._CServices.IVR_api.controller;
 
-import com._CServices.IVR_api.dto.PermissionsDto;
+import com._CServices.IVR_api.dto.request.PermissionsRequest;
+import com._CServices.IVR_api.dto.response.PermissionsResponse;
 import com._CServices.IVR_api.service.PermissionsService;
 import com._CServices.IVR_api.utils.SortUtils;
 import jakarta.validation.Valid;
@@ -23,7 +24,7 @@ public class PermissionsController {
 
 
     @GetMapping
-    public ResponseEntity<Page<PermissionsDto>> getPermissions(
+    public ResponseEntity<Page<PermissionsResponse>> getPermissions(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String createdBy,
@@ -55,24 +56,24 @@ public class PermissionsController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<PermissionsDto> getPermissionById(@PathVariable Long id) {
+    public ResponseEntity<PermissionsResponse> getPermissionById(@PathVariable Long id) {
         return ResponseEntity.ok(permissionsService.getPermissionById(id));
 
     }
 
     @GetMapping("/name")
-    public ResponseEntity<PermissionsDto> getPermissionByName(@RequestParam @NotBlank String name) {
+    public ResponseEntity<PermissionsResponse> getPermissionByName(@RequestParam @NotBlank String name) {
         return ResponseEntity.ok(permissionsService.getPermissionByName(name));
 
     }
     @GetMapping("/description")
-    public ResponseEntity<PermissionsDto> getPermissionByDescription(@RequestParam @NotBlank String description) {
+    public ResponseEntity<PermissionsResponse> getPermissionByDescription(@RequestParam @NotBlank String description) {
         return ResponseEntity.ok(permissionsService.getPermissionByDescription(description));
     }
 
     @PostMapping
-    public ResponseEntity<PermissionsDto> createPermission(@RequestBody @Valid PermissionsDto permissionsDto) {
-        return ResponseEntity.ok(permissionsService.createPermission(permissionsDto));
+    public ResponseEntity<PermissionsResponse> createPermission(@RequestBody @Valid PermissionsRequest permissionsRequest) {
+        return ResponseEntity.ok(permissionsService.createPermission(permissionsRequest));
     }
 
     @DeleteMapping("/{id}")

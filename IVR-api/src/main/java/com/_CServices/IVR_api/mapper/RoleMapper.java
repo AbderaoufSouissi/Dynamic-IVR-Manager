@@ -1,6 +1,6 @@
 package com._CServices.IVR_api.mapper;
 
-import com._CServices.IVR_api.dto.RoleDto;
+import com._CServices.IVR_api.dto.response.RoleResponse;
 import com._CServices.IVR_api.entity.Role;
 import org.springframework.stereotype.Component;
 
@@ -9,23 +9,23 @@ import java.util.Set;
 
 @Component
 public class RoleMapper {
-    public RoleDto toDto(Role role) {
-        RoleDto roleDto = new RoleDto();
-        if(null != role.getId()) roleDto.setRoleId(role.getId());
-        if(null != role.getName() ) roleDto.setName(role.getName());
-        if(null != role.getCreatedAt() ) roleDto.setCreatedAt(role.getCreatedAt());
-        if(null != role.getCreatedBy() ) roleDto.setCreatedBy(role.getCreatedBy().getUsername());
-        if(null != role.getUpdatedAt() ) roleDto.setUpdatedAt(role.getUpdatedAt());
-        if(null != role.getUpdatedBy() ) roleDto.setUpdatedBy(role.getUpdatedBy().getUsername());
+    public RoleResponse toDto(Role role) {
+        RoleResponse roleResponse = new RoleResponse();
+        if(null != role.getId()) roleResponse.setRoleId(role.getId());
+        if(null != role.getName() ) roleResponse.setName(role.getName());
+        if(null != role.getCreatedAt() ) roleResponse.setCreatedAt(role.getCreatedAt());
+        if(null != role.getCreatedBy() ) roleResponse.setCreatedBy(role.getCreatedBy().getUsername());
+        if(null != role.getUpdatedAt() ) roleResponse.setUpdatedAt(role.getUpdatedAt());
+        if(null != role.getUpdatedBy() ) roleResponse.setUpdatedBy(role.getUpdatedBy().getUsername());
 
         if (null != role.getPermissions()) {
             Set<String> permissions = new HashSet<>();
             role.getPermissions().forEach(perm -> permissions.add(perm.getName()));
-            roleDto.setPermissions(permissions);
+            roleResponse.setPermissions(permissions);
         }
         else{
-            roleDto.setPermissions(new HashSet<>());
+            roleResponse.setPermissions(new HashSet<>());
         }
-        return roleDto;
+        return roleResponse;
     }
 }

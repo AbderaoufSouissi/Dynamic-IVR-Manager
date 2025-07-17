@@ -2,7 +2,8 @@ package com._CServices.IVR_api.service.impl;
 
 import com._CServices.IVR_api.dao.RoleRepository;
 import com._CServices.IVR_api.dao.UserRepository;
-import com._CServices.IVR_api.dto.UserDto;
+import com._CServices.IVR_api.dto.request.UserRequest;
+import com._CServices.IVR_api.dto.response.UserResponse;
 import com._CServices.IVR_api.entity.Role;
 import com._CServices.IVR_api.enumeration.ActionType;
 import com._CServices.IVR_api.enumeration.EntityType;
@@ -51,7 +52,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Page<UserDto> getUsersWithFilters(
+    public Page<UserResponse> getUsersWithFilters(
             Long id,
             String firstName,
             String lastName,
@@ -225,7 +226,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserDto getUserById(Long id) {
+    public UserResponse getUserById(Long id) {
         log.info("inside getUserById()");
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID : "+id+" Not Found"));
@@ -234,14 +235,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto createUser(UserDto userDto) {
-        if(null == userDto.getRoleName()){
-            userDto.setRoleName("DEFAULT_ROLE");
+    public UserResponse createUser(UserRequest userRequest) {
+        if(null == userRequest.getRoleName()){
+            userRequest.setRoleName("DEFAULT_ROLE");
         }
-        if(Objects.equals(userDto.getRoleName(), "DEFAULT_ROLE") &&
-                null == roleRepository.findByName(userDto.getRoleName())){
+        if(Objects.equals(userRequest.getRoleName(), "DEFAULT_ROLE") &&
+                null == roleRepository.findByName(userRequest.getRoleName())){
             Role role = Role.builder()
-                    .name(userDto.getRoleName())
+                    .name(userRequest.getRoleName())
                     .permissions(new HashSet<>())
                     .build();
             Role defaultRole = roleRepository.save(role);
@@ -255,25 +256,25 @@ public class UserServiceImpl implements UserService {
 
         }
 
-        if(null == roleRepository.findByName(userDto.getRoleName())){
-            throw new ResourceNotFoundException("Cannot assign non existing Role : "+userDto.getRoleName()+" to user");
+        if(null == roleRepository.findByName(userRequest.getRoleName())){
+            throw new ResourceNotFoundException("Cannot assign non existing Role : "+userRequest.getRoleName()+" to user");
         }
 
-        if(null != userRepository.findByUsername(userDto.getUsername())) {
-            throw new ResourceAlreadyExistsException("User with Username : "+userDto.getUsername()+" Already Exists");
+        if(null != userRepository.findByUsername(userRequest.getUsername())) {
+            throw new ResourceAlreadyExistsException("User with Username : "+userRequest.getUsername()+" Already Exists");
 
-        } else if (null != userRepository.findByEmail(userDto.getEmail())) {
-            throw new ResourceAlreadyExistsException("User with Email : "+userDto.getEmail()+" Already Exists");
+        } else if (null != userRepository.findByEmail(userRequest.getEmail())) {
+            throw new ResourceAlreadyExistsException("User with Email : "+userRequest.getEmail()+" Already Exists");
         }
         else {
             User user = User.builder()
-                    .firstName(userDto.getFirstName())
-                    .lastName(userDto.getLastName())
-                    .username(userDto.getUsername())
-                    .email(userDto.getEmail())
-                    .password(passwordEncoder.encode(userDto.getPassword()))
-                    .active(userDto.getActive())
-                    .role(roleRepository.findByName(userDto.getRoleName()))
+                    .firstName(userRequest.getFirstName())
+                    .lastName(userRequest.getLastName())
+                    .username(userRequest.getUsername())
+                    .email(userRequest.getEmail())
+                    .password(passwordEncoder.encode(userRequest.getPassword()))
+                    .active(userRequest.getActive())
+                    .role(roleRepository.findByName(userRequest.getRoleName()))
                     .build();
             User newUser = userRepository.save(user);
 
@@ -347,28 +348,28 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserDto updateUser(UserDto userDto, Long id) {
+    public UserResponse updateUser(UserRequest userRequest, Long id) {
         User userToUpdate = userRepository.findById(id).map(user->{
-            if(null != userDto.getFirstName()) {
-                user.setFirstName(userDto.getFirstName());
+            if(null != userRequest.getFirstName()) {
+                user.setFirstName(userRequest.getFirstName());
             }
-            if(null != userDto.getLastName()) {
-                user.setLastName(userDto.getLastName());
+            if(null != userRequest.getLastName()) {
+                user.setLastName(userRequest.getLastName());
             }
-            if(null != userDto.getEmail()){
-                user.setEmail(userDto.getEmail());
+            if(null != userRequest.getEmail()){
+                user.setEmail(userRequest.getEmail());
             }
-            if(null != userDto.getUsername()){
-                user.setUsername(userDto.getUsername());
+            if(null != userRequest.getUsername()){
+                user.setUsername(userRequest.getUsername());
             }
-            if(null != userDto.getPassword()){
-                user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+            if(null != userRequest.getPassword()){
+                user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
             }
-            if(null != userDto.getActive()){
-                user.setActive(userDto.getActive());
+            if(null != userRequest.getActive()){
+                user.setActive(userRequest.getActive());
             }
-            if(null != userDto.getRoleName() && roleRepository.findByName(userDto.getRoleName()) != null){
-                Role updatedRole = roleRepository.findByName(userDto.getRoleName());
+            if(null != userRequest.getRoleName() && roleRepository.findByName(userRequest.getRoleName()) != null){
+                Role updatedRole = roleRepository.findByName(userRequest.getRoleName());
                 user.setRole(updatedRole);
 
             }

@@ -1,4 +1,4 @@
-package com._CServices.IVR_api.dto;
+package com._CServices.IVR_api.dto.response;
 
 
 import lombok.*;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuditDto {
+public class AuditResponse {
     private Long auditId;
     private Long userId;
     private String actionType;

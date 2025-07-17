@@ -1,6 +1,6 @@
 package com._CServices.IVR_api.controller;
 
-import com._CServices.IVR_api.dto.AuditDto;
+import com._CServices.IVR_api.dto.response.AuditResponse;
 import com._CServices.IVR_api.service.AuditService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -20,7 +20,7 @@ public class AuditController {
     private final AuditService auditService;
 
     @GetMapping
-    public ResponseEntity<Page<AuditDto>> getAudits(
+    public ResponseEntity<Page<AuditResponse>> getAudits(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) String action,
@@ -36,7 +36,7 @@ public class AuditController {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<AuditDto> audits = auditService.getAuditsWithFilters(
+        Page<AuditResponse> audits = auditService.getAuditsWithFilters(
                 id, userId, action, entity, date,   // <‑‑ extra param
                 sortBy, sortDir,
                 pageable
@@ -48,7 +48,7 @@ public class AuditController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<AuditDto> getAuditById(@PathVariable Long id) {
+    public ResponseEntity<AuditResponse> getAuditById(@PathVariable Long id) {
         return ResponseEntity.ok(auditService.getAuditById(id));
     }
 

@@ -1,6 +1,7 @@
 package com._CServices.IVR_api.service;
 
-import com._CServices.IVR_api.dto.UserDto;
+import com._CServices.IVR_api.dto.request.UserRequest;
+import com._CServices.IVR_api.dto.response.UserResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,7 +13,7 @@ public interface UserService {
 
 
     //GESTION DES USERS
-    Page<UserDto> getUsersWithFilters(
+    Page<UserResponse> getUsersWithFilters(
             Long id,
             String firstName,
             String lastName,
@@ -27,9 +28,9 @@ public interface UserService {
             String sortBy,
             String sortDir,
             Pageable pageable);
-    UserDto getUserById(Long id);
-    UserDto createUser(UserDto userDto);
-    UserDto updateUser(UserDto userDto, Long id);
+    UserResponse getUserById(Long id);
+    UserResponse createUser(UserRequest userRequest);
+    UserResponse updateUser(UserRequest userRequest, Long id);
     void deleteUserById(Long id);
     void deleteUserByEmail(String email);
     void deleteUserByUsername(String username);

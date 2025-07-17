@@ -1,16 +1,14 @@
 package com._CServices.IVR_api.mapper;
 
-import com._CServices.IVR_api.dto.AuditDto;
+import com._CServices.IVR_api.dto.response.AuditResponse;
 import com._CServices.IVR_api.entity.Audit;
-import com._CServices.IVR_api.enumeration.ActionType;
-import com._CServices.IVR_api.enumeration.EntityType;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AuditMapper {
-    public AuditDto toDto(Audit audit) {
+    public AuditResponse toDto(Audit audit) {
 //        MAPPER WITH VERIFICATION
-//        AuditDto auditDto = new AuditDto();
+//        AuditResponse auditDto = new AuditResponse();
 //        if(audit.getId() != null) auditDto.setAuditId(audit.getId());
 //        if(audit.getUser() != null) auditDto.setUserId(audit.getUser().getId());
 //        if(audit.getEntityId() != null) auditDto.setEntityId(audit.getEntityId());
@@ -19,7 +17,7 @@ public class AuditMapper {
 //        if(audit.getActionTimeStamp() != null) auditDto.setActionTimestamp(audit.getActionTimeStamp());
 //        return auditDto;
 
-        return AuditDto.builder()
+        return AuditResponse.builder()
                 .auditId(audit.getId())
                 .userId(audit.getUser().getId())
                 .actionType(audit.getActionType())
