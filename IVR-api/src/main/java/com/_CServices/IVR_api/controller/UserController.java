@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.LocalDate;
 
 
 @RestController
@@ -21,74 +21,56 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Page<UserDto>> getUsers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "user_id") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam(required = false) String role,
-            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String email,
-            @RequestParam(required = false) String firstName,
-            @RequestParam(required = false) String lastName
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) String role,
+            @RequestParam(required = false) String createdBy,
+            @RequestParam(required = false) String updatedBy,
+            @RequestParam(required = false) LocalDate createdAt,
+            @RequestParam(required = false) LocalDate updatedAt,
+            @RequestParam(defaultValue = "user_id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        // Create sort direction
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ?
                 Sort.Direction.DESC : Sort.Direction.ASC;
 
-        // Create Pageable object
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        if (role != null && active != null) {
-            return ResponseEntity.ok(userService.getUsersByRoleAndActiveStatus(role, active, pageable));
-        }
+        Page<UserDto> users = userService.getUsersWithFilters(
+                id,
+                firstName,
+                lastName,
+                username,
+                email,
+                active,
+                role,
+                createdBy,
+                updatedBy,
+                createdAt,
+                updatedAt,
+                sortBy,
+                sortDir,
+                pageable
+        );
 
-        if (firstName != null && lastName != null) {
-            return ResponseEntity.ok(userService.getUsersByFirstNameAndLastName(firstName, lastName, pageable));
-        }
-
-        if (username != null) {
-            UserDto user = userService.getUserByUsername(username);
-            return ResponseEntity.ok(new PageImpl<>(List.of(user), pageable, 1));
-        }
-
-        if (email != null) {
-            UserDto user = userService.getUserByEmail(email);
-            return ResponseEntity.ok(new PageImpl<>(List.of(user), pageable, 1));
-        }
-
-        if (firstName != null) {
-            return ResponseEntity.ok(userService.getUsersByFirstName(firstName, pageable));
-        }
-
-        if (lastName != null) {
-            return ResponseEntity.ok(userService.getUsersByLastName(lastName, pageable));
-        }
-
-        if (role != null) {
-            return ResponseEntity.ok(userService.getUsersByRole(role, pageable));
-        }
-        if (active != null) {
-            return ResponseEntity.ok(userService.getUsersByActiveStatus(active, pageable));
-        }
-
-        return ResponseEntity.ok(userService.getAllUsers(pageable));
+        return ResponseEntity.ok(users);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
         return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
     }
 
-    @GetMapping("/email")
-    public ResponseEntity<UserDto> getUserByEmail(@RequestParam String email) {
-        return new ResponseEntity<>(userService.getUserByEmail(email), HttpStatus.OK);
-    }
 
-    @GetMapping("/username")
-    public ResponseEntity<UserDto> getUserByUsername(@RequestParam @NotBlank String username) {
-        return ResponseEntity.ok(userService.getUserByUsername(username));
-    }
+
+
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto userDto) {

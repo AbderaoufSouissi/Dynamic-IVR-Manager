@@ -24,6 +24,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -44,131 +47,200 @@ public class UserServiceImpl implements UserService {
     private final EntityManager entityManager;
 
 
-    @Override
-    public Page<UserDto> getAllUsers(Pageable pageable) {
-        log.info("inside getAllUsers()");
 
-        String sortBy = SortUtils.sanitizeSortField(
-                pageable.getSort().iterator().next().getProperty(),
+
+
+    @Override
+    public Page<UserDto> getUsersWithFilters(
+            Long id,
+            String firstName,
+            String lastName,
+            String username,
+            String email,
+            Boolean active,
+            String roleName,
+            String createdByUsername,
+            String updatedByUsername,
+            LocalDate createdAt,
+            LocalDate updatedAt,
+            String sortBy,
+            String sortDir,
+            Pageable pageable) {
+
+        log.info("Fetching users with filters");
+
+        // Sanitize sorting
+        String sanitizedSortField = SortUtils.sanitizeSortField(
+                sortBy != null ? sortBy.toLowerCase() : "",
                 SortUtils.getAllowedUserFields(),
                 "user_id"
         );
+        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
 
-        String sortDir = SortUtils.sanitizeSortDirection(
-                pageable.getSort().iterator().next().getDirection().name()
-        );
-
+        // Calculate pagination bounds
         int[] bounds = getRowBounds(pageable);
         int startRow = bounds[0];
         int endRow = bounds[1];
 
-        String sql = """
-        SELECT * FROM (
-            SELECT u.*, ROWNUM rn FROM (
-                SELECT * FROM app_users ORDER BY %s %s
-            ) u WHERE ROWNUM <= :endRow
-        ) WHERE rn > :startRow
-        """.formatted(sortBy, sortDir);
+        // Date-time filtering ranges
+        LocalDateTime startCreatedAt = null;
+        LocalDateTime endCreatedAt = null;
+        if (createdAt != null) {
+            startCreatedAt = createdAt.atStartOfDay();
+            endCreatedAt = createdAt.atTime(LocalTime.MAX);
+        }
 
-        Query query = entityManager.createNativeQuery(sql, User.class)
-                .setParameter("startRow", startRow)
-                .setParameter("endRow", endRow);
+        LocalDateTime startUpdatedAt = null;
+        LocalDateTime endUpdatedAt = null;
+        if (updatedAt != null) {
+            startUpdatedAt = updatedAt.atStartOfDay();
+            endUpdatedAt = updatedAt.atTime(LocalTime.MAX);
+        }
 
-        List<User> users = query.getResultList();
+        // CORRECTED SQL query with proper createdByUsername and updatedByUsername filtering
+        String sql = "SELECT * FROM (" +
+                "  SELECT main_query.*, ROWNUM rn FROM (" +
+                "    SELECT u.user_id, u.first_name, u.last_name, u.username, u.password, u.email, " +
+                "           u.created_at, u.created_by_id, u.updated_at, u.updated_by_id, u.is_active, " +
+                "           u.role_id, " +
+                "           NVL(r.role_name, '') AS role_name, " +
+                "           NVL(creator.username, '') AS created_by_username, " +
+                "           NVL(updater.username, '') AS updated_by_username " +
+                "    FROM app_users u " +
+                "    LEFT JOIN roles r ON u.role_id = r.role_id " +
+                "    LEFT JOIN app_users creator ON u.created_by_id = creator.user_id " +
+                "    LEFT JOIN app_users updater ON u.updated_by_id = updater.user_id " +
+                "    WHERE (? IS NULL OR u.user_id = ?) " +
+                "      AND (? IS NULL OR LOWER(u.first_name) LIKE '%' || LOWER(?) || '%') " +
+                "      AND (? IS NULL OR LOWER(u.last_name) LIKE '%' || LOWER(?) || '%') " +
+                "      AND (? IS NULL OR LOWER(u.username) LIKE '%' || LOWER(?) || '%') " +
+                "      AND (? IS NULL OR LOWER(u.email) LIKE '%' || LOWER(?) || '%') " +
+                "      AND (? IS NULL OR u.is_active = ?) " +
+                "      AND (? IS NULL OR LOWER(NVL(r.role_name, '')) LIKE '%' || LOWER(?) || '%') " +
+                // FIXED: Corrected createdByUsername filtering logic
+                "      AND (? IS NULL OR LOWER(NVL(creator.username, '')) LIKE '%' || LOWER(?) || '%') " +
+                // FIXED: Corrected updatedByUsername filtering logic
+                "      AND (? IS NULL OR LOWER(NVL(updater.username, '')) LIKE '%' || LOWER(?) || '%') " +
+                "      AND ((? IS NULL AND ? IS NULL) OR (u.created_at BETWEEN ? AND ?)) " +
+                "      AND ((? IS NULL AND ? IS NULL) OR (u.updated_at BETWEEN ? AND ?)) " +
+                "    ORDER BY u." + sanitizedSortField + " " + sanitizedSortDir +
+                "  ) main_query WHERE ROWNUM <= ?" +
+                ") WHERE rn > ?";
 
-        long total = userRepository.count();
+        try {
+            Query query = entityManager.createNativeQuery(sql, User.class)
+                    .setParameter(1, id)
+                    .setParameter(2, id)
+                    .setParameter(3, firstName)
+                    .setParameter(4, firstName)
+                    .setParameter(5, lastName)
+                    .setParameter(6, lastName)
+                    .setParameter(7, username)
+                    .setParameter(8, username)
+                    .setParameter(9, email)
+                    .setParameter(10, email)
+                    .setParameter(11, active)
+                    .setParameter(12, active)
+                    .setParameter(13, roleName)
+                    .setParameter(14, roleName)
+                    .setParameter(15, createdByUsername)
+                    .setParameter(16, createdByUsername)
+                    .setParameter(17, updatedByUsername)
+                    .setParameter(18, updatedByUsername)
+                    .setParameter(19, startCreatedAt)
+                    .setParameter(20, endCreatedAt)
+                    .setParameter(21, startCreatedAt)
+                    .setParameter(22, endCreatedAt)
+                    .setParameter(23, startUpdatedAt)
+                    .setParameter(24, endUpdatedAt)
+                    .setParameter(25, startUpdatedAt)
+                    .setParameter(26, endUpdatedAt)
+                    .setParameter(27, endRow)
+                    .setParameter(28, startRow);
 
-        List<UserDto> userDtos = users.stream()
-                .map(userMapper::toDto)
-                .collect(Collectors.toList());
+            List<User> users = query.getResultList();
 
-        return new PageImpl<>(userDtos, pageable, total);
+            // CORRECTED Count query with same fix
+            String countSql = "SELECT COUNT(u.user_id) " +
+                    "FROM app_users u " +
+                    "LEFT JOIN roles r ON u.role_id = r.role_id " +
+                    "LEFT JOIN app_users creator ON u.created_by_id = creator.user_id " +
+                    "LEFT JOIN app_users updater ON u.updated_by_id = updater.user_id " +
+                    "WHERE (? IS NULL OR u.user_id = ?) " +
+                    "  AND (? IS NULL OR LOWER(u.first_name) LIKE '%' || LOWER(?) || '%') " +
+                    "  AND (? IS NULL OR LOWER(u.last_name) LIKE '%' || LOWER(?) || '%') " +
+                    "  AND (? IS NULL OR LOWER(u.username) LIKE '%' || LOWER(?) || '%') " +
+                    "  AND (? IS NULL OR LOWER(u.email) LIKE '%' || LOWER(?) || '%') " +
+                    "  AND (? IS NULL OR u.is_active = ?) " +
+                    "  AND (? IS NULL OR LOWER(NVL(r.role_name, '')) LIKE '%' || LOWER(?) || '%') " +
+                    // FIXED: Corrected createdByUsername filtering logic
+                    "  AND (? IS NULL OR LOWER(NVL(creator.username, '')) LIKE '%' || LOWER(?) || '%') " +
+                    // FIXED: Corrected updatedByUsername filtering logic
+                    "  AND (? IS NULL OR LOWER(NVL(updater.username, '')) LIKE '%' || LOWER(?) || '%') " +
+                    "  AND ((? IS NULL AND ? IS NULL) OR (u.created_at BETWEEN ? AND ?)) " +
+                    "  AND ((? IS NULL AND ? IS NULL) OR (u.updated_at BETWEEN ? AND ?))";
+
+            Query countQuery = entityManager.createNativeQuery(countSql)
+                    .setParameter(1, id)
+                    .setParameter(2, id)
+                    .setParameter(3, firstName)
+                    .setParameter(4, firstName)
+                    .setParameter(5, lastName)
+                    .setParameter(6, lastName)
+                    .setParameter(7, username)
+                    .setParameter(8, username)
+                    .setParameter(9, email)
+                    .setParameter(10, email)
+                    .setParameter(11, active)
+                    .setParameter(12, active)
+                    .setParameter(13, roleName)
+                    .setParameter(14, roleName)
+                    .setParameter(15, createdByUsername)
+                    .setParameter(16, createdByUsername)
+                    .setParameter(17, updatedByUsername)
+                    .setParameter(18, updatedByUsername)
+                    .setParameter(19, startCreatedAt)
+                    .setParameter(20, endCreatedAt)
+                    .setParameter(21, startCreatedAt)
+                    .setParameter(22, endCreatedAt)
+                    .setParameter(23, startUpdatedAt)
+                    .setParameter(24, endUpdatedAt)
+                    .setParameter(25, startUpdatedAt)
+                    .setParameter(26, endUpdatedAt);
+
+            long total = ((Number) countQuery.getSingleResult()).longValue();
+
+            return new PageImpl<>(
+                    users.stream().map(userMapper::toDto).collect(Collectors.toList()),
+                    pageable,
+                    total
+            );
+
+        } catch (Exception e) {
+            log.error("Error fetching filtered users", e);
+            throw new RuntimeException("Error fetching users with filters", e);
+        }
     }
 
-    @Override
-    public Page<UserDto> getUsersByFirstName(String firstName, Pageable pageable) {
-        int[] bounds = getRowBounds(pageable);
-        List<User> users = userRepository.findUsersByFirstName(firstName, bounds[0], bounds[1]);
-        long total = userRepository.countUsersByFirstName(firstName);
-
-        List<UserDto> userDtos = users.stream()
-                .map(userMapper::toDto)
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(userDtos, pageable, total);
-    }
-
-    @Override
-    public Page<UserDto> getUsersByLastName(String lastName, Pageable pageable) {
-        int[] bounds = getRowBounds(pageable);
-        List<User> users = userRepository.findUsersByLastName(lastName, bounds[0], bounds[1]);
-        long total = userRepository.countUsersByLastName(lastName);
-
-        List<UserDto> userDtos = users.stream()
-                .map(userMapper::toDto)
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(userDtos, pageable, total);
-    }
-
-
-
-    @Override
-    public Page<UserDto> getUsersByFirstNameAndLastName(String firstName, String lastName, Pageable pageable) {
-        int[] bounds = getRowBounds(pageable);
-        List<User> users = userRepository.findUsersByFirstNameAndLastName(firstName, lastName, bounds[0], bounds[1]);
-        long total = userRepository.countUsersByFirstNameAndLastName(firstName, lastName);
-
-        List<UserDto> userDtos = users.stream()
-                .map(userMapper::toDto)
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(userDtos, pageable, total);
-    }
 
 
 
 
-    @Override
-    public Page<UserDto> getUsersByActiveStatus(Boolean active, Pageable pageable) {
-        int[] bounds = getRowBounds(pageable);
-        List<User> users = userRepository.findUsersByActiveStatus(active, bounds[0], bounds[1]);
-        long total = userRepository.countUsersByActiveStatus(active);
-
-        List<UserDto> userDtos = users.stream()
-                .map(userMapper::toDto)
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(userDtos, pageable, total);
-    }
 
 
-    @Override
-    public Page<UserDto> getUsersByRole(String roleName, Pageable pageable) {
-        int[] bounds = getRowBounds(pageable);
-        List<User> users = userRepository.findUsersByRoleName(roleName, bounds[0], bounds[1]);
-        long total = userRepository.countUsersByRoleName(roleName);
-
-        List<UserDto> userDtos = users.stream()
-                .map(userMapper::toDto)
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(userDtos, pageable, total);
-    }
 
 
-    @Override
-    public Page<UserDto> getUsersByRoleAndActiveStatus(String role, Boolean active, Pageable pageable) {
-        int[] bounds = getRowBounds(pageable);
-        List<User> users = userRepository.findUsersByRoleNameAndActive(role, active, bounds[0], bounds[1]);
-        long total = userRepository.countUsersByRoleNameAndActive(role, active);
 
-        List<UserDto> userDtos = users.stream()
-                .map(userMapper::toDto)
-                .collect(Collectors.toList());
 
-        return new PageImpl<>(userDtos, pageable, total);
-    }
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -176,22 +248,6 @@ public class UserServiceImpl implements UserService {
         log.info("inside getUserById()");
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID : "+id+" Not Found"));
-        return userMapper.toDto(user);
-    }
-
-    @Override
-    public UserDto getUserByEmail(String email) {
-        log.info("inside getUserByEmail()");
-        User user = Optional.ofNullable(userRepository.findByEmail(email))
-                .orElseThrow(() -> new ResourceNotFoundException("User with Email : "+email+" Found"));
-        return userMapper.toDto(user);
-    }
-
-    @Override
-    public UserDto getUserByUsername(String username) {
-        log.info("inside getUserByUsername()");
-        User user = Optional.ofNullable(userRepository.findByUsername(username))
-                .orElseThrow(() -> new ResourceNotFoundException("User with Username : "+username+" Not Found"));
         return userMapper.toDto(user);
     }
 
