@@ -11,7 +11,8 @@ import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.LocalDate;
+
 
 
 @RestController
@@ -23,29 +24,33 @@ public class PermissionsController {
 
     @GetMapping
     public ResponseEntity<Page<PermissionsDto>> getPermissions(
+            @RequestParam(required = false) Long id,
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) String createdBy,
+            @RequestParam(required = false) String updatedBy,
+            @RequestParam(required = false) LocalDate createdAt,
+            @RequestParam(required = false) LocalDate updatedAt,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "permission_id") String sortField,
-            @RequestParam(defaultValue = "ASC") String sortDirection
+            @RequestParam(defaultValue = "permission_id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
     ) {
-        String sanitizedSortField = SortUtils.sanitizeSortField(
-                sortField,
-                SortUtils.getAllowedPermissionFields(),
-                "permission_id"
+        String sanitizedSortBy = SortUtils.sanitizeSortField(sortBy, SortUtils.getAllowedPermissionFields(), "permission_id");
+        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
+
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                page,
+                size,
+                sanitizedSortDir.equalsIgnoreCase("desc")
+                        ? org.springframework.data.domain.Sort.by(sanitizedSortBy).descending()
+                        : org.springframework.data.domain.Sort.by(sanitizedSortBy).ascending()
         );
 
-        String sanitizedSortDirection = SortUtils.sanitizeSortDirection(sortDirection);
-        Sort.Direction direction = Sort.Direction.fromString(sanitizedSortDirection);
-        Sort sort = Sort.by(direction, sanitizedSortField);
-        Pageable pageable = PageRequest.of(page, size, sort);
-
-        if (name != null && !name.isEmpty()) {
-            PermissionsDto permission  = permissionsService.getPermissionByName(name);
-            return ResponseEntity.ok(new PageImpl<>(List.of(permission), pageable, 1));
-        }
-
-        return ResponseEntity.ok(permissionsService.getAllPermissions(pageable));
+        return ResponseEntity.ok(
+                permissionsService.getPermissionsWithFilters(
+                id, name, createdBy, updatedBy, createdAt, updatedAt, sanitizedSortBy, sanitizedSortDir,pageable
+                )
+        );
     }
 
 

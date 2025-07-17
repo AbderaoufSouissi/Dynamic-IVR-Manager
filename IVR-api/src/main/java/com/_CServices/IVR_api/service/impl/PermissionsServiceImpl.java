@@ -15,6 +15,7 @@ import com._CServices.IVR_api.service.AuditService;
 import com._CServices.IVR_api.service.PermissionsService;
 import com._CServices.IVR_api.utils.SortUtils;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,9 +23,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +39,127 @@ public class PermissionsServiceImpl implements PermissionsService {
     private final PermissionsMapper permissionsMapper;
     private final AuditService auditService;
     private final EntityManager entityManager;
+
+
+    @Override
+    public Page<PermissionsDto> getPermissionsWithFilters(
+            Long id,
+            String name,
+            String createdByUsername,
+            String updatedByUsername,
+            LocalDate createdAt,
+            LocalDate updatedAt,
+            String sortBy,
+            String sortDir,
+            Pageable pageable) {
+
+        log.info("Fetching permissions with filters");
+
+        // Sanitize sorting
+        String sanitizedSortField = SortUtils.sanitizeSortField(
+                sortBy != null ? sortBy.toLowerCase() : "",
+                SortUtils.getAllowedPermissionFields(), // <-- make sure this exists
+                "permission_id"
+        );
+        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
+
+        // Pagination bounds
+        int[] bounds = getRowBounds(pageable);
+        int startRow = bounds[0];
+        int endRow = bounds[1];
+
+        // Date-time filtering ranges
+        LocalDateTime startCreatedAt = createdAt != null ? createdAt.atStartOfDay() : null;
+        LocalDateTime endCreatedAt = createdAt != null ? createdAt.atTime(LocalTime.MAX) : null;
+        LocalDateTime startUpdatedAt = updatedAt != null ? updatedAt.atStartOfDay() : null;
+        LocalDateTime endUpdatedAt = updatedAt != null ? updatedAt.atTime(LocalTime.MAX) : null;
+
+        String sql = "SELECT * FROM (" +
+                "  SELECT main_query.*, ROWNUM rn FROM (" +
+                "    SELECT p.permission_id, p.permission_name, p.description, p.created_at, p.updated_at, " +
+                "           p.created_by_id, p.updated_by_id, " +
+                "           NVL(creator.username, '') AS created_by_username, " +
+                "           NVL(updater.username, '') AS updated_by_username " +
+                "    FROM permissions p " +
+                "    LEFT JOIN app_users creator ON p.created_by_id = creator.user_id " +
+                "    LEFT JOIN app_users updater ON p.updated_by_id = updater.user_id " +
+                "    WHERE (? IS NULL OR p.permission_id = ?) " +
+                "      AND (? IS NULL OR LOWER(p.permission_name) LIKE '%' || LOWER(?) || '%') " +
+                "      AND (? IS NULL OR LOWER(NVL(creator.username, '')) LIKE '%' || LOWER(?) || '%') " +
+                "      AND (? IS NULL OR LOWER(NVL(updater.username, '')) LIKE '%' || LOWER(?) || '%') " +
+                "      AND ((? IS NULL AND ? IS NULL) OR (p.created_at BETWEEN ? AND ?)) " +
+                "      AND ((? IS NULL AND ? IS NULL) OR (p.updated_at BETWEEN ? AND ?)) " +
+                "    ORDER BY p." + sanitizedSortField + " " + sanitizedSortDir +
+                "  ) main_query WHERE ROWNUM <= ?" +
+                ") WHERE rn > ?";
+
+        try {
+            Query query = entityManager.createNativeQuery(sql, Permissions.class)
+                    .setParameter(1, id)
+                    .setParameter(2, id)
+                    .setParameter(3, name)
+                    .setParameter(4, name)
+                    .setParameter(5, createdByUsername)
+                    .setParameter(6, createdByUsername)
+                    .setParameter(7, updatedByUsername)
+                    .setParameter(8, updatedByUsername)
+                    .setParameter(9, startCreatedAt)
+                    .setParameter(10, endCreatedAt)
+                    .setParameter(11, startCreatedAt)
+                    .setParameter(12, endCreatedAt)
+                    .setParameter(13, startUpdatedAt)
+                    .setParameter(14, endUpdatedAt)
+                    .setParameter(15, startUpdatedAt)
+                    .setParameter(16, endUpdatedAt)
+                    .setParameter(17, endRow)
+                    .setParameter(18, startRow);
+
+            List<Permissions> permissions = query.getResultList();
+
+            // Count query
+            String countSql = "SELECT COUNT(p.permission_id) " +
+                    "FROM permissions p " +
+                    "LEFT JOIN app_users creator ON p.created_by_id = creator.user_id " +
+                    "LEFT JOIN app_users updater ON p.updated_by_id = updater.user_id " +
+                    "WHERE (? IS NULL OR p.permission_id = ?) " +
+                    "  AND (? IS NULL OR LOWER(p.permission_name) LIKE '%' || LOWER(?) || '%') " +
+                    "  AND (? IS NULL OR LOWER(NVL(creator.username, '')) LIKE '%' || LOWER(?) || '%') " +
+                    "  AND (? IS NULL OR LOWER(NVL(updater.username, '')) LIKE '%' || LOWER(?) || '%') " +
+                    "  AND ((? IS NULL AND ? IS NULL) OR (p.created_at BETWEEN ? AND ?)) " +
+                    "  AND ((? IS NULL AND ? IS NULL) OR (p.updated_at BETWEEN ? AND ?))";
+
+            Query countQuery = entityManager.createNativeQuery(countSql)
+                    .setParameter(1, id)
+                    .setParameter(2, id)
+                    .setParameter(3, name)
+                    .setParameter(4, name)
+                    .setParameter(5, createdByUsername)
+                    .setParameter(6, createdByUsername)
+                    .setParameter(7, updatedByUsername)
+                    .setParameter(8, updatedByUsername)
+                    .setParameter(9, startCreatedAt)
+                    .setParameter(10, endCreatedAt)
+                    .setParameter(11, startCreatedAt)
+                    .setParameter(12, endCreatedAt)
+                    .setParameter(13, startUpdatedAt)
+                    .setParameter(14, endUpdatedAt)
+                    .setParameter(15, startUpdatedAt)
+                    .setParameter(16, endUpdatedAt);
+
+            long total = ((Number) countQuery.getSingleResult()).longValue();
+
+            return new PageImpl<>(
+                    permissions.stream().map(permissionsMapper::toDto).collect(Collectors.toList()),
+                    pageable,
+                    total
+            );
+
+        } catch (Exception e) {
+            log.error("Error fetching filtered permissions", e);
+            throw new RuntimeException("Error fetching permissions with filters", e);
+        }
+    }
+
 
 
     @Override
