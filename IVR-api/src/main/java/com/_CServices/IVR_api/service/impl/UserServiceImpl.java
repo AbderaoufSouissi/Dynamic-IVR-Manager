@@ -224,25 +224,6 @@ public class UserServiceImpl implements UserService {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public UserDto getUserById(Long id) {
         log.info("inside getUserById()");
