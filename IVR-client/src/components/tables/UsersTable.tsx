@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
-import type { User } from "../types/types";
-import { MdKeyboardArrowLeft } from "react-icons/md";
-import { MdKeyboardArrowRight } from "react-icons/md";
+import type { User } from "../../types/types";
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 interface UsersTableProps {
   users: User[];
@@ -10,53 +9,44 @@ interface UsersTableProps {
 
 const UsersTable = ({ users, itemsPerPage = 5 }: UsersTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
 
-  // Calculate pagination values
-  const totalPages = Math.ceil(users.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentUsers = useMemo(() => users.slice(startIndex, endIndex), [users, startIndex, endIndex]);
+  const totalPages = Math.ceil(users.length / rowsPerPage);
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
 
-  // Generate page numbers to display
+  const currentUsers = useMemo(
+    () => users.slice(startIndex, endIndex),
+    [users, startIndex, endIndex]
+  );
+
   const getPageNumbers = () => {
     const pages = [];
     const maxPagesToShow = 5;
-    
+
     if (totalPages <= maxPagesToShow) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else if (currentPage <= 3) {
+      for (let i = 1; i <= 5; i++) pages.push(i);
+    } else if (currentPage >= totalPages - 2) {
+      for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
     } else {
-      if (currentPage <= 3) {
-        for (let i = 1; i <= 5; i++) {
-          pages.push(i);
-        }
-      } else if (currentPage >= totalPages - 2) {
-        for (let i = totalPages - 4; i <= totalPages; i++) {
-          pages.push(i);
-        }
-      } else {
-        for (let i = currentPage - 2; i <= currentPage + 2; i++) {
-          pages.push(i);
-        }
-      }
+      for (let i = currentPage - 2; i <= currentPage + 2; i++) pages.push(i);
     }
-    
+
     return pages;
   };
 
   const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
-  const handlePrevious = () => {
-    handlePageChange(currentPage - 1);
-  };
+  const handlePrevious = () => handlePageChange(currentPage - 1);
+  const handleNext = () => handlePageChange(currentPage + 1);
 
-  const handleNext = () => {
-    handlePageChange(currentPage + 1);
+  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setRowsPerPage(parseInt(e.target.value));
+    setCurrentPage(1); // Reset to first page on change
   };
 
   return (
@@ -80,10 +70,7 @@ const UsersTable = ({ users, itemsPerPage = 5 }: UsersTableProps) => {
         </thead>    
         <tbody>
           {currentUsers.map((user) => (
-            <tr
-              key={user.userId}
-              className="border-t border-gray-200 hover:bg-gray-50 transition"
-            >
+            <tr key={user.userId} className="border-t border-gray-200 hover:bg-gray-50 transition">
               <td className="px-4 py-2 font-medium">{user.userId}</td>
               <td className="px-4 py-2 font-medium">{user.firstName}</td>
               <td className="px-4 py-2 font-medium">{user.lastName}</td>
@@ -97,9 +84,7 @@ const UsersTable = ({ users, itemsPerPage = 5 }: UsersTableProps) => {
               <td className="px-4 py-2">
                 <span
                   className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
-                    user.active
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-red-100 text-red-700'
+                    user.active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                   }`}
                 >
                   {user.active ? 'Actif' : 'Inactif'}
@@ -114,51 +99,72 @@ const UsersTable = ({ users, itemsPerPage = 5 }: UsersTableProps) => {
           ))}
         </tbody>
       </table>
-      
-      {/* Pagination */}
-      <div className="flex items-center justify-between mt-4 p-4 border-t border-gray-200">
-       <span className="text-sm text-slate-500">
-  Affichage de {Math.min(endIndex, users.length)} sur {users.length} résultats
-</span>
+
+      {/* Pagination + Rows per page */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-4 p-4 border-t border-gray-200 gap-4">
+        {/* Rows per page selector */}
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-gray-700">Rows per page:</p>
+          <div className="relative">
+            <select
+              value={rowsPerPage}
+              onChange={handleRowsPerPageChange}
+              className="appearance-none rounded-md border border-gray-300 bg-white py-1.5 pl-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              {[5, 10, 15, 20].map((size) => (
+                <option key={size} value={size}>{size}</option>
+              ))}
+            </select>
+            <svg
+              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="m19.5 8.25-7.5 7.5-7.5-7.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Pagination controls */}
         <div className="flex items-center gap-2">
           <button
             onClick={handlePrevious}
             disabled={currentPage === 1}
             className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
-              currentPage === 1 
-                ? 'opacity-50 cursor-not-allowed' 
-                : 'hover:bg-slate-100'
+              currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-100'
             }`}
           >
             <MdKeyboardArrowLeft />
           </button>
-          
           {getPageNumbers().map((page) => (
             <button
               key={page}
               onClick={() => handlePageChange(page)}
               className={`text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${
-                page === currentPage
-                  ? 'text-white bg-blue-600'
-                  : 'text-slate-600 hover:bg-slate-100'
+                page === currentPage ? 'text-white bg-blue-600' : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
               {page}
             </button>
           ))}
-          
           <button
             onClick={handleNext}
             disabled={currentPage === totalPages}
             className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
-              currentPage === totalPages 
-                ? 'opacity-50 cursor-not-allowed' 
-                : 'hover:bg-slate-100'
+              currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-100'
             }`}
           >
-           <MdKeyboardArrowRight/>
+            <MdKeyboardArrowRight />
           </button>
         </div>
+
+        {/* Displayed range */}
+        <p className="text-sm text-slate-500">
+           Affichage de {Math.min(endIndex, users.length)} sur {users.length} utilsateurs
+        </p>
       </div>
     </div>
   );

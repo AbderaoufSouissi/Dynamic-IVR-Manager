@@ -13,8 +13,9 @@ const LoginPage = () => {
     // Example validation (replace with real auth logic)
     if (username === "admin" && password === "admin") {
       // alert("Connecté !");
-      navigate("/")
       setError(false);
+      navigate("/")
+      
     } else {
       
       
