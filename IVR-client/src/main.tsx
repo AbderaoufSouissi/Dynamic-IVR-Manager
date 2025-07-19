@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import LoginPage from './pages/LoginPage.tsx'
+import LoginPage from './pages/login/LoginPage.tsx'
 import ForgetPasswordPage from './pages/ForgetPasswordPage.tsx'
 
 
