@@ -1,5 +1,5 @@
 {
-    "users":[
+    "users": [
         {
             "userId": 48,
             "firstName": "test4",
@@ -106,7 +106,7 @@
             "email": "admin@gmail.com",
             "password": "$2a$10$C0Xf4.fnNJxFQcpSFga2qeqyiuAc8wqfz2sN6NPTpkmAw7ZuZJ.Q6",
             "active": true,
-            "roleName": "DEFAULT_ROLE",
+            "roleName": "ADMIN_ROLE",
             "createdAt": "2025-07-16 11:51:06",
             "createdBy": "SYSTEM_USER",
             "updatedAt": "2025-07-16 11:52:32",
@@ -125,6 +125,48 @@
             "createdBy": "SYSTEM_USER",
             "updatedAt": "2025-07-16 10:26:39",
             "updatedBy": "SYSTEM_USER"
+        },
+        {
+            "userId": 50,
+            "firstName": "auditor",
+            "lastName": "user",
+            "username": "auditor",
+            "email": "auditor@system",
+            "password": "$2a$10$QYc.TUCTnY1.B3U8YhKsAOegXPueiJ7NKhXOXbV3Li2Mskh0wradq",
+            "active": true,
+            "roleName": "AUDITOR_ROLE",
+            "createdAt": "2025-07-18 09:15:22",
+            "createdBy": "SYSTEM_USER",
+            "updatedAt": "2025-07-18 09:15:22",
+            "updatedBy": "SYSTEM_USER"
+        },
+        {
+            "userId": 51,
+            "firstName": "manager",
+            "lastName": "user",
+            "username": "manager",
+            "email": "manager@system",
+            "password": "$2a$10$QYc.TUCTnY1.B3U8YhKsAOegXPueiJ7NKhXOXbV3Li2Mskh0wradq",
+            "active": true,
+            "roleName": "MANAGER_ROLE",
+            "createdAt": "2025-07-18 09:16:45",
+            "createdBy": "admin",
+            "updatedAt": "2025-07-18 09:16:45",
+            "updatedBy": "admin"
+        },
+        {
+            "userId": 52,
+            "firstName": "support",
+            "lastName": "agent",
+            "username": "support",
+            "email": "support@system",
+            "password": "$2a$10$QYc.TUCTnY1.B3U8YhKsAOegXPueiJ7NKhXOXbV3Li2Mskh0wradq",
+            "active": true,
+            "roleName": "SUPPORT_ROLE",
+            "createdAt": "2025-07-18 10:30:15",
+            "createdBy": "admin",
+            "updatedAt": "2025-07-18 10:30:15",
+            "updatedBy": "admin"
         }
     ],
     "roles": [
@@ -142,7 +184,9 @@
                 "UPDATE_USER",
                 "UPDATE_ROLE",
                 "DELETE_PERMISSION",
-                "CREATE_PERMISSION"
+                "CREATE_PERMISSION",
+                "VIEW_AUDIT_LOGS",
+                "MANAGE_SYSTEM_SETTINGS"
             ],
             "createdAt": "2025-07-16 10:26:39",
             "createdBy": "SYSTEM_USER",
@@ -152,20 +196,25 @@
         {
             "roleId": 13,
             "name": "DEFAULT_ROLE",
-            "permissions": [],
+            "permissions": [
+                "VIEW_PROFILE",
+                "EDIT_PROFILE"
+            ],
             "createdAt": "2025-07-16 11:44:12",
             "createdBy": "SYSTEM_USER",
-            "updatedAt": "2025-07-16 11:44:12",
-            "updatedBy": "SYSTEM_USER"
+            "updatedAt": "2025-07-18 08:30:00",
+            "updatedBy": "admin"
         },
         {
             "roleId": 27,
             "name": "GUEST_ROLE",
-            "permissions": [],
+            "permissions": [
+                "VIEW_PROFILE"
+            ],
             "createdAt": "2025-07-16 12:40:49",
             "createdBy": "SYSTEM_USER",
-            "updatedAt": "2025-07-16 12:40:49",
-            "updatedBy": "SYSTEM_USER"
+            "updatedAt": "2025-07-18 08:31:15",
+            "updatedBy": "admin"
         },
         {
             "roleId": 51,
@@ -176,6 +225,62 @@
             "createdAt": "2025-07-17 15:43:59",
             "createdBy": "test2",
             "updatedAt": "2025-07-17 15:45:01",
+            "updatedBy": "admin"
+        },
+        {
+            "roleId": 60,
+            "name": "ADMIN_ROLE",
+            "permissions": [
+                "CREATE_USER",
+                "UPDATE_USER",
+                "DELETE_USER",
+                "CREATE_ROLE",
+                "UPDATE_ROLE",
+                "VIEW_AUDIT_LOGS",
+                "MANAGE_SETTINGS"
+            ],
+            "createdAt": "2025-07-18 08:45:30",
+            "createdBy": "SYSTEM_USER",
+            "updatedAt": "2025-07-18 08:45:30",
+            "updatedBy": "SYSTEM_USER"
+        },
+        {
+            "roleId": 61,
+            "name": "AUDITOR_ROLE",
+            "permissions": [
+                "VIEW_AUDIT_LOGS",
+                "VIEW_USER_PROFILES"
+            ],
+            "createdAt": "2025-07-18 09:10:15",
+            "createdBy": "admin",
+            "updatedAt": "2025-07-18 09:10:15",
+            "updatedBy": "admin"
+        },
+        {
+            "roleId": 62,
+            "name": "MANAGER_ROLE",
+            "permissions": [
+                "CREATE_USER",
+                "UPDATE_USER",
+                "VIEW_USER_PROFILES",
+                "MANAGE_TEAMS"
+            ],
+            "createdAt": "2025-07-18 09:15:45",
+            "createdBy": "admin",
+            "updatedAt": "2025-07-18 09:15:45",
+            "updatedBy": "admin"
+        },
+        {
+            "roleId": 63,
+            "name": "SUPPORT_ROLE",
+            "permissions": [
+                "VIEW_USER_PROFILES",
+                "UPDATE_USER_PROFILES",
+                "RESET_PASSWORDS"
+            ],
+            "createdAt": "2025-07-18 10:25:30",
+            "createdBy": "admin",
+            "updatedAt": "2025-07-18 10:25:30",
             "updatedBy": "admin"
         }
     ],
@@ -269,9 +374,160 @@
             "createdBy": "SYSTEM_USER",
             "updatedAt": "2025-07-16 10:26:39",
             "updatedBy": "SYSTEM_USER"
+        },
+        {
+            "permissionId": 12,
+            "name": "VIEW_AUDIT_LOGS",
+            "description": "View Audit Logs",
+            "createdAt": "2025-07-18 08:20:15",
+            "createdBy": "admin",
+            "updatedAt": "2025-07-18 08:20:15",
+            "updatedBy": "admin"
+        },
+        {
+            "permissionId": 13,
+            "name": "VIEW_PROFILE",
+            "description": "View User Profile",
+            "createdAt": "2025-07-18 08:22:30",
+            "createdBy": "admin",
+            "updatedAt": "2025-07-18 08:22:30",
+            "updatedBy": "admin"
+        },
+        {
+            "permissionId": 14,
+            "name": "EDIT_PROFILE",
+            "description": "Edit User Profile",
+            "createdAt": "2025-07-18 08:23:45",
+            "createdBy": "admin",
+            "updatedAt": "2025-07-18 08:23:45",
+            "updatedBy": "admin"
+        },
+        {
+            "permissionId": 15,
+            "name": "MANAGE_SYSTEM_SETTINGS",
+            "description": "Manage System Settings",
+            "createdAt": "2025-07-18 08:25:00",
+            "createdBy": "admin",
+            "updatedAt": "2025-07-18 08:25:00",
+            "updatedBy": "admin"
+        },
+        {
+            "permissionId": 16,
+            "name": "VIEW_USER_PROFILES",
+            "description": "View Other User Profiles",
+            "createdAt": "2025-07-18 09:05:15",
+            "createdBy": "admin",
+            "updatedAt": "2025-07-18 09:05:15",
+            "updatedBy": "admin"
+        },
+        {
+            "permissionId": 17,
+            "name": "MANAGE_TEAMS",
+            "description": "Manage User Teams",
+            "createdAt": "2025-07-18 09:08:30",
+            "createdBy": "admin",
+            "updatedAt": "2025-07-18 09:08:30",
+            "updatedBy": "admin"
+        },
+        {
+            "permissionId": 18,
+            "name": "RESET_PASSWORDS",
+            "description": "Reset User Passwords",
+            "createdAt": "2025-07-18 10:20:45",
+            "createdBy": "admin",
+            "updatedAt": "2025-07-18 10:20:45",
+            "updatedBy": "admin"
         }
     ],
-    "audits":[
+    "audits": [
+        {
+            "auditId": 70,
+            "userId": 24,
+            "actionType": "CREATE_ROLE",
+            "entityType": "ROLE",
+            "entityId": 63,
+            "actionTimestamp": "2025-07-18T10:25:30.123456"
+        },
+        {
+            "auditId": 69,
+            "userId": 24,
+            "actionType": "CREATE_USER",
+            "entityType": "USER",
+            "entityId": 52,
+            "actionTimestamp": "2025-07-18T10:30:15.789012"
+        },
+        {
+            "auditId": 68,
+            "userId": 24,
+            "actionType": "CREATE_ROLE",
+            "entityType": "ROLE",
+            "entityId": 62,
+            "actionTimestamp": "2025-07-18T09:15:45.456789"
+        },
+        {
+            "auditId": 67,
+            "userId": 24,
+            "actionType": "CREATE_USER",
+            "entityType": "USER",
+            "entityId": 51,
+            "actionTimestamp": "2025-07-18T09:16:45.123456"
+        },
+        {
+            "auditId": 66,
+            "userId": 24,
+            "actionType": "CREATE_ROLE",
+            "entityType": "ROLE",
+            "entityId": 61,
+            "actionTimestamp": "2025-07-18T09:10:15.789012"
+        },
+        {
+            "auditId": 65,
+            "userId": 0,
+            "actionType": "CREATE_USER",
+            "entityType": "USER",
+            "entityId": 50,
+            "actionTimestamp": "2025-07-18T09:15:22.456789"
+        },
+        {
+            "auditId": 64,
+            "userId": 24,
+            "actionType": "CREATE_ROLE",
+            "entityType": "ROLE",
+            "entityId": 60,
+            "actionTimestamp": "2025-07-18T08:45:30.123456"
+        },
+        {
+            "auditId": 63,
+            "userId": 24,
+            "actionType": "UPDATE_ROLE",
+            "entityType": "ROLE",
+            "entityId": 27,
+            "actionTimestamp": "2025-07-18T08:31:15.789012"
+        },
+        {
+            "auditId": 62,
+            "userId": 24,
+            "actionType": "UPDATE_ROLE",
+            "entityType": "ROLE",
+            "entityId": 13,
+            "actionTimestamp": "2025-07-18T08:30:00.456789"
+        },
+        {
+            "auditId": 61,
+            "userId": 24,
+            "actionType": "CREATE_PERMISSION",
+            "entityType": "PERMISSION",
+            "entityId": 18,
+            "actionTimestamp": "2025-07-18T10:20:45.123456"
+        },
+        {
+            "auditId": 60,
+            "userId": 24,
+            "actionType": "CREATE_PERMISSION",
+            "entityType": "PERMISSION",
+            "entityId": 17,
+            "actionTimestamp": "2025-07-18T09:08:30.789012"
+        },
         {
             "auditId": 59,
             "userId": 38,
@@ -279,6 +535,14 @@
             "entityType": "PERMISSION",
             "entityId": 58,
             "actionTimestamp": "2025-07-17T16:14:15.368292"
+        },
+        {
+            "auditId": 58,
+            "userId": 24,
+            "actionType": "CREATE_PERMISSION",
+            "entityType": "PERMISSION",
+            "entityId": 16,
+            "actionTimestamp": "2025-07-18T09:05:15.456789"
         },
         {
             "auditId": 57,
@@ -289,12 +553,28 @@
             "actionTimestamp": "2025-07-17T16:13:45.192683"
         },
         {
+            "auditId": 56,
+            "userId": 24,
+            "actionType": "CREATE_PERMISSION",
+            "entityType": "PERMISSION",
+            "entityId": 15,
+            "actionTimestamp": "2025-07-18T08:25:00.123456"
+        },
+        {
             "auditId": 55,
             "userId": 44,
             "actionType": "CREATE_PERMISSION",
             "entityType": "PERMISSION",
             "entityId": 54,
             "actionTimestamp": "2025-07-17T16:13:24.077623"
+        },
+        {
+            "auditId": 54,
+            "userId": 24,
+            "actionType": "CREATE_PERMISSION",
+            "entityType": "PERMISSION",
+            "entityId": 14,
+            "actionTimestamp": "2025-07-18T08:23:45.789012"
         },
         {
             "auditId": 53,
@@ -313,6 +593,14 @@
             "actionTimestamp": "2025-07-17T15:43:59.107979"
         },
         {
+            "auditId": 51,
+            "userId": 24,
+            "actionType": "CREATE_PERMISSION",
+            "entityType": "PERMISSION",
+            "entityId": 13,
+            "actionTimestamp": "2025-07-18T08:22:30.456789"
+        },
+        {
             "auditId": 50,
             "userId": 0,
             "actionType": "UPDATE_USER",
@@ -327,6 +615,14 @@
             "entityType": "USER",
             "entityId": 48,
             "actionTimestamp": "2025-07-17T15:19:46.590536"
+        },
+        {
+            "auditId": 48,
+            "userId": 24,
+            "actionType": "CREATE_PERMISSION",
+            "entityType": "PERMISSION",
+            "entityId": 12,
+            "actionTimestamp": "2025-07-18T08:20:15.123456"
         },
         {
             "auditId": 47,
