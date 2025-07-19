@@ -1,8 +1,9 @@
-// pages/AdminDashboard.tsx or wherever you need it
+
 import { useState } from 'react';
 import Sidebar from '../components/SideBar';
-import UsersTable from '../components/UsersTable';
-import content from "../data/content.json"
+import UsersPage from './UsersPage';
+import RolesPage from './RolesPage';
+import PermissionsPage from './PermissionsPage';
 
 
 const AdminDashboard: React.FC = () => {
@@ -11,11 +12,11 @@ const AdminDashboard: React.FC = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'users':
-        return<> <p>Gestion des utilisateurs</p> <UsersTable users={content.users} /> </>;
+        return <UsersPage/>;
       case 'roles':
-        return <p>Gestion des rôles ici.</p>;
+        return <RolesPage/>;
       case 'permissions':
-        return <p>Gestion des permissions ici.</p>;
+        return <PermissionsPage/>;
       case 'auditLogs':
         return <p>Logs d’audit ici.</p>;
       default:
