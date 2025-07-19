@@ -58,7 +58,7 @@ const UsersTable = ({ users, itemsPerPage = 5 }: UsersTableProps) => {
             <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Prénom</th>
             <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Nom</th>
             <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Email</th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Nom d'utilisateur</th>
+            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Username</th>
             <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Rôle</th>
             <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Date de création</th>  
             <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Créé par</th>         
