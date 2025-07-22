@@ -1,6 +1,6 @@
 import { useState } from "react";
 import MSISDNInput from "../components/MSISDNInput";
-import ActionButtons from "../components/ActionButtons";
+import ActionButtons from "../components/buttons/ActionButtons";
 import { StatusMessage } from "../components/StatusMessage";
 import Modal from "../components/Modal";
 
