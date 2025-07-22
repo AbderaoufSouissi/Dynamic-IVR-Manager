@@ -69,7 +69,7 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
             <tr key={role.roleId} className="border-t border-gray-200 hover:bg-gray-50 transition">
               <td className="px-4 py-2 font-medium">{role.roleId}</td>
               <td className="px-4 py-2 font-medium">{role.name}</td>
-              <td className="px-4 py-2">{role.permissions.join(", ")}</td>
+              <td className="px-4 py-2">{role.permissions.join("\n")}</td>
               <td className="px-4 py-2">{role.createdAt}</td>
               <td className="px-4 py-2">{role.createdBy}</td>
               <td className="px-4 py-2">{role.updatedAt}</td>
@@ -93,14 +93,14 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
             <select
               value={rowsPerPage}
               onChange={handleRowsPerPageChange}
-              className="appearance-none rounded-md border border-gray-300 bg-white py-1.5 pl-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="cursor-pointer appearance-none rounded-md border border-gray-300 bg-white py-1.5 pl-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               {[5, 10, 15, 20].map((size) => (
                 <option key={size} value={size}>{size}</option>
               ))}
             </select>
             <svg
-              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+              className="cursor-pointer pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
@@ -117,7 +117,7 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
           <button
             onClick={handlePrevious}
             disabled={currentPage === 1}
-            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
+            className={`cursor-pointer flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
               currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-100"
             }`}
           >
@@ -128,7 +128,7 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
             <button
               key={page}
               onClick={() => handlePageChange(page)}
-              className={`text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${
+              className={`cursor-pointer text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${
                 page === currentPage ? "text-white bg-blue-600" : "text-slate-600 hover:bg-slate-100"
               }`}
             >
@@ -139,7 +139,7 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
           <button
             onClick={handleNext}
             disabled={currentPage === totalPages}
-            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
+            className={`cursor-pointer flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
               currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-100"
             }`}
           >
