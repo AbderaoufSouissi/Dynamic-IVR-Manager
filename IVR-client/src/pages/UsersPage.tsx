@@ -48,7 +48,7 @@ const UsersPage = () => {
 
             
     <UsersTable users={content.users} onEdit={(user: User) => {
-        navigate("/admin/users/update");
+        navigate("/admin/users/update", { state: { user } });
       } }/>
       <Outlet />
       {/* Render create/update form when route matches */}
