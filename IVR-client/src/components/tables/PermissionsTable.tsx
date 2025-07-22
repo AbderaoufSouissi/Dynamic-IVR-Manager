@@ -69,13 +69,13 @@ const PermissionsTable = ({ permissions, itemsPerPage = 5 }: PermissionsTablePro
               key={permission.permissionId}
               className="border-t border-gray-200 hover:bg-gray-50 transition"
             >
-              <td className="px-4 py-2 font-medium">{permission.permissionId}</td>
-              <td className="px-4 py-2 font-medium">{permission.name}</td>
-              <td className="px-4 py-2">{permission.description}</td>
-              <td className="px-4 py-2">{permission.createdAt}</td>
-              <td className="px-4 py-2">{permission.createdBy}</td>
-              <td className="px-4 py-2">{permission.updatedAt}</td>
-              <td className="px-4 py-2">{permission.updatedBy}</td>
+              <td className="px-4 py-2 font-medium text-slate-800 ">{permission.permissionId}</td>
+              <td className="px-4 py-2 font-medium text-slate-800 ">{permission.name}</td>
+              <td className="px-4 py-2 text-slate-800 ">{permission.description}</td>
+              <td className="px-4 py-2 text-slate-800 ">{permission.createdAt}</td>
+              <td className="px-4 py-2 text-slate-800 ">{permission.createdBy}</td>
+              <td className="px-4 py-2 text-slate-800 ">{permission.updatedAt}</td>
+              <td className="px-4 py-2 text-slate-800 ">{permission.updatedBy}</td>
             </tr>
           ))}
         </tbody>

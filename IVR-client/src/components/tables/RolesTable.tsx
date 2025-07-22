@@ -67,13 +67,13 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
         <tbody>
           {currentRoles.map((role) => (
             <tr key={role.roleId} className="border-t border-gray-200 hover:bg-gray-50 transition">
-              <td className="px-4 py-2 font-medium">{role.roleId}</td>
-              <td className="px-4 py-2 font-medium">{role.name}</td>
-              <td className="px-4 py-2">{role.permissions.join("\n")}</td>
-              <td className="px-4 py-2">{role.createdAt}</td>
-              <td className="px-4 py-2">{role.createdBy}</td>
-              <td className="px-4 py-2">{role.updatedAt}</td>
-              <td className="px-4 py-2">{role.updatedBy}</td>
+              <td className="px-4 py-2 font-medium text-slate-800 ">{role.roleId}</td>
+              <td className="px-4 py-2 font-medium text-slate-800 ">{role.name}</td>
+              <td className="px-4 py-2 text-slate-800 ">{role.permissions.join("\n")}</td>
+              <td className="px-4 py-2 text-slate-800 ">{role.createdAt}</td>
+              <td className="px-4 py-2 text-slate-800 ">{role.createdBy}</td>
+              <td className="px-4 py-2 text-slate-800 ">{role.updatedAt}</td>
+              <td className="px-4 py-2 text-slate-800 ">{role.updatedBy}</td>
               <td className="p-4 space-x-2 font-medium text-blue-600">
                 <a className="action-link" href="#">Edit</a>
                 <span className="text-slate-300">|</span>
