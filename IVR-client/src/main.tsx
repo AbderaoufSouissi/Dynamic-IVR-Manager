@@ -11,6 +11,7 @@ import PermissionsPage from "./pages/PermissionsPage.tsx";
 import MsisdnPage from "./pages/MsisdnPage.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import UserForm from "./components/forms/UserForm.tsx";
+import HomePage from "./pages/HomePage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -55,16 +56,20 @@ const router = createBrowserRouter([
       },
       {
         path: "auditLogs",
-        element: <p>Logs d’audit ici.</p>,
+        element: <p className="text-lg font-semibold text-gray-800">Logs d’audit ici.</p>,
       },
       {
         index: true,
-        element: <p>Bienvenue dans le tableau de bord admin.</p>,
+        element: <p className="text-3xl font-bold text-gray-800">Bienvenue dans le tableau de bord admin.</p>,
       },
     ],
   },
   {
     path: "/",
+    element: <HomePage />,
+  },
+  {
+    path: "/login",
     element: <LoginPage />,
   },
   {
