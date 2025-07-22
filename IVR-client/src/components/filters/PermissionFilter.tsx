@@ -102,6 +102,11 @@ const PermissionFilter: React.FC<PermissionFiltersProps> = ({ filters, onFilterC
             className={inputClass}
           />
         </div>
+        <div>
+          <button className="text-sm block w-[50%] rounded-md bg-gray-200 px-3 py-1.5 text-gray-900 font-semibold cursor-pointer hover:scale-105 transition-all duration-200">
+            Filtrer
+          </button>
+        </div>
       </div>
     </div>
   );

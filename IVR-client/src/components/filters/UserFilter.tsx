@@ -1,4 +1,4 @@
-import React from "react";
+
 
 interface UserFiltersProps {
   filters: {
@@ -23,7 +23,7 @@ const inputClass = "block w-full rounded-md bg-white px-3 py-1.5 text-base text-
 
 
 
-const UserFilter: React.FC<UserFiltersProps> = ({ filters, onFilterChange }) => {
+const UserFilter = ({ filters, onFilterChange }:UserFiltersProps) => {
   return (
     <div className="mb-6 p-4 bg-white rounded-xl shadow border border-gray-200">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -65,8 +65,7 @@ const UserFilter: React.FC<UserFiltersProps> = ({ filters, onFilterChange }) => 
             onChange={(e) => onFilterChange("role", e.target.value)}
             className={inputClass}
           />
-           
-                </div>
+        </div>
         <div>
           <label htmlFor="id-filter" className={labelClass}>
             ID
@@ -155,6 +154,11 @@ const UserFilter: React.FC<UserFiltersProps> = ({ filters, onFilterChange }) => 
             onChange={(e) => onFilterChange("updatedAt", e.target.value)}
             className={inputClass}
           />
+        </div>
+        <div>
+          <button className="text-sm mt-6 block w-[50%] rounded-md bg-gray-200  py-2 text-gray-900 font-semibold cursor-pointer hover:scale-105 transition-all duration-200">
+            Filtrer
+          </button>
         </div>
       </div>
     </div>
