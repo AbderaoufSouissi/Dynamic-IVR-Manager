@@ -1,10 +1,9 @@
-
 import { useNavigate } from "react-router-dom";
+
 
 interface UserFormProps {
   title: Title;
     description: Description;
-   
 }
 
 type Title = "Créer un nouvel utilisateur" | "Modifier un utilisateur";
@@ -13,9 +12,9 @@ type Description =
   | "Mettez à jour les détails de l'utilisateur ci-dessous.";
 
 const UserForm = ({ title, description }: UserFormProps) => {
-    const navigate = useNavigate();
-    
-const handleCancel = () => {
+  const navigate = useNavigate();
+
+  const handleCancel = () => {
     navigate("/admin/users"); // Go back to users page
   };
 
@@ -24,12 +23,12 @@ const handleCancel = () => {
       <div
         aria-labelledby="modal-title"
         aria-modal="true"
-        className="bg-white rounded-2xl shadow-xl w-full max-w-xl"
+        className="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[98vh] "
         role="dialog"
       >
         <div className="p-8">
           <header className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800" id="modal-title">
+            <h2 className="text-3xl font-bold text-gray-800" id="modal-title">
               {title}
             </h2>
             <p className="text-gray-500 mt-1">{description}</p>
@@ -130,17 +129,17 @@ const handleCancel = () => {
 
             <footer className="mt-8 flex justify-between">
               <button
-        className="px-5 py-2.5 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition"
-        type="button"
-        onClick={handleCancel}
-      >
+                className="px-5 cursor-pointer py-2.5 bg-red-700 text-white font-medium rounded-lg hover:bg-red-800 transition"
+                type="button"
+                onClick={handleCancel}
+              >
                 Annuler
               </button>
               <button
-                className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"
+                className="px-6 cursor-pointer py-2.5 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"
                 type="submit"
               >
-                Créer l'utilisateur
+                Valider
               </button>
             </footer>
           </form>
