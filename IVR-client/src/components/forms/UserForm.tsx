@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router-dom";
-
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface UserFormProps {
   title: Title;
-    description: Description;
+  description: Description;
 }
 
 type Title = "Créer un nouvel utilisateur" | "Modifier un utilisateur";
@@ -12,10 +12,30 @@ type Description =
   | "Mettez à jour les détails de l'utilisateur ci-dessous.";
 
 const UserForm = ({ title, description }: UserFormProps) => {
+  const location = useLocation();
+  const user = location.state?.user;
+  const [firstName, setFirstName] = useState(user?.firstname || "");
+  const [lastName, setLastName] = useState(user?.lastname || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [username, setUsername] = useState(user?.username || "");
+  const [password, setPassword] = useState(""); // You usually don't prefill password
+  const [role, setRole] = useState(user?.role || "");
+
   const navigate = useNavigate();
 
   const handleCancel = () => {
-    navigate("/admin/users"); // Go back to users page
+      navigate("/admin/users"); // Go back to users page
+      
+
+      useEffect(() => {
+    if (user) {
+      setFirstName(user.firstname || "");
+      setLastName(user.lastname || "");
+      setEmail(user.email || "");
+      setUsername(user.username || "");
+      setRole(user.role || "");
+    }
+  }, [user]);
   };
 
   return (
@@ -45,7 +65,9 @@ const UserForm = ({ title, description }: UserFormProps) => {
                 </label>
                 <input
                   className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={firstName}
                   id="first-name"
+                  onChange={(e) => setFirstName(e.target.value)}
                   placeholder="ex: Jean"
                   type="text"
                 />
@@ -60,7 +82,9 @@ const UserForm = ({ title, description }: UserFormProps) => {
                 </label>
                 <input
                   className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={lastName}
                   id="last-name"
+                  onChange={(e) => setLastName(e.target.value)}
                   placeholder="ex: Dupont"
                   type="text"
                 />
@@ -75,7 +99,9 @@ const UserForm = ({ title, description }: UserFormProps) => {
                 </label>
                 <input
                   className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={email}
                   id="email"
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="ex: jean.dupont@mail.com"
                   type="email"
                 />
@@ -90,7 +116,9 @@ const UserForm = ({ title, description }: UserFormProps) => {
                 </label>
                 <input
                   className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={username}
                   id="username"
+                  onChange={(e) => setUsername(e.target.value)}
                   placeholder="ex: jeandupont"
                   type="text"
                 />
@@ -106,6 +134,8 @@ const UserForm = ({ title, description }: UserFormProps) => {
                 <input
                   className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   type="password"
                 />
@@ -120,7 +150,9 @@ const UserForm = ({ title, description }: UserFormProps) => {
                 </label>
                 <input
                   className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={role}
                   id="role"
+                  onChange={(e) => setRole(e.target.value)}
                   placeholder="ex: administrateur"
                   type="text"
                 />
