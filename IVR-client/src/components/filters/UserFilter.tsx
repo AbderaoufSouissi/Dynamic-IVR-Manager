@@ -1,3 +1,4 @@
+import FilterButton from "../buttons/FilterButton";
 
 
 interface UserFiltersProps {
@@ -155,11 +156,7 @@ const UserFilter = ({ filters, onFilterChange }:UserFiltersProps) => {
             className={inputClass}
           />
         </div>
-        <div>
-          <button className="text-sm mt-6 block w-[50%] rounded-md bg-gray-200  py-2 text-gray-900 font-semibold cursor-pointer hover:scale-105 transition-all duration-200">
-            Filtrer
-          </button>
-        </div>
+        <FilterButton/>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import React from "react";
+import FilterButton from "../buttons/FilterButton";
 
 interface RoleFiltersProps {
   filters: {
@@ -95,11 +96,7 @@ const RoleFilter: React.FC<RoleFiltersProps> = ({ filters, onFilterChange }) => 
             className={inputClass}
           />
         </div>
-        <div>
-          <button className="text-sm block w-[50%] rounded-md bg-gray-200 px-3 py-1.5 text-gray-900 font-semibold cursor-pointer hover:scale-105 transition-all duration-200">
-            Filtrer
-          </button>
-        </div>
+        <FilterButton/>
       </div>
     </div>
   );
