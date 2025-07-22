@@ -1,66 +1,81 @@
-import { createElement, StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import LoginPage from './auth/LoginPage.tsx'
-import ForgetPasswordPage from './auth/ForgetPasswordPage.tsx'
-import UsersPage from './pages/UsersPage.tsx'
-import RolesPage from './pages/RolesPage.tsx'
-import PermissionsPage from './pages/PermissionsPage.tsx'
-import MsisdnPage from './pages/MsisdnPage.tsx'
-import AdminDashboard from './pages/AdminDashboard.tsx'
-
-
+import { createElement, StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.tsx";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import LoginPage from "./auth/LoginPage.tsx";
+import ForgetPasswordPage from "./auth/ForgetPasswordPage.tsx";
+import UsersPage from "./pages/UsersPage.tsx";
+import RolesPage from "./pages/RolesPage.tsx";
+import PermissionsPage from "./pages/PermissionsPage.tsx";
+import MsisdnPage from "./pages/MsisdnPage.tsx";
+import AdminDashboard from "./pages/AdminDashboard.tsx";
+import UserForm from "./components/forms/UserForm.tsx";
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: createElement(App),
-  },
-  {
-    path: "/login",
-    element: createElement(LoginPage),
-  },
-  {
-    path: "/forget-password",
-    element: createElement(ForgetPasswordPage),
-  },
-  {
     path: "/admin",
-    element: createElement(AdminDashboard), // Sidebar and layout
+    element: <AdminDashboard />, // use JSX directly instead of createElement for consistency
     children: [
       {
         path: "users",
-        element: createElement(UsersPage),
+        element: <UsersPage />,
+        children: [
+          {
+            path: "create",
+            element: (
+              <UserForm
+                title="Créer un nouvel utilisateur"
+                description="Complétez les informations ci-dessous pour créer un nouvel utilisateur."
+              />
+            ),
+          },
+          {
+            path: "update",
+            element: (
+              <UserForm
+                title="Modifier un utilisateur"
+                description="Mettez à jour les détails de l'utilisateur ci-dessous."
+              />
+            ),
+          },
+        ],
       },
       {
         path: "roles",
-        element: createElement(RolesPage),
+        element: <RolesPage />,
       },
       {
         path: "permissions",
-        element: createElement(PermissionsPage),
+        element: <PermissionsPage />,
       },
       {
         path: "msisdn",
-        element: createElement(MsisdnPage),
+        element: <MsisdnPage />,
       },
       {
         path: "auditLogs",
         element: <p>Logs d’audit ici.</p>,
       },
       {
-        index: true, // /admin by default
+        index: true,
         element: <p>Bienvenue dans le tableau de bord admin.</p>,
       },
     ],
   },
+  {
+    path: "/",
+    element: <LoginPage />,
+  },
+  {
+    path: "/forget-password",
+    element: <ForgetPasswordPage />,
+  },
 ]);
 
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router = {router}/>
-  </StrictMode>,
-)
+    <RouterProvider router={router} />
+  </StrictMode>
+);
