@@ -32,7 +32,7 @@ const MsisdnPage = () => {
 
   return (
     <div>
-    <p>Gestion des MSISDN ici.</p>
+
     
     <main className="flex flex-1 items-center justify-center py-12">
       

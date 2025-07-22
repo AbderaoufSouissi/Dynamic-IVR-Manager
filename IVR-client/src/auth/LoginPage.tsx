@@ -14,7 +14,7 @@ const LoginPage = () => {
     if (username === "admin" && password === "admin") {
       // alert("Connecté !");
       setError(false);
-      navigate("/")
+      navigate("/admin")
       
     } else {
       

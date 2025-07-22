@@ -4,6 +4,9 @@ import UsersTable from "../components/tables/UsersTable";
 import content from "../data/content.json";
 import { HiOutlineUserAdd } from "react-icons/hi";
 
+import type { User } from "../types/types";
+import { Outlet, useNavigate } from "react-router-dom";
+
 const UsersPage = () => {
   const [filters, setFilters] = useState({
     username: "",
@@ -15,6 +18,7 @@ const UsersPage = () => {
     updatedBy: "",
     createdAt: "",
     updatedAt: "",
+    role: "",
   });
 
   const handleFilterChange = (name: string, value: string) => {
@@ -24,19 +28,32 @@ const UsersPage = () => {
     }));
   };
 
+  const navigate = useNavigate();
+
   return (
-    <div>
+    <>
       <div className="mb-6 flex items-center justify-between">
-        <p>Gestion des utilisateurs ici.</p>
-        <button className="flex items-center gap-2 cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 hover:scale-105 transform transition-transform duration-300 focus:outline-none">
-          <HiOutlineUserAdd size={25} />
-          Add User
+        <p className="text-lg font-semibold text-gray-800">Gestion des utilisateurs</p>
+        <button
+          onClick={() => navigate("/admin/users/create")}
+
+          className="flex items-center gap-2 cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 hover:scale-105 transform transition-transform duration-300 focus:outline-none"
+        >
+          <HiOutlineUserAdd size={20} />
+          Ajouter un utilisateur
         </button>
       </div>
+
       <UserFilter filters={filters} onFilterChange={handleFilterChange} />
-      <UsersTable users={content.users} />
-      {/* Use filters state as needed */}
-    </div>
+
+            
+    <UsersTable users={content.users} onEdit={(user: User) => {
+        navigate("/admin/users/update");
+      } }/>
+      <Outlet />
+      {/* Render create/update form when route matches */}
+
+    </>
   );
 };
 
