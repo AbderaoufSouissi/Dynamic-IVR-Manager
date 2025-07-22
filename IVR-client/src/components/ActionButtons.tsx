@@ -24,6 +24,7 @@ const ActionButtons = ({
     <button
             className="
       text-center
+      cursor-pointer
         bg-blue-600 text-white
         hover:bg-blue-700 hover:scale-105
         flex w-full items-center justify-center
@@ -44,6 +45,7 @@ const ActionButtons = ({
     <button
       className="
         bg-gray-200
+        cursor-pointer
         text-gray-900
         hover:bg-gray-300 hover:scale-105
         flex w-full items-center justify-center
@@ -59,7 +61,8 @@ const ActionButtons = ({
 
     {/* Success Action (Whitelist) */}
     <button
-            className="bg-gray-200
+      className="bg-gray-200
+            cursor-pointer
       text-gray-900
         hover:bg-gray-300 hover:scale-105
         flex w-full items-center justify-center
@@ -76,6 +79,7 @@ const ActionButtons = ({
     {/* Secondary Action (Reset) */}
     <button
       className="
+      cursor-pointer
         bg-gray-600 text-white
         hover:bg-gray-700 hover:scale-105
         flex w-full items-center justify-center
