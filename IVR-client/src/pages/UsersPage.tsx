@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UserFilter from "../components/filters/UserFilter";
 import UsersTable from "../components/tables/UsersTable";
 import content from "../data/content.json";
@@ -6,6 +6,7 @@ import { HiOutlineUserAdd } from "react-icons/hi";
 
 import type { User } from "../types/types";
 import { Outlet, useNavigate } from "react-router-dom";
+import { getUsers } from "../service/UserService";
 
 const UsersPage = () => {
   const [filters, setFilters] = useState({
@@ -29,6 +30,11 @@ const UsersPage = () => {
   };
 
   const navigate = useNavigate();
+  useEffect(() => {
+      const response = getUsers();
+      console.log(response);
+      
+    },[])
 
   return (
     <>
