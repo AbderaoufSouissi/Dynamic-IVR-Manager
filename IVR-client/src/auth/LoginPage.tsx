@@ -5,31 +5,40 @@ import { login } from "../service/AuthService";
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
+
   const navigate = useNavigate()
 
-  const handleSubmit = async (e: React.FormEvent) => {
+ const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
+   
+
     try {
-      await login(username, password);
-      navigate("/admin");
-    } catch (err) {
-      alert("Login failed");
+      const response = await login(username,password)
+      
+      navigate("/admin  ")
+      // ✅ At this point, the session is established and cookie is stored
+      console.log("Logged in:", response);
+      }
+      // Redirect or change state
+    catch (err) {
       console.error(err);
+      setError("Invalid credentials");
     }
   };
+
 
     return (
       <div className="bg-gray-50 min-h-screen flex items-center justify-center">
         <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-lg">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900">Bienvenue</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Connexion</h1>
             <p className="mt-2 text-sm text-gray-600">
               Veuillez saisir vos identifiants pour vous connecter.
             </p>
           </div>
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <form className="mt-8 space-y-6" onSubmit={handleLogin}>
             <input type="hidden" name="remember" value="true" />
             <div className="rounded-md shadow-sm -space-y-px">
               <div>

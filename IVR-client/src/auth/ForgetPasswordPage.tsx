@@ -53,7 +53,10 @@ const ForgetPasswordPage = () => {
               <div>
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 transition-all"
+                  className="flex w-full justify-center rounded-lg bg-blue-600 px-4 py-3 text-base font-semibold text-white shadow-sm cursor-pointer
+             transition-transform duration-300 ease-in-out
+             hover:scale-101 hover:bg-blue-700
+             focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                 >
                   Envoyer l'email de réinitialisation
                 </button>

@@ -1,7 +1,6 @@
-import { createElement, StrictMode } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./App.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LoginPage from "./auth/LoginPage.tsx";
 import ForgetPasswordPage from "./auth/ForgetPasswordPage.tsx";
@@ -12,6 +11,7 @@ import MsisdnPage from "./pages/MsisdnPage.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import UserForm from "./components/forms/UserForm.tsx";
 import HomePage from "./pages/HomePage.tsx";
+import ResetPasswordPage from "./auth/ResetPasswordPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -75,6 +75,10 @@ const router = createBrowserRouter([
   {
     path: "/forget-password",
     element: <ForgetPasswordPage />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPasswordPage />,
   },
 ]);
 
