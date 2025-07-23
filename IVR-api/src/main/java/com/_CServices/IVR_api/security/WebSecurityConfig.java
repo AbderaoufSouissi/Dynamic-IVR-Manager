@@ -43,7 +43,7 @@ public class WebSecurityConfig {
                                 "/api/v1/auth/reset-password"
                         )
                         .permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
                         .loginProcessingUrl("/api/auth/login")
