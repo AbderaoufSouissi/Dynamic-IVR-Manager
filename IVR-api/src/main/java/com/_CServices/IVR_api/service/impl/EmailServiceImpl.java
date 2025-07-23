@@ -49,15 +49,14 @@ public class EmailServiceImpl implements EmailService {
         return String.format(
                 "Hello %s,\n\n" +
                         "You requested a password reset for your account.\n\n" +
-                        "Please use the following token to reset your password:\n\n" +
-                        "Reset Token: %s\n\n" +
-                        "Or click the link below to open the reset form:\n" +
-                        "%s/reset-password\n\n" +
-                        "This token will expire in 15 minutes.\n\n" +
+                        "Please click the link below to open the reset form:\n" +
+                        "%s?token=%s\n\n" +
+                        "This link will expire in 15 minutes.\n\n" +
                         "If you didn't request this password reset, please ignore this email.\n\n" +
                         "Best regards,\n" +
                         "Your Application Team",
-                username, token, host
+                username, host, token
         );
     }
+
 }
