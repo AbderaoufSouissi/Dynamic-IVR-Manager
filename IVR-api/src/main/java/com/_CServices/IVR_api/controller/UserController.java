@@ -21,6 +21,7 @@ import java.time.LocalDate;
 public class UserController {
     private final UserService userService;
 
+
     @GetMapping
     public ResponseEntity<Page<UserResponse>> getUsers(
             @RequestParam(required = false) Long id,
