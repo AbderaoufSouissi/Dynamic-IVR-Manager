@@ -74,9 +74,9 @@ export const ResetPasswordPage = () => {
                 <button
                   type="submit"
                   disabled={!password.trim()}
-                  className={`flex w-full justify-center rounded-lg px-4 py-3 text-base font-semibold text-white shadow-sm cursor-pointer transition-transform duration-300 ease-in-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
+                  className={`flex w-full justify-center rounded-lg px-4 py-3 text-base font-semibold text-white shadow-sm transition-transform duration-300 ease-in-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600  ${
                     password.trim()
-                      ? "bg-blue-600 hover:scale-101 hover:bg-blue-700"
+                      ? "bg-blue-600 cursor-pointer hover:scale-101 hover:bg-blue-700"
                       : "bg-blue-300 cursor-not-allowed"
                   }`}
                 >
