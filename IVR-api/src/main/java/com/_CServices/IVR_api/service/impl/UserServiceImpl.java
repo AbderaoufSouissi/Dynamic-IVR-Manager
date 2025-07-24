@@ -234,60 +234,60 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(user);
     }
 
-    @Override
-    @Transactional
-    public UserResponse createUser(CreateUserRequest request) {
-        if(null == request.getRoleName()){
-            request.setRoleName("DEFAULT_ROLE");
-        }
-        if(Objects.equals(request.getRoleName(), "DEFAULT_ROLE") &&
-                null == roleRepository.findByName(request.getRoleName())){
-            Role role = Role.builder()
-                    .name(request.getRoleName())
-                    .permissions(new HashSet<>())
-                    .build();
-            Role defaultRole = roleRepository.save(role);
+        @Override
+        @Transactional
+        public UserResponse createUser(CreateUserRequest request) {
+            if(null == request.getRoleName()){
+                request.setRoleName("DEFAULT_ROLE");
+            }
+            if(Objects.equals(request.getRoleName(), "DEFAULT_ROLE") &&
+                    null == roleRepository.findByName(request.getRoleName())){
+                Role role = Role.builder()
+                        .name(request.getRoleName())
+                        .permissions(new HashSet<>())
+                        .build();
+                Role defaultRole = roleRepository.save(role);
 
-            auditService.logAction(
-                    ActionType.CREATE_ROLE.toString(),
-                    EntityType.ROLE.toString(),
-                    defaultRole.getId()
-            );
+                auditService.logAction(
+                        ActionType.CREATE_ROLE.toString(),
+                        EntityType.ROLE.toString(),
+                        defaultRole.getId()
+                );
 
 
-        }
+            }
 
-        if(null == roleRepository.findByName(request.getRoleName())){
-            throw new ResourceNotFoundException("Cannot assign non existing Role : "+request.getRoleName()+" to user");
-        }
+            if(null == roleRepository.findByName(request.getRoleName())){
+                throw new ResourceNotFoundException("Cannot assign non existing Role : "+request.getRoleName()+" to user");
+            }
 
-        if(null != userRepository.findByUsername(request.getUsername())) {
-            throw new ResourceAlreadyExistsException("User with Username : "+request.getUsername()+" Already Exists");
+            if(null != userRepository.findByUsername(request.getUsername())) {
+                throw new ResourceAlreadyExistsException("User with Username : "+request.getUsername()+" Already Exists");
 
-        } else if (null != userRepository.findByEmail(request.getEmail())) {
-            throw new ResourceAlreadyExistsException("User with Email : "+request.getEmail()+" Already Exists");
-        }
-        else {
-            User user = User.builder()
-                    .firstName(request.getFirstName())
-                    .lastName(request.getLastName())
-                    .username(request.getUsername())
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .active(request.getActive())
-                    .role(roleRepository.findByName(request.getRoleName()))
-                    .build();
-            User newUser = userRepository.save(user);
+            } else if (null != userRepository.findByEmail(request.getEmail())) {
+                throw new ResourceAlreadyExistsException("User with Email : "+request.getEmail()+" Already Exists");
+            }
+            else {
+                User user = User.builder()
+                        .firstName(request.getFirstName())
+                        .lastName(request.getLastName())
+                        .username(request.getUsername())
+                        .email(request.getEmail())
+                        .password(passwordEncoder.encode(request.getPassword()))
+                        .active(request.getActive())
+                        .role(roleRepository.findByName(request.getRoleName()))
+                        .build();
+                User newUser = userRepository.save(user);
 
-            auditService.logAction(
-                    ActionType.CREATE_USER.toString(),
-                    EntityType.USER.toString(),
-                    newUser.getId()
-            );
+                auditService.logAction(
+                        ActionType.CREATE_USER.toString(),
+                        EntityType.USER.toString(),
+                        newUser.getId()
+                );
 
-            return userMapper.toDto(user);
+                return userMapper.toDto(user);
 
-        }
+            }
 
 
     }
