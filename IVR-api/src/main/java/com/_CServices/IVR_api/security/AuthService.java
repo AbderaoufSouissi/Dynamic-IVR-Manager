@@ -6,6 +6,7 @@ import com._CServices.IVR_api.exception.ApiException;
 import com._CServices.IVR_api.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -75,7 +76,9 @@ public class AuthService {
     public User getCurrentLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated()) {
+        if (authentication == null ||
+                !authentication.isAuthenticated() ||
+                authentication instanceof AnonymousAuthenticationToken) {
             throw new IllegalStateException("No authenticated user found");
         }
 
@@ -85,9 +88,7 @@ public class AuthService {
             throw new IllegalStateException("Principal is not an instance of User");
         }
 
-        User user = (User) principal;
-
-        return userRepository.findById(user.getId())
+        return userRepository.findById(((User) principal).getId())
                 .orElseThrow(() -> new IllegalStateException("User not found in DB"));
     }
 

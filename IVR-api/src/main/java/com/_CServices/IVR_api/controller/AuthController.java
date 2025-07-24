@@ -5,14 +5,20 @@ package com._CServices.IVR_api.controller;
 import com._CServices.IVR_api.dto.request.ForgetPasswordRequest;
 import com._CServices.IVR_api.dto.request.ResetPasswordRequest;
 import com._CServices.IVR_api.dto.response.MessageResponse;
+import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.security.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 
 
 @RestController
@@ -42,5 +48,32 @@ public class AuthController {
 
         return ResponseEntity.ok(new MessageResponse("Password reset successful"));
     }
+
+
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (!(principal instanceof User)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user principal");
+        }
+
+        User user = (User) principal;
+
+        return ResponseEntity.ok(Map.of(
+                "id", user.getId(),
+                "username", user.getUsername(),
+                "email", user.getEmail()
+        ));
+    }
+
 }
 
