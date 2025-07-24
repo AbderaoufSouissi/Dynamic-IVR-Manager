@@ -4,7 +4,7 @@ import { FiPhoneCall } from 'react-icons/fi'
 import { HiOutlineUserAdd } from 'react-icons/hi'
 import { MdOutlineSecurity } from 'react-icons/md'
 import { NavLink } from 'react-router-dom'
-import FeatureCard from './FeatureCard'
+import FeatureCard from '../cards/FeatureCard'
 
 
 
