@@ -5,7 +5,7 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 
 export const getUsers = async () => {
-    const response = await axios.get(`${API_BASE_URL}/api/v1/users`)
+    const response = await axios.get(`${API_BASE_URL}/users`)
     return response.data;
     
 }
