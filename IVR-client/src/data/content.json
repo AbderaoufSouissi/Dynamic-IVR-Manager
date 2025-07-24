@@ -1,6 +1,20 @@
 {
     "users": [
         {
+            "userId": 52,
+            "firstName": "abderaouf",
+            "lastName": "souissi",
+            "username": "ars",
+            "email": "abderaouf.souissi@gmail.com",
+            "password": "$2a$10$Chri7Z6CoJ5nFXWokaAkKuikbL1DfdJQeBaeWRmI2z0PReBNdQaFS",
+            "active": true,
+            "roleName": "DEFAULT_ROLE",
+            "createdAt": "2025-07-17 15:19:46",
+            "createdBy": "test2",
+            "updatedAt": "2025-07-17 15:19:46",
+            "updatedBy": "test2"
+        },
+        {
             "userId": 48,
             "firstName": "test4",
             "lastName": "test4",
@@ -21,7 +35,7 @@
             "username": "test3",
             "email": "test3@test3",
             "password": "$2a$10$GDRwVIEJJ7Ea0UqsrY1dbOwp3O2.30zMUTidE/Db1FzeywQOgVmMS",
-            "active": true,
+            "active": false,
             "roleName": "DEFAULT_ROLE",
             "createdAt": "2025-07-17 11:09:38",
             "createdBy": "test2",
@@ -86,12 +100,12 @@
         },
         {
             "userId": 29,
-            "firstName": "guest1",
+            "firstName": "guest",
             "lastName": "guest",
             "username": "guest",
-            "email": "guest@guest",
+            "email": "guest@guest.com",
             "password": "$2a$10$BUQbdZwlGlFm9iKmJS2P3.fv2mEZylK08MENXgd.j8DT0lRKVKVk6",
-            "active": true,
+            "active": false,
             "roleName": "GUEST_ROLE",
             "createdAt": "2025-07-16 12:41:08",
             "createdBy": "SYSTEM_USER",
