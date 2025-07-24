@@ -41,7 +41,7 @@ const Modal = ({
           </p>
           <div className="mt-6 flex justify-center gap-4">
             <button
-              className={`rounded-md px-4 py-2 text-sm font-medium transition-all duration-200 ${
+              className={`rounded-md cursor-pointer px-4 py-2 text-sm font-medium transition-all duration-200 ${
                 confirmType === "danger"
                   ? "bg-red-600 text-white hover:bg-red-700 hover:scale-[1.02]"
                   : "bg-blue-600 text-white hover:bg-blue-700 hover:scale-[1.02]"
@@ -51,7 +51,7 @@ const Modal = ({
               {confirmLabel}
             </button>
             <button
-              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50 hover:scale-[1.02] dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              className="rounded-md border cursor-pointer border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50 hover:scale-[1.02] dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
               onClick={onClose}
             >
               Annuler

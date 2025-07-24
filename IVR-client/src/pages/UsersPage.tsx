@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import UserFilter from "../components/filters/UserFilter";
 import UsersTable from "../components/tables/UsersTable";
-import content from "../data/content.json";
 import { HiOutlineUserAdd } from "react-icons/hi";
 
-import type { User } from "../types/types";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { getUsers } from "../service/UserService";
 
 const UsersPage = () => {
@@ -22,7 +20,27 @@ const UsersPage = () => {
     role: "",
   });
 
- 
+  const [users, setUsers] = useState([]);
+  const location = useLocation();
+
+  useEffect(() => {
+  fetchUsers();
+}, [location]);
+
+
+  const fetchUsers = async () => {
+    try {
+      const data = await getUsers();
+      setUsers(data.content);
+    } catch (err) {
+      console.error("Erreur lors de la récupération des utilisateurs", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
 
   const handleFilterChange = (name: string, value: string) => {
     setFilters((prevFilters) => ({
@@ -34,11 +52,7 @@ const UsersPage = () => {
   
 
   const navigate = useNavigate();
-  useEffect(() => {
-      const response = getUsers();
-      console.log(response);
-      
-    },[])
+ 
 
   return (
     <>
@@ -57,10 +71,10 @@ const UsersPage = () => {
       <UserFilter filters={filters} onFilterChange={handleFilterChange} />
 
             
-    <UsersTable onEdit={(user: User) => {
-        navigate("/admin/users/update", { state: { user } });
-      } }/>
+    <UsersTable users={users}/>
       <Outlet />
+
+      
   
 
     </>

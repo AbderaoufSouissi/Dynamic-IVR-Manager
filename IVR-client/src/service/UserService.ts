@@ -1,5 +1,6 @@
 import { API_BASE_URL, axiosInstance } from "../api/Api";
-import type { UserRequest } from "../types/types";
+import type { CreateUserRequest, UpdateUserRequest } from "../types/types";
+
 
 
 
@@ -12,13 +13,17 @@ export const getUsers = async (params = {}) => {
   return response.data;
 };
 
+export const createUser = async (userData: CreateUserRequest) => {
+  const response = await axiosInstance.post(`${API_BASE_URL}/users`,userData);
+  return response.data
+}
 
 export const getUserById = async (id: number) => {
   const response = await axiosInstance.get(`${API_BASE_URL}/users/${id}`,{withCredentials:true});
   return response.data;
 };
 
-export const updateUser = async (id: number, userData: UserRequest) => {
+export const updateUser = async (id: number, userData: UpdateUserRequest) => {
     const response = await axiosInstance.put(`${API_BASE_URL}/users/${id}`,userData);
     return response.data
 

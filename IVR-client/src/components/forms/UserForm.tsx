@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import type { User } from "../../types/types";
+import { useNavigate, useParams } from "react-router-dom";
+import { createUser, getUserById, updateUser } from "../../service/UserService";
 
 interface UserFormProps {
   title: Title;
@@ -13,32 +13,84 @@ type Description =
   | "Mettez à jour les détails de l'utilisateur ci-dessous.";
 
 const UserForm = ({ title, description }: UserFormProps) => {
-  const location = useLocation();
-  const user: User = location.state?.user;
-  const [firstName, setFirstName] = useState(user?.firstName || "");
-  const [lastName, setLastName] = useState(user?.lastName || "");
-  const [email, setEmail] = useState(user?.email || "");
-  const [username, setUsername] = useState(user?.username || "");
-  const [password, setPassword] = useState(""); // You usually don't prefill password
-  const [role, setRole] = useState(user?.roleName || "");
-  const [active,setActive] = useState(user?.active)
+  const { id } = useParams();
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    username: "",
+    password: "",
+    roleName: "",
+    active: null as boolean | null, // allow null initially
+  });
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (id) {
+      getUserById(parseInt(id)).then((user) => {
+        const { password, ...rest } = user; // remove hashed password
+        setFormData({
+          ...rest,
+          password: "", // clear the password field intentionally
+        });
+      });
+    }
+  }, [id]);
 
   const handleCancel = () => {
     navigate("/admin/users"); // Go back to users page
   };
 
-  useEffect(() => {
-    if (user) {
-      setFirstName(user.firstName || "");
-      setLastName(user.lastName || "");
-      setEmail(user.email || "");
-      setUsername(user.username || "");
-      setRole(user.roleName || "");
-      setActive(user.active || false)
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // common data
+    const basePayload: any = {
+  firstName: formData.firstName,
+  lastName: formData.lastName,
+  email: formData.email,
+  username: formData.username,
+  roleName: formData.roleName.trim() === "" ? null : formData.roleName,
+};
+
+// Only add active if it's boolean (true or false), ignore if null
+if (formData.active !== null) {
+  basePayload.active = formData.active;
     }
-  }, [user]);
+  
+
+
+    try {
+      if (id) {
+        // Update: password nullable or omitted if empty
+        const updatePayload = {
+          ...basePayload,
+          password: formData.password.trim() === "" ? null : formData.password,
+        };
+
+        
+
+        await updateUser(parseInt(id), updatePayload);
+      } else {
+        // Create: password required and must be string (not null)
+        if (formData.password.trim() === "") {
+          throw new Error("Password is required to create a new user.");
+        }
+        const createPayload = {
+          ...basePayload,
+          password: formData.password,
+        };
+
+        await createUser(createPayload);
+      }
+
+      navigate("/admin/users");
+    } catch (error) {
+      console.error("Erreur lors de la soumission du formulaire :", error);
+      // show toast or error message
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 p-4">
@@ -67,11 +119,14 @@ const UserForm = ({ title, description }: UserFormProps) => {
                 </label>
                 <input
                   className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={firstName}
+                  value={formData.firstName}
                   id="first-name"
-                  onChange={(e) => setFirstName(e.target.value)}
+                  onChange={(e) =>
+                    setFormData({ ...formData, firstName: e.target.value })
+                  }
                   placeholder="ex: Jean"
                   type="text"
+                  required
                 />
               </div>
 
@@ -84,11 +139,14 @@ const UserForm = ({ title, description }: UserFormProps) => {
                 </label>
                 <input
                   className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={lastName}
+                  value={formData.lastName}
                   id="last-name"
-                  onChange={(e) => setLastName(e.target.value)}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
                   placeholder="ex: Dupont"
                   type="text"
+                  required
                 />
               </div>
 
@@ -101,11 +159,14 @@ const UserForm = ({ title, description }: UserFormProps) => {
                 </label>
                 <input
                   className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={email}
+                  value={formData.email}
                   id="email"
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   placeholder="ex: jean.dupont@mail.com"
                   type="email"
+                  required
                 />
               </div>
 
@@ -118,11 +179,14 @@ const UserForm = ({ title, description }: UserFormProps) => {
                 </label>
                 <input
                   className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={username}
+                  value={formData.username}
                   id="username"
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e) =>
+                    setFormData({ ...formData, username: e.target.value })
+                  }
                   placeholder="ex: jeandupont"
                   type="text"
+                  required
                 />
               </div>
 
@@ -136,9 +200,11 @@ const UserForm = ({ title, description }: UserFormProps) => {
                 <input
                   className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  placeholder="••••••••••••••••"
                   type="password"
                 />
               </div>
@@ -152,14 +218,16 @@ const UserForm = ({ title, description }: UserFormProps) => {
                 </label>
                 <input
                   className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={role}
+                  value={formData.roleName}
                   id="role"
-                  onChange={(e) => setRole(e.target.value)}
+                  onChange={(e) =>
+                    setFormData({ ...formData, roleName: e.target.value })
+                  }
                   placeholder="ex: administrateur"
                   type="text"
                 />
               </div>
-              
+
               <div className="md:col-span-2">
                 <label className="text-sm font-medium text-gray-700 mb-1 block">
                   Statut
@@ -176,7 +244,10 @@ const UserForm = ({ title, description }: UserFormProps) => {
                       id="active"
                       value="active"
                       className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
-                      checked = {active === true}
+                      checked={formData.active === true}
+                      onChange={() =>
+                        setFormData({ ...formData, active: true })
+                      }
                     />
                     <span className="ml-2 flex items-center text-sm text-gray-700">
                       <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
@@ -195,7 +266,10 @@ const UserForm = ({ title, description }: UserFormProps) => {
                       id="inactive"
                       value="inactive"
                       className="h-4 w-4 text-red-600 border-gray-300 focus:ring-red-500"
-                      checked = {active === false}
+                      onChange={() =>
+                        setFormData({ ...formData, active: false })
+                      }
+                      checked={formData.active === false}
                     />
                     <span className="ml-2 flex items-center text-sm text-gray-700">
                       <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
@@ -215,6 +289,7 @@ const UserForm = ({ title, description }: UserFormProps) => {
                 Annuler
               </button>
               <button
+                onClick={handleSubmit}
                 className="px-5 cursor-pointer py-2 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition text-sm"
                 type="submit"
               >

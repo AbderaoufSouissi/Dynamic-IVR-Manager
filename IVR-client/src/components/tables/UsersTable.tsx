@@ -3,39 +3,27 @@ import type { User } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import Modal from "../modal/Modal";
 import { FiAlertTriangle } from "react-icons/fi";
-import { getUsers } from "../../service/UserService";
+import { useNavigate } from "react-router-dom";
 
 interface UsersTableProps {
   itemsPerPage?: number;
-  onEdit: (user: User) => void; // New
+  users: User[];
 }
 
-const UsersTable = ({ itemsPerPage = 5, onEdit }: UsersTableProps) => {
+const UsersTable = ({ itemsPerPage = 5,users}: UsersTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
-  const [users, setUsers] = useState<User[]>([])
+
 
   const totalPages = Math.ceil(users.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
+  const navigate = useNavigate()
 
   const [showModal, setShowModal] = useState(false);
 
 
- useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const data = await getUsers();
-        const users = data.content
-        console.log(data)
-        setUsers(users);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
+ 
 
 
 
@@ -116,7 +104,7 @@ const UsersTable = ({ itemsPerPage = 5, onEdit }: UsersTableProps) => {
               <td className="px-4 py-2 font-medium whitespace-nowrap text-slate-800  ">
                 {user.userId}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="py-4 whitespace-nowrap">
                 <div className="flex items-center">
                   <div className="ml-4">
                     <div className="text-sm font-medium text-gray-900">
@@ -130,7 +118,7 @@ const UsersTable = ({ itemsPerPage = 5, onEdit }: UsersTableProps) => {
                 </div>
               </td>
 
-              <td className="px-4 py-2 font-medium whitespace-nowrap text-slate-800 ">
+              <td className="px-6 py-2 font-medium whitespace-nowrap text-slate-800 ">
                 {user.username}
               </td>
               <td className="px-4 py-2 font-medium whitespace-nowrap text-slate-800 ">
@@ -162,7 +150,7 @@ const UsersTable = ({ itemsPerPage = 5, onEdit }: UsersTableProps) => {
               <td className="p-4 font-medium text-blue-600">
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => onEdit(user)}
+                    onClick={() => navigate(`/users/update/${user.userId}`)}
                     className="text-blue-600 hover:underline cursor-pointer"
                   >
                     Éditer
@@ -262,6 +250,7 @@ const UsersTable = ({ itemsPerPage = 5, onEdit }: UsersTableProps) => {
           utilsateurs
         </p>
       </div>
+
       {showModal && (
         <Modal
           open={showModal}
@@ -278,7 +267,10 @@ const UsersTable = ({ itemsPerPage = 5, onEdit }: UsersTableProps) => {
           confirmLabel="Supprimer"
         />
       )}
+            
     </div>
+
+    
   );
 };
 

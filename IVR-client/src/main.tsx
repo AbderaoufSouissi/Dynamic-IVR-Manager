@@ -38,7 +38,7 @@ const router = createBrowserRouter([
                 ),
               },
               {
-                path: "update",
+                path: "update/:id",
                 element: (
                   <UserForm
                     title="Modifier un utilisateur"
