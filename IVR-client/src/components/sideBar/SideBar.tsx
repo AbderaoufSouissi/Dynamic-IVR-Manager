@@ -3,9 +3,10 @@ import type { IconType } from 'react-icons';
 import { FaUserAlt, FaShieldAlt } from "react-icons/fa";
 import { HiOutlineKey } from "react-icons/hi2";
 import { FiFileText, FiPhone } from "react-icons/fi";
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { BiLogOut } from 'react-icons/bi';
 import { TbLayoutDashboard } from 'react-icons/tb';
+import { logout } from '../../service/AuthService';
 
 interface SidebarProps {
   activeTab: string;
@@ -28,7 +29,25 @@ const navItems: NavItem[] = [
   { id: 'logout', label: 'Logout', icon: BiLogOut , route: '/' },
 ];
 
+
+
+
+
 const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
+
+const navigate = useNavigate()
+const handleLogout = async () => {
+    try {
+      await logout();
+      // Optional: clear user state here if you have context or global state
+      navigate('/'); // redirect to login page after logout
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Optional: show error notification
+    }
+  };
+
+
   return (
     <aside className="flex flex-col w-64 bg-white border-r border-gray-200 min-h-screen shadow-sm">
       <div className="flex items-center justify-center h-16 px-6 border-b border-gray-200 bg-white">
@@ -39,11 +58,21 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
       <nav className="flex-1 p-4 space-y-1 bg-white ">
         {navItems.map(({ id, label, icon: Icon, route }) => {
           const isActive = activeTab === id;
+
+          // For Logout item, override click behavior:
+          const onClick = id === 'logout'
+            ? (e: React.MouseEvent) => {
+                e.preventDefault();
+                handleLogout();
+                onTabChange(id);
+              }
+            : () => onTabChange(id);
+
           return (
             <NavLink
               key={id}
-              to={route || '#'}
-              onClick={() => onTabChange(id)}
+              to={id === 'logout' ? '#' : route || '#'}
+              onClick={onClick}
               className={` flex items-center w-full gap-3 px-4 py-2 rounded-lg transition 
                 ${isActive
                   ? 'bg-blue-100 text-blue-600 shadow-sm'
@@ -59,5 +88,6 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
     </aside>
   );
 };
+
 
 export default Sidebar;
