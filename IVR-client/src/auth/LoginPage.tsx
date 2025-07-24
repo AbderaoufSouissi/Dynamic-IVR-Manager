@@ -17,8 +17,7 @@ const LoginPage = () => {
     try {
       const response = await login(username,password)
       
-      navigate("/admin  ")
-      // ✅ At this point, the session is established and cookie is stored
+      navigate("/admin")
       console.log("Logged in:", response);
       }
       // Redirect or change state
@@ -34,7 +33,7 @@ const LoginPage = () => {
         <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-lg">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-900">Connexion</h1>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-xl text-gray-600">
               Veuillez saisir vos identifiants pour vous connecter.
             </p>
           </div>
