@@ -115,19 +115,6 @@ public class WebSecurityConfig {
     @Bean
     public LogoutSuccessHandler logoutSuccessHandler() {
         return (request, response, authentication) -> {
-            // Invalidate session explicitly
-            if (request.getSession(false) != null) {
-                request.getSession(false).invalidate();
-            }
-
-            // Clear cookie manually
-            Cookie cookie = new Cookie("JSESSIONID", "");
-            cookie.setPath("/");
-            cookie.setMaxAge(0); // delete now
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
-
-            // Response
             response.setStatus(HttpStatus.OK.value());
             response.setContentType("application/json");
             response.getWriter().write("{\"message\":\"Logout successful\"}");
