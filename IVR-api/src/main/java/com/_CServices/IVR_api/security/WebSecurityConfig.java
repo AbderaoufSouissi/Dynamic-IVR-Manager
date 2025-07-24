@@ -1,13 +1,13 @@
 package com._CServices.IVR_api.security;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,7 +21,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 @EnableWebSecurity
 @Configuration
@@ -49,7 +48,7 @@ public class WebSecurityConfig {
                                 "/webjars/**",
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/forget-password",
-                                   "/api/v1/auth/reset-password"
+                                "/api/v1/auth/reset-password"
                         )
                         .permitAll()
                         .anyRequest().authenticated()
@@ -109,11 +108,25 @@ public class WebSecurityConfig {
     @Bean
     public LogoutSuccessHandler logoutSuccessHandler() {
         return (request, response, authentication) -> {
+            // Invalidate session explicitly
+            if (request.getSession(false) != null) {
+                request.getSession(false).invalidate();
+            }
+
+            // Clear cookie manually
+            Cookie cookie = new Cookie("JSESSIONID", "");
+            cookie.setPath("/");
+            cookie.setMaxAge(0); // delete now
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
+
+            // Response
             response.setStatus(HttpStatus.OK.value());
             response.setContentType("application/json");
             response.getWriter().write("{\"message\":\"Logout successful\"}");
         };
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
