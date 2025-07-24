@@ -1,13 +1,24 @@
 // components/ProtectedRoute.tsx
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth"; // You'll create this hook next
+import SpinnerLoader from "../components/spinner/SpinnerLoader";
 
+// route/ProtectedRoute.tsx
 const ProtectedRoute = () => {
   const { user, loading } = useAuth();
 
-  if (loading) return <div className="text-center p-4">Chargement...</div>;
+  if (loading) {
+    return <SpinnerLoader />;
+  }
 
-  return user ? <Outlet /> : <Navigate to="/login" replace />;
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  console.log("user", user);
+console.log("loading", loading);
+
+  return <Outlet />;
 };
 
 export default ProtectedRoute;
+
