@@ -28,75 +28,75 @@ const LoginPage = () => {
   };
 
 
-    return (
-      <div className="bg-gray-50 min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-lg">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900">Connexion</h1>
-            <p className="mt-2 text-xl text-gray-600">
-              Veuillez saisir vos identifiants pour vous connecter.
-            </p>
-          </div>
-          <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-            <input type="hidden" name="remember" value="true" />
-            <div className="rounded-md shadow-sm -space-y-px">
-              <div>
-                <label htmlFor="username" className="sr-only">
-                  Nom d'utilisateur
-                </label>
-                <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  required
-                  placeholder="Nom d'utilisateur"
-                  className="form-input appearance-none rounded-none relative block w-full px-3 py-4  border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-700 focus:z-10 sm:text-sm"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="sr-only">Mot de passe</label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  placeholder="Mot de passe"
-                  className="form-input appearance-none rounded-none relative block w-full px-3 py-4 border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-ring-blue-700 focus:z-10 sm:text-sm"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
+   return (
+    <div className="bg-gray-100 min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg space-y-6">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+            Connectez-vous à votre compte
+          </h2>
+        </div>
+
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="username" className="sr-only">
+                Nom d'utilisateur
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                required
+                placeholder="Nom d'utilisateur"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+              />
             </div>
-            {error && (
+
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Mot de passe
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                placeholder="Mot de passe"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+           </div>
+           {error && (
               <div className="text-sm text-red-700">
                 Identifiant ou mot de passe incorrect. Veuillez réessayer.
               </div>
             )}
-            <div className="flex items-center justify-between">
-              <div className="text-sm">
-                <NavLink
-                  to="/forget-password"
-                  className="font-medium text-blue-600 hover:text-blue-700"
-                >
-                  Mot de passe oublié ?
-                </NavLink>
-              </div>
-            </div>
-            <div>
-              <button
-                type="submit"
-                className="group cursor-pointer relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 transition-colors duration-300"
-              >
-                Se connecter
-              </button>
-            </div>
-          </form>
-        </div>
+
+          <div className="text-left text-sm">
+            <NavLink to="/reset-password" className="font-medium text-blue-600 hover:text-blue-500">
+              Mot de passe oublié ?
+            </NavLink>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              className="group cursor-pointer relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Connexion
+            </button>
+          </div>
+        </form>
       </div>
-    );
-  };
+    </div>
+  );
+}
+
 
 export default LoginPage;
