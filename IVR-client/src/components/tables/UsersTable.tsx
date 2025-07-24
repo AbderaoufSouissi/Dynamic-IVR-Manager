@@ -1,8 +1,7 @@
 import { useState, useMemo } from "react";
 import type { User } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
-import Modal from "../Modal";
+import Modal from "../modal/Modal";
 import { FiAlertTriangle } from "react-icons/fi";
 
 interface UsersTableProps {
@@ -19,8 +18,7 @@ const UsersTable = ({ users, itemsPerPage = 5, onEdit }: UsersTableProps) => {
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
 
-  const navigate = useNavigate();
-  const [showModal,setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false);
 
   const currentUsers = useMemo(
     () => users.slice(startIndex, endIndex),
@@ -56,9 +54,7 @@ const UsersTable = ({ users, itemsPerPage = 5, onEdit }: UsersTableProps) => {
     setCurrentPage(1); // Reset to first page on change
   };
 
-  const handleEditUser = (user: User) => {
-    navigate("/admin/users/update", { state: { user } });
-  };
+
   return (
     <div className="overflow-x-auto max-w-[100vw] rounded-xl shadow border border-gray-200 bg-white">
       <table className="w-full text-sm">
@@ -68,13 +64,7 @@ const UsersTable = ({ users, itemsPerPage = 5, onEdit }: UsersTableProps) => {
               ID
             </th>
             <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Prénom
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Nom
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Email
+              Nom complet
             </th>
             <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
               Username
@@ -108,16 +98,41 @@ const UsersTable = ({ users, itemsPerPage = 5, onEdit }: UsersTableProps) => {
               key={user.userId}
               className="border-t border-gray-200 hover:bg-gray-50 transition"
             >
-              <td className="px-4 py-2 font-medium whitespace-nowrap text-slate-800  ">{user.userId}</td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800  ">{user.firstName}</td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">{user.lastName}</td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">{user.email}</td>
-              <td className="px-4 py-2 font-medium whitespace-nowrap text-slate-800 ">{user.username}</td>
-              <td className="px-4 py-2 font-medium whitespace-nowrap text-slate-800 ">{user.roleName}</td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">{user.createdAt}</td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">{user.createdBy}</td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">{user.updatedAt}</td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">{user.updatedBy}</td>
+              <td className="px-4 py-2 font-medium whitespace-nowrap text-slate-800  ">
+                {user.userId}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="flex items-center">
+                  <div className="ml-4">
+                    <div className="text-sm font-medium text-gray-900">
+                      {user.firstName} {user.lastName}
+                      
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {user.email}
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <td className="px-4 py-2 font-medium whitespace-nowrap text-slate-800 ">
+                {user.username}
+              </td>
+              <td className="px-4 py-2 font-medium whitespace-nowrap text-slate-800 ">
+                {user.roleName}
+              </td>
+              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
+                {user.createdAt}
+              </td>
+              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
+                {user.createdBy}
+              </td>
+              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
+                {user.updatedAt}
+              </td>
+              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
+                {user.updatedBy}
+              </td>
               <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
                 <span
                   className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
@@ -130,25 +145,24 @@ const UsersTable = ({ users, itemsPerPage = 5, onEdit }: UsersTableProps) => {
                 </span>
               </td>
               <td className="p-4 font-medium text-blue-600">
-  <div className="flex items-center gap-2">
-    <button
-      onClick={() => onEdit(user)}
-      className="text-blue-600 hover:underline"
-    >
-      Éditer
-    </button>
-    
-    <span className="text-slate-300">|</span>
-    
-    <button
-      onClick={() => setShowModal(true)}
-      className="text-red-500 hover:underline"
-    >
-      Supprimer
-    </button>
-  </div>
-</td>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => onEdit(user)}
+                    className="text-blue-600 hover:underline cursor-pointer"
+                  >
+                    Éditer
+                  </button>
 
+                  <span className="text-slate-300">|</span>
+
+                  <button
+                    onClick={() => setShowModal(true)}
+                    className="text-red-500 hover:underline cursor-pointer"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -234,24 +248,22 @@ const UsersTable = ({ users, itemsPerPage = 5, onEdit }: UsersTableProps) => {
         </p>
       </div>
       {showModal && (
-  <Modal
-    open={showModal}
-    onClose={() => setShowModal(false)}
-    icon={<FiAlertTriangle />}
-    title="Confirmer la suppression"
+        <Modal
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          icon={<FiAlertTriangle />}
+          title="Confirmer la suppression"
           description="Êtes-vous sûr de vouloir supprimer cet utilisateur ?"
           confirmType="danger"
-    onConfirm={() => {
-      // Implement deletion logic here
-      console.log("Confirmed");
-      setShowModal(false);
-    }}
-    confirmLabel="Supprimer"
-  />
-)}
-      
+          onConfirm={() => {
+            // Implement deletion logic here
+            console.log("Confirmed");
+            setShowModal(false);
+          }}
+          confirmLabel="Supprimer"
+        />
+      )}
     </div>
-    
   );
 };
 
