@@ -30,7 +30,14 @@ public class WebSecurityConfig {
     private final UserDetailsService userDetailsService;
     private final CorsConfigurationSource corsConfigurationSource;
 
-
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        return http
+//                .csrf(csrf -> csrf.disable())// Define this bean separately
+//                .authorizeHttpRequests(auth -> auth
+//                        .anyRequest().permitAll() // <-- Allow everything
+//                ).build();
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
