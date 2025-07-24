@@ -14,6 +14,17 @@ export interface User {
 
 }
 
+export interface UserRequest{
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+    password: string;
+    roleName: string;
+    active: boolean;
+
+}
+
 
 export interface Role {
     roleId: number

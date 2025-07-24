@@ -22,12 +22,16 @@ const UsersPage = () => {
     role: "",
   });
 
+ 
+
   const handleFilterChange = (name: string, value: string) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
       [name]: value,
     }));
   };
+
+  
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -53,11 +57,11 @@ const UsersPage = () => {
       <UserFilter filters={filters} onFilterChange={handleFilterChange} />
 
             
-    <UsersTable users={content.users} onEdit={(user: User) => {
+    <UsersTable onEdit={(user: User) => {
         navigate("/admin/users/update", { state: { user } });
       } }/>
       <Outlet />
-      {/* Render create/update form when route matches */}
+  
 
     </>
   );

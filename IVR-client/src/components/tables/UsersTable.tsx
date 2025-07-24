@@ -1,18 +1,19 @@
-import { useState, useMemo } from "react";
+import { useState,  useEffect } from "react";
 import type { User } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import Modal from "../modal/Modal";
 import { FiAlertTriangle } from "react-icons/fi";
+import { getUsers } from "../../service/UserService";
 
 interface UsersTableProps {
-  users: User[];
   itemsPerPage?: number;
   onEdit: (user: User) => void; // New
 }
 
-const UsersTable = ({ users, itemsPerPage = 5, onEdit }: UsersTableProps) => {
+const UsersTable = ({ itemsPerPage = 5, onEdit }: UsersTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
+  const [users, setUsers] = useState<User[]>([])
 
   const totalPages = Math.ceil(users.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -20,10 +21,24 @@ const UsersTable = ({ users, itemsPerPage = 5, onEdit }: UsersTableProps) => {
 
   const [showModal, setShowModal] = useState(false);
 
-  const currentUsers = useMemo(
-    () => users.slice(startIndex, endIndex),
-    [users, startIndex, endIndex]
-  );
+
+ useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const data = await getUsers();
+        const users = data.content
+        console.log(data)
+        setUsers(users);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+
+
 
   const getPageNumbers = () => {
     const pages = [];
@@ -93,7 +108,7 @@ const UsersTable = ({ users, itemsPerPage = 5, onEdit }: UsersTableProps) => {
           </tr>
         </thead>
         <tbody>
-          {currentUsers.map((user) => (
+          {users.map((user) => (
             <tr
               key={user.userId}
               className="border-t border-gray-200 hover:bg-gray-50 transition"
