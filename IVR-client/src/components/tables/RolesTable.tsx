@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import type { Role } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { HiChevronDown } from "react-icons/hi2";
 
 interface RolesTableProps {
   roles: Role[];
@@ -103,16 +104,7 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
                 <option key={size} value={size}>{size}</option>
               ))}
             </select>
-            <svg
-              className="cursor-pointer pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="m19.5 8.25-7.5 7.5-7.5-7.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <HiChevronDown className="cursor-pointer pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           </div>
         </div>
 
