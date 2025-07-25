@@ -15,6 +15,7 @@ import ResetPasswordPage from "./auth/ResetPasswordPage.tsx";
 import ProtectedRoute from "./route/ProtectedRoute.tsx";
 import NotFoundPage from "./pages/NotFound.tsx";
 import DeleteEntityModal from "./components/modal/DeleteEntityModal.tsx";
+import RoleForm from "./components/forms/RoleForm.tsx";
 
 const router = createBrowserRouter([
   {
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
                 path: "delete/:id",
                 element: <DeleteEntityModal />,
               },
+              {
+                path: "create",
+                element: <RoleForm title={"Créer un nouveau role"} description={"Mettez à jour les détails de l'utilisateur ci-dessous."} />,
+              },
             ],
           },
           {
@@ -71,6 +76,7 @@ const router = createBrowserRouter([
                 path: "delete/:id",
                 element: <DeleteEntityModal />,
               },
+              
             ],
           },
           {
