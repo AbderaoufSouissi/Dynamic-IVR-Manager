@@ -1,4 +1,4 @@
-import { useState,  useEffect } from "react";
+import { useState} from "react";
 import type { User } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import Modal from "../modal/Modal";
@@ -150,7 +150,7 @@ const UsersTable = ({ itemsPerPage = 5,users}: UsersTableProps) => {
               <td className="p-4 font-medium text-blue-600">
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => navigate(`/users/update/${user.userId}`)}
+                    onClick={() => navigate(`update/${user.userId}`)}
                     className="text-blue-600 hover:underline cursor-pointer"
                   >
                     Éditer
