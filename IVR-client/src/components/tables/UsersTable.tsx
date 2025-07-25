@@ -1,4 +1,4 @@
-import { useState} from "react";
+import { useState } from "react";
 import type { User } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import Modal from "../modal/Modal";
@@ -10,23 +10,16 @@ interface UsersTableProps {
   users: User[];
 }
 
-const UsersTable = ({ itemsPerPage = 5,users}: UsersTableProps) => {
+const UsersTable = ({ itemsPerPage = 5, users }: UsersTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
-
 
   const totalPages = Math.ceil(users.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [showModal, setShowModal] = useState(false);
-
-
- 
-
-
-
 
   const getPageNumbers = () => {
     const pages = [];
@@ -56,7 +49,6 @@ const UsersTable = ({ itemsPerPage = 5,users}: UsersTableProps) => {
     setRowsPerPage(parseInt(e.target.value));
     setCurrentPage(1); // Reset to first page on change
   };
-
 
   return (
     <div className="overflow-x-auto max-w-[100vw] rounded-xl shadow border border-gray-200 bg-white">
@@ -109,11 +101,8 @@ const UsersTable = ({ itemsPerPage = 5,users}: UsersTableProps) => {
                   <div className="ml-4">
                     <div className="text-sm font-medium text-gray-900">
                       {user.firstName} {user.lastName}
-                      
                     </div>
-                    <div className="text-sm text-gray-500">
-                      {user.email}
-                    </div>
+                    <div className="text-sm text-gray-500">{user.email}</div>
                   </div>
                 </div>
               </td>
@@ -159,8 +148,10 @@ const UsersTable = ({ itemsPerPage = 5,users}: UsersTableProps) => {
                   <span className="text-slate-300">|</span>
 
                   <button
-                    onClick={() => setShowModal(true)}
-                    className="text-red-500 hover:underline cursor-pointer"
+                    onClick={() =>
+                      navigate(`/admin/users/delete/${user.userId}`)
+                    }
+                    className="text-red-600 hover:underline cursor-pointer"
                   >
                     Supprimer
                   </button>
@@ -267,10 +258,7 @@ const UsersTable = ({ itemsPerPage = 5,users}: UsersTableProps) => {
           confirmLabel="Supprimer"
         />
       )}
-            
     </div>
-
-    
   );
 };
 

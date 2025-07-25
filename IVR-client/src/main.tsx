@@ -14,6 +14,7 @@ import HomePage from "./pages/HomePage.tsx";
 import ResetPasswordPage from "./auth/ResetPasswordPage.tsx";
 import ProtectedRoute from "./route/ProtectedRoute.tsx";
 import NotFoundPage from "./pages/NotFound.tsx";
+import DeleteEntityModal from "./components/modal/DeleteEntityModal.tsx";
 
 const router = createBrowserRouter([
   {
@@ -46,15 +47,31 @@ const router = createBrowserRouter([
                   />
                 ),
               },
+              {
+                path: "delete/:id",
+                element: <DeleteEntityModal />,
+              },
             ],
           },
           {
             path: "roles",
             element: <RolesPage />,
+            children: [
+              {
+                path: "delete/:id",
+                element: <DeleteEntityModal />,
+              },
+            ],
           },
           {
             path: "permissions",
             element: <PermissionsPage />,
+            children: [
+              {
+                path: "delete/:id",
+                element: <DeleteEntityModal />,
+              },
+            ],
           },
           {
             path: "msisdn",
@@ -62,11 +79,19 @@ const router = createBrowserRouter([
           },
           {
             path: "auditLogs",
-            element: <p className="text-lg font-semibold text-gray-800">Logs d’audit ici.</p>,
+            element: (
+              <p className="text-lg font-semibold text-gray-800">
+                Logs d’audit ici.
+              </p>
+            ),
           },
           {
             index: true,
-            element: <p className="text-3xl font-bold text-gray-800">Bienvenue dans le tableau de bord admin.</p>,
+            element: (
+              <p className="text-3xl font-bold text-gray-800">
+                Bienvenue dans le tableau de bord admin.
+              </p>
+            ),
           },
         ],
       },
@@ -93,7 +118,6 @@ const router = createBrowserRouter([
     element: <NotFoundPage />,
   },
 ]);
-
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
