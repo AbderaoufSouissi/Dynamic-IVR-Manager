@@ -35,6 +35,11 @@ export interface UpdateUserRequest{
     roleName: string | null,
 }
 
+export interface RoleRequest {
+    name: string
+    permissions: string[]
+}
+
 export interface Role {
     roleId: number
     name: string
@@ -53,6 +58,13 @@ export interface Permission {
     createdBy: string
     updatedAt: string;
     updatedBy: string;
+}
+
+export interface PermissionRequest {
+    name: string
+    description: string
+    permissions: string[]
+
 }
 
 export interface Audit {
