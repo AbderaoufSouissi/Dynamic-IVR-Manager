@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createUser, getUserById, updateUser } from "../../service/UserService";
+import { HiEye, HiEyeSlash } from "react-icons/hi2";
 
 interface UserFormProps {
   title: Title;
@@ -11,6 +12,8 @@ type Title = "Créer un nouvel utilisateur" | "Modifier un utilisateur";
 type Description =
   | "Complétez les informations ci-dessous pour créer un nouvel utilisateur."
   | "Mettez à jour les détails de l'utilisateur ci-dessous.";
+
+
 
 const UserForm = ({ title, description }: UserFormProps) => {
   const { id } = useParams();
@@ -24,7 +27,13 @@ const UserForm = ({ title, description }: UserFormProps) => {
     active: null as boolean | null, // allow null initially
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   useEffect(() => {
     if (id) {
@@ -190,7 +199,7 @@ if (formData.active !== null) {
                 />
               </div>
 
-              <div className="md:col-span-2">
+             <div className="md:col-span-2 relative">
                 <label
                   className="block text-sm font-medium text-gray-700 mb-1"
                   htmlFor="password"
@@ -198,17 +207,27 @@ if (formData.active !== null) {
                   Mot de passe
                 </label>
                 <input
-                  className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   id="password"
                   value={formData.password}
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
                   placeholder="••••••••••••••••"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                 />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute cursor-pointer top-8 right-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors duration-200 focus:outline-none focus:text-blue-600"
+                >
+                  {showPassword ? (
+                    <HiEyeSlash size={20} />
+                  ) : (
+                    <HiEye size={20} />
+                  )}
+                </button>
               </div>
-
               <div className="md:col-span-2">
                 <label
                   className="block text-sm font-medium text-gray-700 mb-1"
