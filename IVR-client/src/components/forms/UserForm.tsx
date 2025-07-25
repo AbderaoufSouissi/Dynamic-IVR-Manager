@@ -60,7 +60,8 @@ const UserForm = ({ title, description }: UserFormProps) => {
   lastName: formData.lastName,
   email: formData.email,
   username: formData.username,
-  roleName: formData.roleName.trim() === "" ? null : formData.roleName,
+      roleName: formData.roleName.trim() === "" ? null : formData.roleName,
+  
 };
 
 // Only add active if it's boolean (true or false), ignore if null

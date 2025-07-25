@@ -125,7 +125,7 @@ const LoginPage = () => {
       
             <div className="text-right">
               <NavLink
-                to="/reset-password"
+                to="/forget-password"
                 className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200"
               >
                 Mot de passe oublié ?

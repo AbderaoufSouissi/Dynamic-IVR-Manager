@@ -72,7 +72,7 @@ const ForgetPasswordPage = () => {
 
         <div className="mt-8 text-center">
   <NavLink
-    to="/"
+    to="/login"
     className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors"
   >
     <IoIosArrowRoundBack size={25}/>Retour à la connexion
