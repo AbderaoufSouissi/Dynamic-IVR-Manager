@@ -69,7 +69,11 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
             <tr key={role.roleId} className="border-t border-gray-200 hover:bg-gray-50 transition">
               <td className="px-4 py-2 font-medium text-slate-800 ">{role.roleId}</td>
               <td className="px-4 py-2 font-medium text-slate-800 ">{role.name}</td>
-              <td className="px-4 py-2 text-slate-800 ">{role.permissions.join("\n")}</td>
+              <td className="px-4 py-2 text-slate-800">
+  {role.permissions.map((perm: string, idx: number) => (
+    <div key={idx}>{perm}</div>
+  ))}
+</td>
               <td className="px-4 py-2 text-slate-800 ">{role.createdAt}</td>
               <td className="px-4 py-2 text-slate-800 ">{role.createdBy}</td>
               <td className="px-4 py-2 text-slate-800 ">{role.updatedAt}</td>
