@@ -56,7 +56,7 @@ const RolesPage = () => {
     
       <div className="mb-6 flex items-center justify-between">
         <p className="text-3xl font-bold text-slate-900">Gestion des rôles ici.</p>
-        <button onClick={() => navigate("/admin/roles/create")} className="flex items-center gap-2 cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 hover:scale-105 transform transition-transform duration-300 focus:outline-none">
+        <button onClick={() => navigate("/admin/roles/create")} className="cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl min-h-[50px] flex items-center justify-center">
           <MdAdminPanelSettings size={25} />
           Add Role
         </button>
