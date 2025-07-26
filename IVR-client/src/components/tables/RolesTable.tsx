@@ -95,7 +95,7 @@ const RolesTable = ({ roles, itemsPerPage = 10 }: RolesTableProps) => {
 
                   <button
                     onClick={() =>
-                      navigate(`/admin/users/delete/${role.roleId}`)
+                      navigate(`/admin/roles/delete/${role.roleId}`)
                     }
                     className="text-red-600 hover:underline cursor-pointer"
                   >
