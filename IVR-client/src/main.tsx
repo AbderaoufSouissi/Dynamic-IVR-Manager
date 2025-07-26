@@ -64,7 +64,11 @@ const router = createBrowserRouter([
               },
               {
                 path: "create",
-                element: <RoleForm title={"Créer un nouveau role"} description={"Mettez à jour les détails de l'utilisateur ci-dessous."} />,
+                element: <RoleForm title={"Créer un nouveau role"} description={"Complétez les informations ci-dessous pour créer un nouveau role."} />,
+              },
+              {
+                path: "update/:id",
+                element: <RoleForm title={"Modifier un role"} description={"Mettez à jour les détails du roler ci-dessous."} />,
               },
             ],
           },
@@ -126,7 +130,7 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  // <StrictMode>
     <RouterProvider router={router} />
-  </StrictMode>
+  // </StrictMode>
 );

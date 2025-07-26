@@ -21,9 +21,8 @@ const LoginPage = () => {
     setError("");
 
     try {
-      const response = await login(username, password);
+      await login(username, password);
       navigate("/admin");
-      console.log("Logged in:", response);
     } catch (err) {
       console.error(err);
       setError("Invalid credentials");

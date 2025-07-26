@@ -12,7 +12,6 @@ export const useAuth = () => {
     axios.get(`${BASE_URL}/auth/user`, { withCredentials: true }) // adjust to your API
       .then(res => {
         setUser(res.data) 
-        console.log("User found:", res.data);
       })
       .catch(() => setUser(null))
       .finally(() => setLoading(false));

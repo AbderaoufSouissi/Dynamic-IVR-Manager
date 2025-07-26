@@ -2,19 +2,22 @@ import { useState, useMemo } from "react";
 import type { Role } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { HiChevronDown } from "react-icons/hi2";
+import { useNavigate } from "react-router-dom";
 
 interface RolesTableProps {
   roles: Role[];
   itemsPerPage?: number;
 }
 
-const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
+const RolesTable = ({ roles, itemsPerPage = 10 }: RolesTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
 
   const totalPages = Math.ceil(roles.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
+
+  const navigate = useNavigate()
 
   const currentRoles = useMemo(
     () => roles.slice(startIndex, endIndex),
@@ -79,10 +82,26 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
               <td className="px-4 py-2 text-slate-800 ">{role.createdBy}</td>
               <td className="px-4 py-2 text-slate-800 ">{role.updatedAt}</td>
               <td className="px-4 py-2 text-slate-800 ">{role.updatedBy}</td>
-              <td className="p-4 space-x-2 font-medium text-blue-600">
-                <a className="action-link" href="#">Edit</a>
-                <span className="text-slate-300">|</span>
-                <a className="action-link text-red-500" href="#">Delete</a>
+              <td className="p-4 font-medium text-blue-600">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => navigate(`update/${role.roleId}`)}
+                    className="text-blue-600 hover:underline cursor-pointer"
+                  >
+                    Éditer
+                  </button>
+
+                  <span className="text-slate-300">|</span>
+
+                  <button
+                    onClick={() =>
+                      navigate(`/admin/users/delete/${role.roleId}`)
+                    }
+                    className="text-red-600 hover:underline cursor-pointer"
+                  >
+                    Supprimer
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

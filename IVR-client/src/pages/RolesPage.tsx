@@ -53,7 +53,7 @@ const RolesPage = () => {
   };
   return (
     <>
-    <div>
+    
       <div className="mb-6 flex items-center justify-between">
         <p className="text-lg font-semibold text-gray-800">Gestion des rôles ici.</p>
         <button onClick={() => navigate("/admin/roles/create")} className="flex items-center gap-2 cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 hover:scale-105 transform transition-transform duration-300 focus:outline-none">
@@ -64,7 +64,7 @@ const RolesPage = () => {
 
       <RoleFilter filters={filters} onFilterChange={handleFilterChange} />
       <RolesTable roles={roles} />
-      </div>
+    
       <Outlet/>
     </>
   );

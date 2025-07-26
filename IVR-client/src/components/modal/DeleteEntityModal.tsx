@@ -4,6 +4,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { FiAlertTriangle } from "react-icons/fi";
 import { deleteUser } from "../../service/UserService";
 import Modal from "./Modal";
+import { deleteRole } from "../../service/RoleService";
 // import { deleteRole } from "../../service/RoleService";
 // import { deletePermission } from "../../service/PermissionService";
 
@@ -37,9 +38,9 @@ const DeleteEntityModal = () => {
         case "user":
           await deleteUser(numericId);
           break;
-        // case "role":
-        //   await deleteRole(numericId);
-        //   break;
+        case "role":
+          await deleteRole(numericId);
+          break;
         // case "permission":
         //   await deletePermission(numericId);
         //   break;

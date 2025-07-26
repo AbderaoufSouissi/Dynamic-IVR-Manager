@@ -3,11 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { createRole, getRoleById, updateRole } from "../../service/RoleService";
 import { getPermissions } from "../../service/PermissionService";
 import type { RoleRequest, Permission } from "../../types/types";
+import { FaRegCheckCircle, FaCheckCircle } from "react-icons/fa";
 
 type Title = "Créer un nouveau role" | "Modifier un role";
 type Description =
   | "Complétez les informations ci-dessous pour créer un nouveau role."
-  | "Mettez à jour les détails de l'utilisateur ci-dessous.";
+  | "Mettez à jour les détails du roler ci-dessous.";
 
 interface RoleFormProps {
   title: Title;
@@ -26,37 +27,40 @@ const RoleForm = ({ title, description }: RoleFormProps) => {
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch permissions and role (if editing)
+  // Fetch permissions and role if editing
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const data = await getPermissions();
-        const permissions = data.content;
-        setPermissions(permissions);
+    getPermissions()
+      .then(res => {
+        setPermissions(res.content);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error("Erreur lors du chargement des permissions :", error);
+        setLoading(false);
+      });
+  }, []);
 
-        if (id) {
-          const role = await getRoleById(parseInt(id));
+  // Load role data if editing
+  useEffect(() => {
+    if (id) {
+      getRoleById(parseInt(id))
+        .then(role => {
           setFormData({
             name: role.name,
-            permissions: role.permissions.map((p: Permission) => p.name),
+            permissions: role.permissions
           });
-        }
-      } catch (error) {
-        console.error("Erreur lors du chargement des données :", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
+        })
+        .catch(error => {
+          console.error("Erreur lors du chargement du rôle :", error);
+        });
+    }
   }, [id]);
-
-  const handleCheckboxChange = (permName: string) => {
-    setFormData((prev) => ({
+  const handlePermissionToggle = (permissionName: string) => {
+    setFormData(prev => ({
       ...prev,
-      permissions: prev.permissions.includes(permName)
-        ? prev.permissions.filter((p) => p !== permName)
-        : [...prev.permissions, permName],
+      permissions: prev.permissions.includes(permissionName)
+        ? prev.permissions.filter(p => p !== permissionName)
+        : [...prev.permissions, permissionName]
     }));
   };
 
@@ -89,6 +93,7 @@ const RoleForm = ({ title, description }: RoleFormProps) => {
 
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 gap-6">
+              {/* Role Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Nom du rôle
@@ -105,89 +110,77 @@ const RoleForm = ({ title, description }: RoleFormProps) => {
                 />
               </div>
 
+              {/* Permissions */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">
                   Permissions (facultatif)
                 </label>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 max-h-60 overflow-y-auto">
                   {permissions.length === 0 ? (
                     <p className="text-gray-500 text-sm text-center py-4">
                       Aucune permission disponible
                     </p>
                   ) : (
-                    <div className="max-h-60 overflow-y-auto">
-                      <div className="grid grid-cols-1 gap-3">
-                        {permissions.map((perm) => (
-                          <label
+                    <div className="space-y-2">
+                      {permissions.map((perm) => {
+                        const isSelected = formData.permissions.includes(perm.name);
+                        return (
+                          <div
                             key={perm.name}
-                            className={`flex items-center p-3 border rounded-lg transition-colors duration-200 cursor-pointer group
-    ${
-      formData.permissions.includes(perm.name)
-        ? "bg-blue-50 border-blue-500"
-        : "bg-white border-gray-200 hover:bg-blue-50 hover:border-blue-300"
-    }
-  `}
+                            className={`flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                              isSelected
+                                ? 'border-blue-500 bg-blue-50 shadow-sm'
+                                : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                            }`}
+                            onClick={() => handlePermissionToggle(perm.name)}
                           >
-                            <div className="flex items-center">
-                              <input
-                                type="checkbox"
-                                hidden
-                                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                                checked={formData.permissions.includes(
-                                  perm.name
-                                )}
-                                onChange={() => handleCheckboxChange(perm.name)}
-                              />
-                              <div className="ml-3">
-                                <span className="text-sm font-medium text-gray-800 group-hover:text-blue-700">
-                                  {perm.name}
-                                </span>
-                                {perm.description && (
-                                  <p className="text-xs text-gray-500 mt-1">
-                                    {perm.description}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                            <div className="ml-auto">
-                              {formData.permissions.includes(perm.name) && (
-                                <div className="flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full">
-                                  <svg
-                                    className="w-3 h-3 text-blue-600"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                  >
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                </div>
+                            <div className="flex items-center justify-center w-5 h-5 mr-3">
+                              {isSelected ? (
+                                <FaCheckCircle className="text-blue-600 text-lg" />
+                              ) : (
+                                <FaRegCheckCircle className="text-gray-400 text-lg" />
                               )}
                             </div>
-                          </label>
-                        ))}
-                      </div>
-                      {formData.permissions.length > 0 && (
-                        <div className="mt-4 pt-3 border-t border-gray-200">
-                          <p className="text-sm text-gray-600">
-                            <span className="font-medium text-blue-600">
-                              {formData.permissions.length}
-                            </span>{" "}
-                            permission
-                            {formData.permissions.length > 1 ? "s" : ""}{" "}
-                            sélectionnée
-                            {formData.permissions.length > 1 ? "s" : ""}
-                          </p>
-                        </div>
-                      )}
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-sm font-medium ${
+                                isSelected ? 'text-blue-900' : 'text-gray-900'
+                              }`}>
+                                {perm.name}
+                              </p>
+                              {perm.description && (
+                                <p className={`text-xs mt-1 ${
+                                  isSelected ? 'text-blue-700' : 'text-gray-500'
+                                }`}>
+                                  {perm.description}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {formData.permissions.length > 0 && (
+                    <div className="mt-4 pt-3 border-t border-gray-200">
+                      <p className="text-sm text-gray-600">
+                        <span className="font-medium text-blue-600">
+                          {formData.permissions.length}
+                        </span>{" "}
+                        {formData.permissions.length > 1
+                          ? "permissions"
+                          : "permission"}{" "}
+                        {formData.permissions.length > 1
+                          ? "sélectionnées"
+                          : "sélectionnée"}
+                      </p>
                     </div>
                   )}
                 </div>
               </div>
             </div>
 
+            {/* Footer Buttons */}
             <footer className="mt-6 flex justify-between">
               <button
                 type="button"
