@@ -14,8 +14,6 @@ const ProtectedRoute = () => {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
-  console.log("user", user);
-console.log("loading", loading);
 
   return <Outlet />;
 };
