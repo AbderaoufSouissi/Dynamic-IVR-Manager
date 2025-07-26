@@ -31,6 +31,7 @@ const UsersPage = () => {
   const fetchUsers = async () => {
     try {
       const data = await getUsers();
+      console.log(data)
       setUsers(data.content);
     } catch (err) {
       console.error("Erreur lors de la récupération des utilisateurs", err);
@@ -57,7 +58,7 @@ const UsersPage = () => {
   return (
     <>
       <div className="mb-6 flex items-center justify-between">
-        <p className="text-lg font-semibold text-gray-800">Gestion des utilisateurs</p>
+        <p className="text-3xl font-bold text-slate-900">Gestion des utilisateurs</p>
         <button
           onClick={() => navigate("/admin/users/create")}
 
