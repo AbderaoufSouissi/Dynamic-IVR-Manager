@@ -16,6 +16,7 @@ import ProtectedRoute from "./route/ProtectedRoute.tsx";
 import NotFoundPage from "./pages/NotFound.tsx";
 import DeleteEntityModal from "./components/modal/DeleteEntityModal.tsx";
 import RoleForm from "./components/forms/RoleForm.tsx";
+import AdminOverview from "./pages/AdminOverview.tsx";
 
 const router = createBrowserRouter([
   {
@@ -90,18 +91,14 @@ const router = createBrowserRouter([
           {
             path: "auditLogs",
             element: (
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-3xl font-bold text-slate-900">
                 Logs d’audit ici.
               </p>
             ),
           },
           {
             index: true,
-            element: (
-              <p className="text-3xl font-bold text-gray-800">
-                Bienvenue dans le tableau de bord admin.
-              </p>
-            ),
+            element: <AdminOverview/>
           },
         ],
       },
