@@ -1,7 +1,8 @@
 package com._CServices.IVR_api.controller;
 
 
-import com._CServices.IVR_api.dto.request.UserRequest;
+import com._CServices.IVR_api.dto.request.CreateUserRequest;
+import com._CServices.IVR_api.dto.request.UpdateUserRequest;
 import com._CServices.IVR_api.dto.response.UserResponse;
 import com._CServices.IVR_api.service.UserService;
 import jakarta.validation.Valid;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 public class UserController {
     private final UserService userService;
 
+
     @GetMapping
     public ResponseEntity<Page<UserResponse>> getUsers(
             @RequestParam(required = false) Long id,
@@ -37,7 +39,7 @@ public class UserController {
             @RequestParam(defaultValue = "user_id") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ?
                 Sort.Direction.DESC : Sort.Direction.ASC;
@@ -75,8 +77,8 @@ public class UserController {
 
 
     @PostMapping
-    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest userRequest) {
-        return ResponseEntity.ok(userService.createUser(userRequest));
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid CreateUserRequest request) {
+        return ResponseEntity.ok(userService.createUser(request));
     }
 
     @DeleteMapping("/{id}")
@@ -98,7 +100,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUserById(@PathVariable Long id, @RequestBody @Valid UserRequest userRequest) {
+    public ResponseEntity<UserResponse> updateUserById(@PathVariable Long id, @RequestBody @Valid UpdateUserRequest userRequest) {
         return ResponseEntity.ok(userService.updateUser(userRequest, id));
     }
 }

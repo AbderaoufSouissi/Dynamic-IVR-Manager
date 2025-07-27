@@ -2,7 +2,8 @@ package com._CServices.IVR_api.service.impl;
 
 import com._CServices.IVR_api.dao.RoleRepository;
 import com._CServices.IVR_api.dao.UserRepository;
-import com._CServices.IVR_api.dto.request.UserRequest;
+import com._CServices.IVR_api.dto.request.CreateUserRequest;
+import com._CServices.IVR_api.dto.request.UpdateUserRequest;
 import com._CServices.IVR_api.dto.response.UserResponse;
 import com._CServices.IVR_api.entity.Role;
 import com._CServices.IVR_api.enumeration.ActionType;
@@ -233,60 +234,60 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(user);
     }
 
-    @Override
-    @Transactional
-    public UserResponse createUser(UserRequest userRequest) {
-        if(null == userRequest.getRoleName()){
-            userRequest.setRoleName("DEFAULT_ROLE");
-        }
-        if(Objects.equals(userRequest.getRoleName(), "DEFAULT_ROLE") &&
-                null == roleRepository.findByName(userRequest.getRoleName())){
-            Role role = Role.builder()
-                    .name(userRequest.getRoleName())
-                    .permissions(new HashSet<>())
-                    .build();
-            Role defaultRole = roleRepository.save(role);
+        @Override
+        @Transactional
+        public UserResponse createUser(CreateUserRequest request) {
+            if(null == request.getRoleName()){
+                request.setRoleName("DEFAULT_ROLE");
+            }
+            if(Objects.equals(request.getRoleName(), "DEFAULT_ROLE") &&
+                    null == roleRepository.findByName(request.getRoleName())){
+                Role role = Role.builder()
+                        .name(request.getRoleName())
+                        .permissions(new HashSet<>())
+                        .build();
+                Role defaultRole = roleRepository.save(role);
 
-            auditService.logAction(
-                    ActionType.CREATE_ROLE.toString(),
-                    EntityType.ROLE.toString(),
-                    defaultRole.getId()
-            );
+                auditService.logAction(
+                        ActionType.CREATE_ROLE.toString(),
+                        EntityType.ROLE.toString(),
+                        defaultRole.getId()
+                );
 
 
-        }
+            }
 
-        if(null == roleRepository.findByName(userRequest.getRoleName())){
-            throw new ResourceNotFoundException("Cannot assign non existing Role : "+userRequest.getRoleName()+" to user");
-        }
+            if(null == roleRepository.findByName(request.getRoleName())){
+                throw new ResourceNotFoundException("Cannot assign non existing Role : "+request.getRoleName()+" to user");
+            }
 
-        if(null != userRepository.findByUsername(userRequest.getUsername())) {
-            throw new ResourceAlreadyExistsException("User with Username : "+userRequest.getUsername()+" Already Exists");
+            if(null != userRepository.findByUsername(request.getUsername())) {
+                throw new ResourceAlreadyExistsException("User with Username : "+request.getUsername()+" Already Exists");
 
-        } else if (null != userRepository.findByEmail(userRequest.getEmail())) {
-            throw new ResourceAlreadyExistsException("User with Email : "+userRequest.getEmail()+" Already Exists");
-        }
-        else {
-            User user = User.builder()
-                    .firstName(userRequest.getFirstName())
-                    .lastName(userRequest.getLastName())
-                    .username(userRequest.getUsername())
-                    .email(userRequest.getEmail())
-                    .password(passwordEncoder.encode(userRequest.getPassword()))
-                    .active(userRequest.getActive())
-                    .role(roleRepository.findByName(userRequest.getRoleName()))
-                    .build();
-            User newUser = userRepository.save(user);
+            } else if (null != userRepository.findByEmail(request.getEmail())) {
+                throw new ResourceAlreadyExistsException("User with Email : "+request.getEmail()+" Already Exists");
+            }
+            else {
+                User user = User.builder()
+                        .firstName(request.getFirstName())
+                        .lastName(request.getLastName())
+                        .username(request.getUsername())
+                        .email(request.getEmail())
+                        .password(passwordEncoder.encode(request.getPassword()))
+                        .active(request.getActive())
+                        .role(roleRepository.findByName(request.getRoleName()))
+                        .build();
+                User newUser = userRepository.save(user);
 
-            auditService.logAction(
-                    ActionType.CREATE_USER.toString(),
-                    EntityType.USER.toString(),
-                    newUser.getId()
-            );
+                auditService.logAction(
+                        ActionType.CREATE_USER.toString(),
+                        EntityType.USER.toString(),
+                        newUser.getId()
+                );
 
-            return userMapper.toDto(user);
+                return userMapper.toDto(user);
 
-        }
+            }
 
 
     }
@@ -348,34 +349,34 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserResponse updateUser(UserRequest userRequest, Long id) {
-        User userToUpdate = userRepository.findById(id).map(user->{
-            if(null != userRequest.getFirstName()) {
-                user.setFirstName(userRequest.getFirstName());
+    public UserResponse updateUser(UpdateUserRequest request, Long id) {
+        User userToUpdate = userRepository.findById(id).map(user -> {
+            if (request.getFirstName() != null) {
+                user.setFirstName(request.getFirstName());
             }
-            if(null != userRequest.getLastName()) {
-                user.setLastName(userRequest.getLastName());
+            if (request.getLastName() != null) {
+                user.setLastName(request.getLastName());
             }
-            if(null != userRequest.getEmail()){
-                user.setEmail(userRequest.getEmail());
+            if (request.getEmail() != null) {
+                user.setEmail(request.getEmail());
             }
-            if(null != userRequest.getUsername()){
-                user.setUsername(userRequest.getUsername());
+            if (request.getUsername() != null) {
+                user.setUsername(request.getUsername());
             }
-            if(null != userRequest.getPassword()){
-                user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+            if (request.getPassword() != null && !request.getPassword().isBlank()) {
+                user.setPassword(passwordEncoder.encode(request.getPassword()));
             }
-            if(null != userRequest.getActive()){
-                user.setActive(userRequest.getActive());
+            if (request.getActive() != null) {
+                user.setActive(request.getActive());
             }
-            if(null != userRequest.getRoleName() && roleRepository.findByName(userRequest.getRoleName()) != null){
-                Role updatedRole = roleRepository.findByName(userRequest.getRoleName());
-                user.setRole(updatedRole);
-
+            if (request.getRoleName() != null) {
+                Role updatedRole = roleRepository.findByName(request.getRoleName());
+                if (updatedRole != null) {
+                    user.setRole(updatedRole);
+                }
             }
             return userRepository.save(user);
-        }).orElseThrow(()-> new ResourceNotFoundException(""));
-
+        }).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
         auditService.logAction(
                 ActionType.UPDATE_USER.toString(),
@@ -384,7 +385,6 @@ public class UserServiceImpl implements UserService {
         );
 
         return userMapper.toDto(userToUpdate);
-
     }
 
 

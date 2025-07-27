@@ -1,4 +1,6 @@
-# Ignore .env files in IVR-api subfolder
+# --- Backend: Spring Boot (IVR-api) ---
+
+# Ignore .env files
 IVR-api/.env
 IVR-api/.env.*
 
@@ -6,9 +8,30 @@ IVR-api/.env.*
 IVR-api/src/main/resources/application-*.yml
 IVR-api/src/main/resources/application-*.properties
 
+# Build output
+IVR-api/target/
 
-# Standard ignores (optional but recommended)
-**/target/
+# --- Frontend: Vite + React + TypeScript (IVR-client) ---
+
+# Node modules
+IVR-client/node_modules/
+
+# Build output
+IVR-client/dist/
+
+# Vite cache
+IVR-client/.vite/
+
+# Local environment variables
+IVR-client/.env
+IVR-client/.env.*
+
+# npm debug logs
+IVR-client/npm-debug.log*
+IVR-client/.npm/
+
+# --- General / IDE / OS-specific ---
+
 **/.idea/
 **/*.iml
 .DS_Store
