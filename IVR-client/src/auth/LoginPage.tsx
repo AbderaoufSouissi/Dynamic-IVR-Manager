@@ -36,6 +36,13 @@ const LoginPage = () => {
   };
 
   return (
+    <>
+    <NavLink
+      to="/"
+      className="absolute top-4 left-4 text-blue-600 hover:text-blue-800 font-medium text-sm underline"
+    >
+      Retour à l'accueil
+    </NavLink>
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Card */}
@@ -152,7 +159,8 @@ const LoginPage = () => {
           </form>
         </div>
       </div>
-    </div>
+      </div>
+      </>
   );
 };
 
