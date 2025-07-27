@@ -1,4 +1,4 @@
-import FilterButton from "../buttons/FilterButton";
+import FilterButtons from "../buttons/FilterButtons";
 
 
 interface UserFiltersProps {
@@ -156,7 +156,7 @@ const UserFilter = ({ filters, onFilterChange }:UserFiltersProps) => {
             className={inputClass}
           />
         </div>
-        <FilterButton/>
+        <FilterButtons/>
       </div>
     </div>
   );

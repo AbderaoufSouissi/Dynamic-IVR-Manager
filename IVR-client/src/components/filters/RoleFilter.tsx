@@ -1,5 +1,5 @@
 import React from "react";
-import FilterButton from "../buttons/FilterButton";
+import FilterButtons from "../buttons/FilterButtons";
 
 interface RoleFiltersProps {
   filters: {
@@ -96,7 +96,7 @@ const RoleFilter: React.FC<RoleFiltersProps> = ({ filters, onFilterChange }) => 
             className={inputClass}
           />
         </div>
-        <FilterButton/>
+        <FilterButtons/>
       </div>
     </div>
   );

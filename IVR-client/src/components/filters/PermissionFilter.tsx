@@ -1,5 +1,5 @@
 import React from "react";
-import FilterButton from "../buttons/FilterButton";
+import FilterButtons from "../buttons/FilterButtons";
 
 interface PermissionFiltersProps {
   filters: {
@@ -103,7 +103,7 @@ const PermissionFilter: React.FC<PermissionFiltersProps> = ({ filters, onFilterC
             className={inputClass}
           />
         </div>
-        <FilterButton/>
+        <FilterButtons/>
       </div>
     </div>
   );
