@@ -32,7 +32,7 @@ public class PermissionsController {
             @RequestParam(required = false) LocalDate createdAt,
             @RequestParam(required = false) LocalDate updatedAt,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "permission_id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir
     ) {
