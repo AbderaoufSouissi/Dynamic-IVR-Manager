@@ -5,6 +5,7 @@ import com._CServices.IVR_api.dao.PermissionsRepository;
 import com._CServices.IVR_api.dto.request.PermissionsRequest;
 import com._CServices.IVR_api.dto.response.PermissionsResponse;
 import com._CServices.IVR_api.entity.Permissions;
+import com._CServices.IVR_api.entity.Role;
 import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.enumeration.ActionType;
 import com._CServices.IVR_api.enumeration.EntityType;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,6 +32,7 @@ import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -219,12 +222,41 @@ public class PermissionsServiceImpl implements PermissionsService {
         return permissionsMapper.toDto(createdPermission);
     }
 
+//    //OLD VERSION of delete method
+//    @Override
+//    public void deletePermissionById(Long id) {
+//        log.info("inside deleteById()");
+//
+//        Permissions permissionToDelete = permissionsRepository.findById(id)
+//                .orElseThrow(()-> new ResourceNotFoundException("Permission with ID: "+id+" not found"));
+//        permissionsRepository.delete(permissionToDelete);
+//
+//        auditService.logAction(
+//                ActionType.DELETE_PERMISSION.toString(),
+//                EntityType.PERMISSION.toString(),
+//                permissionToDelete.getId()
+//        );
+//
+//
+//    }
+
+
+
     @Override
+    @Transactional
     public void deletePermissionById(Long id) {
         log.info("inside deleteById()");
 
         Permissions permissionToDelete = permissionsRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Permission with ID: "+id+" not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Permission with ID: " + id + " not found"));
+
+        // Remove this permission from all roles
+        Set<Role> rolesUsingPermission = new HashSet<>(permissionToDelete.getRoles());
+        for (Role role : rolesUsingPermission) {
+            role.removePermission(permissionToDelete); // This updates both sides
+        }
+
+        // Now it's safe to delete the permission
         permissionsRepository.delete(permissionToDelete);
 
         auditService.logAction(
@@ -232,8 +264,6 @@ public class PermissionsServiceImpl implements PermissionsService {
                 EntityType.PERMISSION.toString(),
                 permissionToDelete.getId()
         );
-
-
     }
 
     @Override
