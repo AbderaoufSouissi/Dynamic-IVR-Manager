@@ -36,7 +36,8 @@ const MsisdnPage = () => {
     
     <main className="flex flex-1 items-center justify-center py-12">
       
-      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-8 shadow-2xl shadow-gray-200/60">
+      <div className="w-full max-w-md space-y-8 bg-white p-8 border border-gray-200 rounded-xl shadow transition-all duration-300 cursor-pointer hover:shadow-2xl hover:bg-white/80">
+
         <div>
           <h2 className="text-center text-3xl font-bold text-gray-900">Gérer MSISDN</h2>
           <p className="mt-2 text-center text-sm">Entrez un numéro de téléphone pour le gérer.</p>
