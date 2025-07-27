@@ -17,6 +17,7 @@ import DeleteEntityModal from "./components/modal/DeleteEntityModal.tsx";
 import RoleForm from "./components/forms/RoleForm.tsx";
 import AdminOverview from "./pages/AdminOverview.tsx";
 import PermissionForm from "./components/forms/PermissionForm.tsx";
+import AuditsPage from "./pages/AuditsPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -94,10 +95,8 @@ const router = createBrowserRouter([
           },
           {
             path: "auditLogs",
-            element: (
-              <p className="text-3xl font-bold text-slate-900">
-                Logs d’audit ici.
-              </p>
+            element: (<AuditsPage/>
+              
             ),
           },
           {
