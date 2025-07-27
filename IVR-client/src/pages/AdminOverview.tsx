@@ -4,40 +4,18 @@ import { getRoles } from "../service/RoleService";
 import { FaUser } from "react-icons/fa6";
 import { SiSpringsecurity } from "react-icons/si";
 import { useNavigate } from "react-router-dom";
+import type { Audit } from "../types/types";
+import { getAudits } from "../service/AuditService";
+import { formatTimestamp } from "../api/Api";
 
 const AdminOverview = () => {
   const [activeUserCount, setActiveUserCount] = useState<number>(0);
   const [inactiveUserCount, setInactiveUserCount] = useState<number>(0);
   const [roleCount, setRoleCount] = useState<number>(0);
+  const [recentAudits,setRecentAudits] = useState<Audit[]>([])
   const navigate = useNavigate()
 
-  const recentAudits = [
-    {
-      user: "Alex Johnson",
-      action: "created a new user",
-      date: "2024-01-15 10:30 AM",
-    },
-    {
-      user: "Sarah Lee",
-      action: "updated a role",
-      date: "2024-01-14 03:45 PM",
-    },
-    {
-      user: "David Chen",
-      action: "granted a permission",
-      date: "2024-01-13 09:12 AM",
-    },
-    {
-      user: "Emily White",
-      action: "deleted a user",
-      date: "2024-01-12 05:20 PM",
-    },
-    {
-      user: "Michael Brown",
-      action: "created a new role",
-      date: "2024-01-11 11:55 AM",
-    },
-  ];
+  
 
   const fetchNbActiveUsers = async () => {
     try {
@@ -65,11 +43,47 @@ const AdminOverview = () => {
     }
   };
 
+  const fetchRecentAudits = async () => {
+  try {
+    const data = await getAudits({
+      page: 0,
+      size: 5,
+      sortBy: "action_time_stamp", // <-- Must match your entity field
+      sortDir: "desc"
+    });
+    setRecentAudits(data.content);
+    console.log("recent audits:", data);
+  } catch (err) {
+    console.error(err);
+  }
+  };
+  
+
+
+
+// Optional: nicer display for action types
+const actionTypeLabels: Record<string, string> = {
+    CREATE_ROLE: 'a créé un rôle',
+    DELETE_ROLE: 'a supprimé un rôle',
+    UPDATE_ROLE: 'a modifié un rôle',
+    CREATE_USER: 'a créé un utilisateur',
+    DELETE_USER: 'a supprimé un utilisateur',
+    UPDATE_USER: 'a modifié un utilisateur',
+    CREATE_PERMISSION: 'a créé une permission',
+    DELETE_PERMISSION: 'a supprimé une permission',
+    UPDATE_PERMISSION: 'a modifié une permission',
+  };
+  
+
+  
+
+
   useEffect(() => {
     fetchNbActiveUsers();
     fetchNbInactiveUsers();
-
     fetchNbRoles();
+    fetchRecentAudits();
+
   }, []);
 
   return (
@@ -138,8 +152,8 @@ const AdminOverview = () => {
           </div>
         </div>
 
-        {/* Recent Actions */}
-        <div className="rounded-xl shadow border border-gray-200 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:bg-white/80bg-white/70 backdrop-blur-sm">
+            {/* Recent Actions */}
+        <div className="rounded-xl shadow border border-gray-200 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:bg-white/80 bg-white/70 backdrop-blur-sm">
           <div className="p-4 sm:p-6 border-b border-slate-200/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-1">
@@ -149,7 +163,10 @@ const AdminOverview = () => {
                 Dernières activités du système
               </p>
             </div>
-            <button onClick={()=> navigate("/admin/auditLogs")} className="text-blue-600 hover:text-blue-700 text-sm font-medium hover:bg-blue-50 px-3 py-2 rounded-lg transition-colors duration-200 self-start sm:self-auto">
+            <button
+              onClick={() => navigate("/admin/auditLogs")}
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium hover:bg-blue-50 px-3 py-2 rounded-lg transition-colors duration-200 self-start sm:self-auto"
+            >
               Voir plus de détails →
             </button>
           </div>
@@ -157,25 +174,33 @@ const AdminOverview = () => {
           <div className="divide-y divide-slate-200/50">
             {recentAudits.map((audit, index) => (
               <div
-                key={index}
+                key={audit.auditId || index}
                 className="p-4 sm:p-6 hover:bg-slate-50/50 transition-colors duration-200"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
                   <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 sm:mt-0"></div>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 sm:mt-0" />
                     <p className="font-medium text-slate-900">
-                      <span className="font-semibold text-blue-600">
-                        {audit.user}
-                      </span>{" "}
-                      <span className="text-slate-700">{audit.action}</span>
+                      <span className="font-semibold text-blue-600 mr-1">
+                        Utilisateur #{audit.userId}
+                      </span>
+                      <span className="text-slate-700">
+                        {actionTypeLabels[audit.actionType] || audit.actionType}
+                      </span>
+                      <span className="ml-2 italic text-sm text-slate-500">
+                        [{audit.entityType} #{audit.entityId}]
+                      </span>
                     </p>
                   </div>
-                  <p className="text-sm text-slate-500 font-medium ml-5 sm:ml-0">
-                    {audit.date}
+                  <p className="text-sm text-slate-500 font-medium ml-5 sm:ml-0 whitespace-nowrap">
+                    {formatTimestamp(audit.actionTimestamp)}
                   </p>
                 </div>
               </div>
             ))}
+            {recentAudits.length === 0 && (
+              <p className="p-4 text-center text-slate-500">Aucune activité récente</p>
+            )}
           </div>
         </div>
       </div>
