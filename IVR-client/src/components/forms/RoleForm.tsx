@@ -8,7 +8,7 @@ import { FaRegCheckCircle, FaCheckCircle } from "react-icons/fa";
 type Title = "Créer un nouveau role" | "Modifier un role";
 type Description =
   | "Complétez les informations ci-dessous pour créer un nouveau role."
-  | "Mettez à jour les détails du roler ci-dessous.";
+  | "Mettez à jour les détails du role ci-dessous.";
 
 interface RoleFormProps {
   title: Title;

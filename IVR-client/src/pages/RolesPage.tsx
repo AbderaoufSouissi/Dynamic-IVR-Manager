@@ -5,6 +5,7 @@ import RolesTable from "../components/tables/RolesTable";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { getRoles } from "../service/RoleService";
+import type { Role } from "../types/types";
 
 <div className="mb-6 flex items-center justify-between">
   <p>Gestion des utilisateurs ici.</p>
@@ -23,7 +24,7 @@ const RolesPage = () => {
   const navigate = useNavigate()
   
 
- const [roles, setRoles] = useState([]);
+ const [roles, setRoles] = useState<Role[]>([]);
   const location = useLocation();
 
 
@@ -53,6 +54,7 @@ const RolesPage = () => {
   };
   return (
     <>
+      <div>
     
       <div className="mb-6 flex items-center justify-between">
         <p className="text-3xl font-bold text-slate-900">Gestion des rôles ici.</p>
@@ -63,9 +65,13 @@ const RolesPage = () => {
       </div>
 
       <RoleFilter filters={filters} onFilterChange={handleFilterChange} />
-      <RolesTable roles={roles} />
+        <RolesTable roles={roles} />
+        </div>
     
-      <Outlet/>
+      <Outlet />
+      
+
+      
     </>
   );
 };

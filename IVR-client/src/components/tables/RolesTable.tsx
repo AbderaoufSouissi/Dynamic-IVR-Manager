@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import type { Role } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { HiChevronDown } from "react-icons/hi2";
@@ -9,20 +9,17 @@ interface RolesTableProps {
   itemsPerPage?: number;
 }
 
-const RolesTable = ({ roles, itemsPerPage = 10 }: RolesTableProps) => {
+const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
-
+  const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage ?? 5);
+  const navigate = useNavigate()
+ 
   const totalPages = Math.ceil(roles.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
+   const currentRoles = roles.slice(startIndex, endIndex);
 
-  const navigate = useNavigate()
 
-  const currentRoles = useMemo(
-    () => roles.slice(startIndex, endIndex),
-    [roles, startIndex, endIndex]
-  );
 
   const getPageNumbers = () => {
     const pages = [];
@@ -50,8 +47,14 @@ const RolesTable = ({ roles, itemsPerPage = 10 }: RolesTableProps) => {
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(parseInt(e.target.value));
-    setCurrentPage(1); // Reset to first page
+    setCurrentPage(1);
   };
+  
+  
+
+ 
+
+ 
 
   return (
     <div className="overflow-x-auto rounded-xl shadow border border-gray-200 bg-white">
@@ -71,17 +74,17 @@ const RolesTable = ({ roles, itemsPerPage = 10 }: RolesTableProps) => {
         <tbody>
           {currentRoles.map((role) => (
             <tr key={role.roleId} className="border-t border-gray-200 hover:bg-gray-50 transition">
-              <td className="px-4 py-2 font-medium text-slate-800 ">{role.roleId}</td>
-              <td className="px-4 py-2 font-medium text-slate-800 ">{role.name}</td>
+              <td className="px-4 py-2 font-medium text-slate-800">{role.roleId}</td>
+              <td className="px-4 py-2 font-medium text-slate-800">{role.name}</td>
               <td className="px-4 py-2 text-slate-800">
-  {role.permissions.map((perm: string, idx: number) => (
-    <div key={idx}>{perm}</div>
-  ))}
-</td>
-              <td className="px-4 py-2 text-slate-800 ">{role.createdAt}</td>
-              <td className="px-4 py-2 text-slate-800 ">{role.createdBy}</td>
-              <td className="px-4 py-2 text-slate-800 ">{role.updatedAt}</td>
-              <td className="px-4 py-2 text-slate-800 ">{role.updatedBy}</td>
+                {role.permissions.map((perm: string, idx: number) => (
+                  <div key={idx}>{perm}</div>
+                ))}
+              </td>
+              <td className="px-4 py-2 text-slate-800">{role.createdAt}</td>
+              <td className="px-4 py-2 text-slate-800">{role.createdBy}</td>
+              <td className="px-4 py-2 text-slate-800">{role.updatedAt}</td>
+              <td className="px-4 py-2 text-slate-800">{role.updatedBy}</td>
               <td className="p-4 font-medium text-blue-600">
                 <div className="flex items-center gap-2">
                   <button
@@ -90,13 +93,9 @@ const RolesTable = ({ roles, itemsPerPage = 10 }: RolesTableProps) => {
                   >
                     Éditer
                   </button>
-
                   <span className="text-slate-300">|</span>
-
                   <button
-                    onClick={() =>
-                      navigate(`/admin/roles/delete/${role.roleId}`)
-                    }
+                    onClick={() => navigate(`/admin/roles/delete/${role.roleId}`)}
                     className="text-red-600 hover:underline cursor-pointer"
                   >
                     Supprimer
@@ -108,53 +107,51 @@ const RolesTable = ({ roles, itemsPerPage = 10 }: RolesTableProps) => {
         </tbody>
       </table>
 
-      {/* Pagination + Rows per page */}
+      {/* Pagination controls */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-4 p-4 border-t border-gray-200 gap-4">
-        {/* Rows per page selector */}
+        {/* Rows per page */}
         <div className="flex items-center gap-2">
           <p className="text-sm text-gray-700">Rows per page:</p>
           <div className="relative">
             <select
               value={rowsPerPage}
               onChange={handleRowsPerPageChange}
-              className="cursor-pointer appearance-none rounded-md border border-gray-300 bg-white py-1.5 pl-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="appearance-none rounded-md border border-gray-300 bg-white py-1.5 pl-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               {[5, 10, 15, 20].map((size) => (
                 <option key={size} value={size}>{size}</option>
               ))}
             </select>
-            <HiChevronDown className="cursor-pointer pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <HiChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           </div>
         </div>
 
-        {/* Pagination controls */}
+        {/* Page number controls */}
         <div className="flex items-center gap-2">
           <button
             onClick={handlePrevious}
             disabled={currentPage === 1}
-            className={`cursor-pointer flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
+            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
               currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-100"
             }`}
           >
             <MdKeyboardArrowLeft />
           </button>
-
           {getPageNumbers().map((page) => (
             <button
               key={page}
               onClick={() => handlePageChange(page)}
-              className={`cursor-pointer text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${
+              className={`text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${
                 page === currentPage ? "text-white bg-blue-600" : "text-slate-600 hover:bg-slate-100"
               }`}
             >
               {page}
             </button>
           ))}
-
           <button
             onClick={handleNext}
             disabled={currentPage === totalPages}
-            className={`cursor-pointer flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
+            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
               currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-100"
             }`}
           >
@@ -162,9 +159,9 @@ const RolesTable = ({ roles, itemsPerPage = 10 }: RolesTableProps) => {
           </button>
         </div>
 
-        {/* Displayed range */}
+        {/* Range summary */}
         <p className="text-sm text-slate-500">
-          Affichage de {Math.min(endIndex, roles.length)} sur {roles.length} roles
+          Affichage de {Math.min(endIndex, roles.length)} sur {roles.length} rôles
         </p>
       </div>
     </div>
