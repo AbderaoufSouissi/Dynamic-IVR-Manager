@@ -70,6 +70,7 @@ export interface Audit {
     auditId: number
     userId: number
     actionType: string
+    entityType: string
     entityId: number
     actionTimestamp: string
 }
