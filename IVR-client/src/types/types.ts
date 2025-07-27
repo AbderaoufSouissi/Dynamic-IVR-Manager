@@ -63,7 +63,6 @@ export interface Permission {
 export interface PermissionRequest {
     name: string
     description: string
-    permissions: string[]
 
 }
 
