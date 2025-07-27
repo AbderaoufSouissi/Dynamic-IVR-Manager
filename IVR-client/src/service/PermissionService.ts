@@ -5,6 +5,7 @@ export const getPermissions = async (params = {}) => {
   const response = await axiosInstance.get(`${API_BASE_URL}/permissions`, {
     params, 
   });
+  
 
   return response.data;
 };

@@ -1,24 +1,24 @@
-import { useState, useMemo } from "react";
+import { useState} from "react";
 import type { Permission } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 interface PermissionsTableProps {
   permissions: Permission[];
   itemsPerPage?: number;
 }
 
-const PermissionsTable = ({ permissions, itemsPerPage = 5 }: PermissionsTableProps) => {
+const PermissionsTable = ({ permissions, itemsPerPage = 5   }: PermissionsTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage ?? 5);
-
+  const navigate = useNavigate()
+ 
   const totalPages = Math.ceil(permissions.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
+   const currentPermissions = permissions.slice(startIndex, endIndex);
 
-  const currentPermissions = useMemo(
-    () => permissions.slice(startIndex, endIndex),
-    [permissions, startIndex, endIndex]
-  );
+
 
   const getPageNumbers = () => {
     const pages = [];
@@ -48,6 +48,7 @@ const PermissionsTable = ({ permissions, itemsPerPage = 5 }: PermissionsTablePro
     setRowsPerPage(parseInt(e.target.value));
     setCurrentPage(1);
   };
+  
 
   return (
     <div className="overflow-x-auto rounded-xl shadow border border-gray-200 bg-white">
@@ -61,6 +62,7 @@ const PermissionsTable = ({ permissions, itemsPerPage = 5 }: PermissionsTablePro
             <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Créé par</th>
             <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Date de modification</th>
             <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Modifié par</th>
+            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -76,6 +78,20 @@ const PermissionsTable = ({ permissions, itemsPerPage = 5 }: PermissionsTablePro
               <td className="px-4 py-2 text-slate-800 ">{permission.createdBy}</td>
               <td className="px-4 py-2 text-slate-800 ">{permission.updatedAt}</td>
               <td className="px-4 py-2 text-slate-800 ">{permission.updatedBy}</td>
+              <td className="p-4 font-medium text-blue-600">
+                <div className="flex items-center gap-2">
+  
+
+                  <button
+                    onClick={() =>
+                      navigate(`/admin/permissions/delete/${permission.permissionId}`)
+                    }
+                    className="text-red-600 hover:underline cursor-pointer"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>

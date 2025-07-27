@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -17,6 +16,7 @@ import NotFoundPage from "./pages/NotFound.tsx";
 import DeleteEntityModal from "./components/modal/DeleteEntityModal.tsx";
 import RoleForm from "./components/forms/RoleForm.tsx";
 import AdminOverview from "./pages/AdminOverview.tsx";
+import PermissionForm from "./components/forms/PermissionForm.tsx";
 
 const router = createBrowserRouter([
   {
@@ -69,7 +69,7 @@ const router = createBrowserRouter([
               },
               {
                 path: "update/:id",
-                element: <RoleForm title={"Modifier un role"} description={"Mettez à jour les détails du roler ci-dessous."} />,
+                element: <RoleForm title={"Modifier un role"} description={"Mettez à jour les détails du role ci-dessous."} />,
               },
             ],
           },
@@ -77,6 +77,10 @@ const router = createBrowserRouter([
             path: "permissions",
             element: <PermissionsPage />,
             children: [
+            {
+                path: "create",
+                element: <PermissionForm title={"Créer une nouvelle permission"} description={"Complétez les informations ci-dessous pour créer une nouvelle permission"}/>,
+              },
               {
                 path: "delete/:id",
                 element: <DeleteEntityModal />,
