@@ -86,10 +86,10 @@ const DeleteEntityModal = () => {
       open={true}
       onClose={handleClose}
       icon={<FiAlertTriangle className="text-red-600 w-6 h-6" />}
-      title={`Confirmer la suppression du ${entityType}`}
+      title={`Confirmer la suppression`}
       description={
         entityName
-          ? `Êtes-vous sûr de vouloir supprimer ${entityType} « ${entityName} » ? Cette action est irréversible.`
+          ? `Êtes-vous sûr de vouloir supprimer ${entityType} « ${entityName} » ?\n Cette action est irréversible.`
           : `Êtes-vous sûr de vouloir supprimer ce ${entityType} ? Cette action est irréversible.`
       }
       onConfirm={handleConfirm}

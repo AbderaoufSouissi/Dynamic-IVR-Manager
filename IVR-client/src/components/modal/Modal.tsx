@@ -19,15 +19,18 @@ const Modal = ({
   description,
   onConfirm,
   confirmLabel,
-  confirmType = "primary"
+  confirmType = "primary",
 }: ModalProps) => {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md" onClick={onClose}>
-      <div 
-        className="mx-4 w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-gray-700 dark:bg-gray-800"
-        onClick={e => e.stopPropagation()}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md px-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-xl sm:w-[90%] md:w-[80%] lg:w-[60%] rounded-xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-gray-700 dark:bg-gray-800"
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
@@ -36,10 +39,11 @@ const Modal = ({
           <h3 className="mt-3 text-lg font-medium text-gray-900 dark:text-white">
             {title}
           </h3>
-          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            {description}
-          </p>
-          <div className="mt-6 flex justify-center gap-4">
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 whitespace-pre-line">
+  {description}
+</p>
+
+          <div className="mt-6 flex justify-center gap-4 flex-wrap">
             <button
               className={`rounded-md cursor-pointer px-4 py-2 text-sm font-medium transition-all duration-200 ${
                 confirmType === "danger"
