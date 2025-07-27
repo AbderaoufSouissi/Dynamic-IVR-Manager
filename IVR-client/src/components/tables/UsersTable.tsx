@@ -4,6 +4,7 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import Modal from "../modal/Modal";
 import { FiAlertTriangle } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { formatTimestamp } from "../../api/Api";
 
 interface UsersTableProps {
   itemsPerPage?: number;
@@ -114,13 +115,13 @@ const UsersTable = ({ itemsPerPage = 5, users }: UsersTableProps) => {
                 {user.roleName}
               </td>
               <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
-                {user.createdAt}
+                {formatTimestamp(user.createdAt)}
               </td>
               <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
                 {user.createdBy}
               </td>
               <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
-                {user.updatedAt}
+                {formatTimestamp(user.updatedAt)}
               </td>
               <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
                 {user.updatedBy}

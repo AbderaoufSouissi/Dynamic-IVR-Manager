@@ -2,6 +2,7 @@ import { useState} from "react";
 import type { Permission } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { formatTimestamp } from "../../api/Api";
 
 interface PermissionsTableProps {
   permissions: Permission[];
@@ -74,9 +75,9 @@ const PermissionsTable = ({ permissions, itemsPerPage = 5   }: PermissionsTableP
               <td className="px-4 py-2 font-medium text-slate-800 ">{permission.permissionId}</td>
               <td className="px-4 py-2 font-medium text-slate-800 ">{permission.name}</td>
               <td className="px-4 py-2 text-slate-800 ">{permission.description}</td>
-              <td className="px-4 py-2 text-slate-800 ">{permission.createdAt}</td>
+              <td className="px-4 py-2 text-slate-800 ">{formatTimestamp(permission.createdAt)}</td>
               <td className="px-4 py-2 text-slate-800 ">{permission.createdBy}</td>
-              <td className="px-4 py-2 text-slate-800 ">{permission.updatedAt}</td>
+              <td className="px-4 py-2 text-slate-800 ">{formatTimestamp(permission.updatedAt)}</td>
               <td className="px-4 py-2 text-slate-800 ">{permission.updatedBy}</td>
               <td className="p-4 font-medium text-blue-600">
                 <div className="flex items-center gap-2">

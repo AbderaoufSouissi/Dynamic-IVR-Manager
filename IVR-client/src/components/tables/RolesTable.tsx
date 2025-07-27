@@ -3,6 +3,7 @@ import type { Role } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { HiChevronDown } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
+import { formatTimestamp } from "../../api/Api";
 
 interface RolesTableProps {
   roles: Role[];
@@ -81,9 +82,9 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
                   <div key={idx}>{perm}</div>
                 ))}
               </td>
-              <td className="px-4 py-2 text-slate-800">{role.createdAt}</td>
+              <td className="px-4 py-2 text-slate-800">{formatTimestamp(role.createdAt)}</td>
               <td className="px-4 py-2 text-slate-800">{role.createdBy}</td>
-              <td className="px-4 py-2 text-slate-800">{role.updatedAt}</td>
+              <td className="px-4 py-2 text-slate-800">{formatTimestamp(role.updatedAt)}</td>
               <td className="px-4 py-2 text-slate-800">{role.updatedBy}</td>
               <td className="p-4 font-medium text-blue-600">
                 <div className="flex items-center gap-2">
