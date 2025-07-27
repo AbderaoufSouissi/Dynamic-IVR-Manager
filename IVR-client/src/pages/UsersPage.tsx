@@ -57,6 +57,7 @@ const UsersPage = () => {
 
   return (
     <>
+      <div>
       <div className="mb-6 flex items-center justify-between">
         <p className="text-3xl font-bold text-slate-900">Gestion des utilisateurs</p>
         <button
@@ -73,7 +74,8 @@ const UsersPage = () => {
       <UserFilter filters={filters} onFilterChange={handleFilterChange} />
 
             
-    <UsersTable users={users}/>
+        <UsersTable users={users} />
+        </div>
       <Outlet />
 
       

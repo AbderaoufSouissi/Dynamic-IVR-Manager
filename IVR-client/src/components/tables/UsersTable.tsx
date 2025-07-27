@@ -88,7 +88,7 @@ const UsersTable = ({ itemsPerPage = 5, users }: UsersTableProps) => {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
+          {users.slice(startIndex, endIndex).map((user) => (
             <tr
               key={user.userId}
               className="border-t border-gray-200 hover:bg-gray-50 transition"
