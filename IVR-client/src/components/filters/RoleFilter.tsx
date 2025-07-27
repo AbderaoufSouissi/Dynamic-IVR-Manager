@@ -96,8 +96,11 @@ const RoleFilter: React.FC<RoleFiltersProps> = ({ filters, onFilterChange }) => 
             className={inputClass}
           />
         </div>
-        <FilterButtons/>
+        
       </div>
+      
+  <FilterButtons />
+
     </div>
   );
 };

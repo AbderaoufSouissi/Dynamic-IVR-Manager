@@ -1,6 +1,5 @@
 import FilterButtons from "../buttons/FilterButtons";
 
-
 interface UserFiltersProps {
   filters: {
     username: string;
@@ -17,17 +16,13 @@ interface UserFiltersProps {
   onFilterChange: (name: string, value: string) => void;
 }
 
-
-
 const labelClass = "block text-sm font-medium text-gray-700 mb-1";
-const inputClass = "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 sm:text-sm/6";
+const inputClass = "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 sm:text-sm";
 
-
-
-const UserFilter = ({ filters, onFilterChange }:UserFiltersProps) => {
+const UserFilter = ({ filters, onFilterChange }: UserFiltersProps) => {
   return (
     <div className="mb-6 p-4 bg-white rounded-xl shadow border border-gray-200">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
           <label htmlFor="username-filter" className={labelClass}>
             Username

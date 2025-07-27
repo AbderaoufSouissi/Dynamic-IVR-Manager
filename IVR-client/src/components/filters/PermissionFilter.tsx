@@ -103,8 +103,14 @@ const PermissionFilter: React.FC<PermissionFiltersProps> = ({ filters, onFilterC
             className={inputClass}
           />
         </div>
-        <FilterButtons/>
+        <div>
+          <FilterButtons />
+        </div>
+        
       </div>
+      
+  
+
     </div>
   );
 };
