@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import AuditTable from "../components/tables/AuditTable";
+import AuditTable from "../components/tables/AuditsTable";
 
 import { getAudits } from "../service/AuditService";
 import AuditFilter from "../components/filters/AuditFilter";
@@ -38,21 +38,30 @@ const AuditsPage = () => {
     }));
   };
 
-  //   const navigate = useNavigate();
+
 
   return (
-    <>
-      <div>
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-3xl font-bold text-slate-900">Logs d’audit ici.</p>
+  <>
+    <div>
+      {audits.length === 0 ? (
+        <div className="text-center mt-10 text-gray-500">
+          <div className="mb-6 flex flex-col items-center justify-center gap-4">
+            <p className="text-3xl font-bold text-slate-900">Aucun log d’audit trouvé</p>
+          </div>
         </div>
+      ) : (
+        <>
+          <div className="mb-6 flex items-center justify-between">
+            <p className="text-3xl font-bold text-slate-900">Logs d’audit ici.</p>
+          </div>
 
-        <AuditFilter filters={filters} onFilterChange={handleFilterChange} />
-
-        <AuditTable audits={audits} />
-      </div>
-    </>
-  );
+          <AuditFilter filters={filters} onFilterChange={handleFilterChange} />
+          <AuditTable audits={audits} />
+        </>
+      )}
+    </div>
+  </>
+);
 };
 
 export default AuditsPage;
