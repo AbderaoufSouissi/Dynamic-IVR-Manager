@@ -2,22 +2,16 @@ package com._CServices.IVR_api.service.impl;
 
 import com._CServices.IVR_api.dao.PermissionsRepository;
 import com._CServices.IVR_api.dao.RoleRepository;
-
 import com._CServices.IVR_api.dto.response.RoleResponse;
-
-
 import com._CServices.IVR_api.dto.request.RoleRequest;
-import com._CServices.IVR_api.dto.response.RoleResponse;
 import com._CServices.IVR_api.entity.Permissions;
 import com._CServices.IVR_api.entity.Role;
-
 import com._CServices.IVR_api.enumeration.ActionType;
 import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.RoleMapper;
-import com._CServices.IVR_api.security.AuthService;
-import com._CServices.IVR_api.service.AuditService;
+import com._CServices.IVR_api.audit.AuditLoggingService;
 import com._CServices.IVR_api.service.RoleService;
 import com._CServices.IVR_api.utils.SortUtils;
 import jakarta.persistence.EntityManager;
@@ -44,7 +38,7 @@ import java.util.stream.Collectors;
 public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
     private final PermissionsRepository permissionsRepository;
-    private final AuditService auditService;
+    private final AuditLoggingService auditLoggingService;
     private final RoleMapper roleMapper;
     private final EntityManager entityManager;
 
@@ -239,7 +233,7 @@ public class RoleServiceImpl implements RoleService {
                 .build();
         Role createdRole = roleRepository.save(role);
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.CREATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
                 createdRole.getId()
@@ -280,7 +274,7 @@ public class RoleServiceImpl implements RoleService {
 
 
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.UPDATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
                 updatedRole.getId()
@@ -315,7 +309,7 @@ public class RoleServiceImpl implements RoleService {
         Role updatedRole = roleRepository.save(roleToUpdate);
 
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.UPDATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
                 updatedRole.getId()
@@ -333,7 +327,7 @@ public class RoleServiceImpl implements RoleService {
         roleRepository.delete(roleToDelete);
 
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.DELETE_ROLE.toString(),
                 EntityType.ROLE.toString(),
                 id
@@ -351,7 +345,7 @@ public class RoleServiceImpl implements RoleService {
 
         roleRepository.delete(roleToDelete);
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.DELETE_ROLE.toString(),
                 EntityType.ROLE.toString(),
                 roleToDeleteId

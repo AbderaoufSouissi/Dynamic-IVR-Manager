@@ -9,9 +9,7 @@ import java.time.LocalDate;
 
 
 public interface AuditService {
-    void logAction(String actionType, String entityType, Long entityId);
     AuditResponse getAuditById(@NotNull Long id);
-
     Page<AuditResponse> getAuditsWithFilters(Long auditId,
                                              Long userId,
                                              String actionType,

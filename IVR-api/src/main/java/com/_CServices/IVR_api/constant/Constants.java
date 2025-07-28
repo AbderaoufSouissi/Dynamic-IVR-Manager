@@ -20,4 +20,5 @@ public class Constants {
     public static final String RESET_NB_CALLS_DESCRIPTION="Réinitialiser le nombre d'appels d'un client";
 
     public static final String FORGET_PASSWORD_DESCRIPTION = "Mot de passe oublié";
+    public static final String RESET_PASSWORD_DESCRIPTION = "Mot de passe réinitialisé";
 }

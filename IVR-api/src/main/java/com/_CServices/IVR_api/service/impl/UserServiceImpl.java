@@ -12,7 +12,7 @@ import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.UserMapper;
 import com._CServices.IVR_api.entity.User;
-import com._CServices.IVR_api.service.AuditService;
+import com._CServices.IVR_api.audit.AuditLoggingService;
 import com._CServices.IVR_api.service.UserService;
 import jakarta.persistence.EntityManager;
 import com._CServices.IVR_api.utils.SortUtils;
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final AuditService auditService;
+    private final AuditLoggingService auditLoggingService;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final EntityManager entityManager;
@@ -248,7 +248,7 @@ public class UserServiceImpl implements UserService {
                         .build();
                 Role defaultRole = roleRepository.save(role);
 
-                auditService.logAction(
+                auditLoggingService.logAction(
                         ActionType.CREATE_ROLE.toString(),
                         EntityType.ROLE.toString(),
                         defaultRole.getId()
@@ -279,7 +279,7 @@ public class UserServiceImpl implements UserService {
                         .build();
                 User newUser = userRepository.save(user);
 
-                auditService.logAction(
+                auditLoggingService.logAction(
                         ActionType.CREATE_USER.toString(),
                         EntityType.USER.toString(),
                         newUser.getId()
@@ -302,7 +302,7 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(userToDelete);
 
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.DELETE_USER.toString(),
                 EntityType.USER.toString(),
                 userToDeleteId
@@ -321,7 +321,7 @@ public class UserServiceImpl implements UserService {
 
         userRepository.delete(userToDelete);
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.DELETE_USER.toString(),
                 EntityType.USER.toString(),
                 userToDeleteId
@@ -338,7 +338,7 @@ public class UserServiceImpl implements UserService {
         Long userToDeleteId = userToDelete.getId();
         userRepository.delete(userToDelete);
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.DELETE_USER.toString(),
                 EntityType.USER.toString(),
                 userToDeleteId
@@ -378,7 +378,7 @@ public class UserServiceImpl implements UserService {
             return userRepository.save(user);
         }).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.UPDATE_USER.toString(),
                 EntityType.USER.toString(),
                 userToUpdate.getId()

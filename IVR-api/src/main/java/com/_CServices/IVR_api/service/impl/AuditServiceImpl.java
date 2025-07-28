@@ -1,12 +1,11 @@
 package com._CServices.IVR_api.service.impl;
 
 import com._CServices.IVR_api.dao.AuditRepository;
+
 import com._CServices.IVR_api.dto.response.AuditResponse;
 import com._CServices.IVR_api.entity.Audit;
-import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.AuditMapper;
-import com._CServices.IVR_api.security.AuthService;
 import com._CServices.IVR_api.service.AuditService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -31,23 +31,9 @@ public class AuditServiceImpl implements AuditService {
 
 
     private final AuditRepository auditRepository;
-    private final AuthService authService;
     private final AuditMapper auditMapper;
     private final EntityManager entityManager;
 
-    public void logAction(String actionType, String entityType, Long entityId) {
-        final User loggedInUser = authService.getCurrentLoggedInUser();
-        log.info("inside logAction()");
-
-        Audit auditLog = Audit.builder()
-                .user(loggedInUser)
-                .actionType(actionType)
-                .entityType(entityType)
-                .entityId(entityId)
-                .build();
-
-        auditRepository.save(auditLog);
-    }
 
 
 

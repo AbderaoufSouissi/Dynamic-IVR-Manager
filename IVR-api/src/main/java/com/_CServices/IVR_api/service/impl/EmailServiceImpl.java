@@ -17,6 +17,7 @@ public class EmailServiceImpl implements EmailService {
 
     private static final String PASSWORD_RESET_REQUEST = "Reset Password Request";
 
+
     private final JavaMailSender sender;
 
     @Value("${spring.mail.verify.host}")
