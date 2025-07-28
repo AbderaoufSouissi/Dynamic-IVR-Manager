@@ -72,5 +72,6 @@ export interface Audit {
     actionType: string
     entityType: string
     entityId: number
+    msisdn: string
     actionTimestamp: string
 }
