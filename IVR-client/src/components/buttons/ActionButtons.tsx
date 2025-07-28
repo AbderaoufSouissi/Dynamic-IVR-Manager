@@ -6,7 +6,7 @@ import { TfiSearch } from "react-icons/tfi";
 
 interface ActionButtonsProps {
   isLoading: boolean;
-  onCheck: () => void;
+  onVerify: () => void;
   onBlacklist: () => void;
   onWhitelist: () => void;
   onReset: () => void;
@@ -14,7 +14,7 @@ interface ActionButtonsProps {
 
 const ActionButtons = ({
   isLoading,
-  onCheck,
+  onVerify,
   onBlacklist,
   onWhitelist,
   onReset,
@@ -34,7 +34,7 @@ const ActionButtons = ({
         disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100
       "
       disabled={isLoading}
-      onClick={onCheck}
+      onClick={onVerify}
         >
             <TfiSearch className="mr-1"/>
             {isLoading ? "Vérification en cours..." : "Vérifier"}

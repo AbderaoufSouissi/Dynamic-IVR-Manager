@@ -5,6 +5,7 @@ import { StatusMessage } from "../components/StatusMessage";
 import Modal from "../components/modal/Modal";
 
 import { FiAlertTriangle } from "react-icons/fi";
+import { blacklistMsisdn, isBlacklisted, resetNbCalls, WhitelistMsisdn } from "../service/MsisdnService";
 
 
 const MsisdnPage = () => {
@@ -18,17 +19,72 @@ const MsisdnPage = () => {
 
   const validateMSISDN = (number: string) => /^\d{8,15}$/.test(number);
 
-  const handleCheck = () => {
-    if (!validateMSISDN(msisdn)) return setError("Le format du MSISDN est invalide.");
-    setError("");
-    setIsLoading(true);
-    setTimeout(() => {
-      setStatus("Ce numéro est valide et n'est pas blacklisté.");
-      setIsLoading(false);
-    }, 2000);
-  };
-
   
+
+  const blacklist = async () => {
+    const data = await blacklistMsisdn(msisdn)
+  
+    setStatus(data.message)
+      console.log("status of blacklist  : ",status)
+
+  }
+
+  const handleOnBlacklist = () => {
+  if (!validateMSISDN(msisdn)) {
+    setError("Le format du MSISDN est invalide.");
+    return;
+  }
+  setError("");
+  setShowBlacklistModal(true);
+};
+
+
+
+  const whitelist = async () => {
+    const data = await WhitelistMsisdn(msisdn)
+    setStatus(data.message)
+        console.log("status of whitelist  : ",status)
+
+  }
+
+  const handleOnWhitelist = () => {
+  if (!validateMSISDN(msisdn)) {
+    setError("Le format du MSISDN est invalide.");
+    return;
+  }
+  setError("");
+  setShowWhitelistModal(true);
+};
+
+
+
+  const reset = async () => {
+    const data = await resetNbCalls(msisdn)
+    setStatus(data.message)
+    console.log("status of reset nb calls  : ",status)
+
+  }
+
+ const handleOnReset = () => {
+  if (!validateMSISDN(msisdn)) {
+    setError("Le format du MSISDN est invalide.");
+    return;
+  }
+  setError("");
+  setShowResetModal(true);
+};
+
+
+  const handleOnVerify = () => {
+    isMsisdnBlacklisted()
+  }
+
+
+  const isMsisdnBlacklisted = async () => {
+    const data = await isBlacklisted(msisdn)
+    setStatus(data.message)
+    console.log("status of is blacklisted  : ",status)
+  }
 
   return (
     <div>
@@ -45,32 +101,10 @@ const MsisdnPage = () => {
         <MSISDNInput value={msisdn} onChange={setMsisdn} error={error} />
         <ActionButtons
           isLoading={isLoading}
-          onCheck={handleCheck}
-          onBlacklist={() => {
-    if (/^\d{8}$/.test(msisdn)) {
-      setShowBlacklistModal(true);
-      setError("");
-    } else {
-      setError("Veuillez entrer un numéro valide de 8 chiffres.");
-    }
-  }}
-  onWhitelist={() => {
-    if (/^\d{8}$/.test(msisdn)) {
-      setShowWhitelistModal(true);
-      setError("");
-    } else {
-      setError("Veuillez entrer un numéro valide de 8 chiffres.");
-    }
-  }}
-  onReset={() => {
-    if (/^\d{8}$/.test(msisdn)) {
-      setShowResetModal(true);
-      setStatus("Le compteur a été réinitialisé.");
-      setError("");
-    } else {
-      setError("Veuillez entrer un numéro valide de 8 chiffres.");
-    }
-  }}
+          onVerify={handleOnVerify}
+          onBlacklist={handleOnBlacklist}
+  onWhitelist={handleOnWhitelist}
+  onReset={handleOnReset}
         />
         <StatusMessage message={status} />
       </div>
@@ -84,10 +118,19 @@ const MsisdnPage = () => {
   description={`Êtes-vous sûr de vouloir blacklister le numéro ${msisdn} ?`}
   confirmLabel="Confirmer"
   confirmType="danger"
-  onConfirm={() => {
-    setStatus(`Le numéro ${msisdn} a été blacklisté.`);
+  onConfirm={async () => {
+  setIsLoading(true);
+  try {
+    const data = await blacklistMsisdn(msisdn);
+    setStatus(data.message);
+  } catch (err) {
+    console.error(err);
+    setStatus("Erreur lors du blacklistage.");
+  } finally {
+    setIsLoading(false);
     setShowBlacklistModal(false);
-  }}
+  }
+}}
 />
 
       <Modal
@@ -98,10 +141,19 @@ const MsisdnPage = () => {
   description={`Êtes-vous sûr de vouloir whitelister ce numéro ${msisdn} ?`}
   confirmLabel="Confirmer"
   confirmType="primary"
-  onConfirm={() => {
-    setStatus(`Le numéro ${msisdn} a été whitelisté.`);
+  onConfirm={async () => {
+  setIsLoading(true);
+  try {
+    const data = await blacklistMsisdn(msisdn);
+    setStatus(data.message);
+  } catch (err) {
+    console.error(err);
+    setStatus("Erreur lors du whitelistage.");
+  } finally {
+    setIsLoading(false);
     setShowWhitelistModal(false);
-  }}
+  }
+}}
 />
 
       <Modal
@@ -112,10 +164,19 @@ const MsisdnPage = () => {
   description={`Êtes-vous sûr de vouloir réinitialiser le nombre d'appels pour ${msisdn} ?`}
   confirmLabel="Confirmer"
   confirmType="warning"
-  onConfirm={() => {
-    setStatus(`Le compteur d'appels pour ${msisdn} a été réinitialisé.`);
+  onConfirm={async () => {
+  setIsLoading(true);
+  try {
+    const data = await blacklistMsisdn(msisdn);
+    setStatus(data.message);
+  } catch (err) {
+    console.error(err);
+    setStatus("Erreur lors de la réinitialisation du nombre d'appels.");
+  } finally {
+    setIsLoading(false);
     setShowResetModal(false);
-  }}
+  }
+}}
 />
 
       </main>
@@ -124,3 +185,5 @@ const MsisdnPage = () => {
 };
 
 export default MsisdnPage;
+
+
