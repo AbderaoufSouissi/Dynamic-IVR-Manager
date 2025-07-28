@@ -78,9 +78,9 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
               <td className="px-4 py-2 font-medium text-slate-800">{role.roleId}</td>
               <td className="px-4 py-2 font-medium text-slate-800">{role.name}</td>
               <td className="px-4 py-2 text-slate-800">
-                {role.permissions.length>0 ?role.permissions.map((perm: string, idx: number) => (
-                  <div key={idx}>{perm}</div>
-                )): "pas de permissions" }
+                {role.permissions.length>0 ?role.permissions.map((perm: string, id: number) => (
+                  <div key={id}>{perm}</div>
+                )): "__" }
                 
               </td>
               <td className="px-4 py-2 text-slate-800">{formatTimestamp(role.createdAt)}</td>
@@ -133,7 +133,7 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
           <button
             onClick={handlePrevious}
             disabled={currentPage === 1}
-            className={`flex  size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
+            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
               currentPage === 1 ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100"
             }`}
           >
@@ -144,7 +144,7 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
               key={page}
               onClick={() => handlePageChange(page)}
               className={`text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${
-                page === currentPage ? "text-white bg-blue-600" : "text-slate-600 hover:bg-slate-100"
+                page === currentPage ? "text-white bg-blue-600" : "cursor-pointer text-slate-600 hover:bg-slate-100"
               }`}
             >
               {page}
@@ -154,7 +154,7 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
             onClick={handleNext}
             disabled={currentPage === totalPages}
             className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
-              currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-100"
+              currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100"
             }`}
           >
             <MdKeyboardArrowRight />
