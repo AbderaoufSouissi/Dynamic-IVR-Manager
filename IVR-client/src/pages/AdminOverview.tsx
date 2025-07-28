@@ -72,21 +72,22 @@ const actionTypeLabels: Record<string, string> = {
     CREATE_PERMISSION: 'a créé une permission',
     DELETE_PERMISSION: 'a supprimé une permission',
   UPDATE_PERMISSION: 'a modifié une permission',
-  FORGET_PASSWORD: 'a oublié son mot de passe',
-    RESET_PASSWORD: 'a réinitialisé son mot de passe'
+  FORGET_PASSWORD: 'mot de passe oublié',
+    RESET_PASSWORD: 'mot de passe réinitialisé'
   };
   
 
   
 
 
-  useEffect(() => {
-    fetchNbActiveUsers();
-    fetchNbInactiveUsers();
-    fetchNbRoles();
-    fetchRecentAudits();
+ useEffect(() => {
+  console.log("Chargement du tableau de bord admin...");
+  fetchNbActiveUsers();
+  fetchNbInactiveUsers();
+  fetchNbRoles();
+  fetchRecentAudits();
+}, []);
 
-  }, []);
 
   return (
     <main className="flex-1 text-slate-800 min-h-screen">
@@ -183,16 +184,30 @@ const actionTypeLabels: Record<string, string> = {
                   <div className="flex items-start sm:items-center gap-3 sm:gap-4">
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 sm:mt-0" />
                     <p className="font-medium text-slate-900">
-                      <span className="font-semibold text-blue-600 mr-1">
-                        Utilisateur #{audit.userId}
-                      </span>
-                      <span className="text-slate-700">
-                        {actionTypeLabels[audit.actionType] || audit.actionType}
-                      </span>
-                      <span className="ml-2 italic text-sm text-slate-500">
-                        [{audit.entityType} #{audit.entityId}]
-                      </span>
-                    </p>
+  {audit.actionType === "RESET_PASSWORD" || audit.actionType === "FORGET_PASSWORD" ? (
+    <>
+      <span className="font-semibold text-blue-600 mr-1">
+        Utilisateur #{audit.entityId}
+      </span>
+      <span className="text-slate-700">
+        a réinitialisé son mot de passe
+      </span>
+    </>
+  ) : (
+    <>
+      <span className="font-semibold text-blue-600 mr-1">
+        Utilisateur #{audit.userId}
+      </span>
+      <span className="text-slate-700">
+        {actionTypeLabels[audit.actionType] || audit.actionType}
+      </span>
+      <span className="ml-2 italic text-sm text-slate-500">
+        [{audit.entityType} #{audit.entityId}]
+      </span>
+    </>
+  )}
+</p>
+
                   </div>
                   <p className="text-sm text-slate-500 font-medium ml-5 sm:ml-0 whitespace-nowrap">
                     {formatTimestamp(audit.actionTimestamp)}

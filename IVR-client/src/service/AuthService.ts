@@ -1,4 +1,5 @@
-import { axiosInstance } from "../api/Api";
+import axios from "axios";
+import { API_BASE_URL, axiosInstance } from "../api/Api";
 
 
 
@@ -41,12 +42,37 @@ export const logout = async () => {
     throw error;
   }
 };
-  
-export const getCurrentUser = async () => {
+
+
+
+export const forgetPassword = async (email: string) => {
   try {
-    const response = await axiosInstance.get("/auth/user");
-    return response.data;
-  } catch (error: any) {
-    throw error;
+    const response = await axios.post(`${API_BASE_URL}/auth/forget-password`, { email })
+    return response.data
+  } catch (err) {
+    console.error("forget password error: ", err)
+    throw err
   }
-};
+
+}
+
+
+export const resetPassword = async (token: string, newPassword: string) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/auth/reset-password?token=${token}`,{newPassword})
+    return response.data
+  } catch (err) {
+    console.error("forget password error: ", err)
+    throw err
+  }
+
+}
+  
+// export const getCurrentUser = async () => {
+//   try {
+//     const response = await axiosInstance.get("/auth/user");
+//     return response.data;
+//   } catch (error: any) {
+//     throw error;
+//   }
+// };
