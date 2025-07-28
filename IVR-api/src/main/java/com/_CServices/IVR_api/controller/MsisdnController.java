@@ -68,7 +68,7 @@ public class MsisdnController {
     public ResponseEntity<MessageResponse> isMsisdnBlacklisted(@RequestBody MsisdnRequest msisdnRequest) {
         boolean isBlacklisted = clientsCrmHistService.isMsisdnBlacklisted(msisdnRequest.getMsisdn());
         MessageResponse messageResponse = MessageResponse.builder()
-                .message("le MSISDN " + msisdnRequest.getMsisdn() +"est Blacklisté")
+                .message("le MSISDN " + msisdnRequest.getMsisdn() +" est Blacklisté")
                 .build();
         if (!isBlacklisted) {
             messageResponse.setMessage("le MSISDN " + msisdnRequest.getMsisdn() +" n'est pas Blacklisté");
