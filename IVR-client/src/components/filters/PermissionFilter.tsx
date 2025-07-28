@@ -104,10 +104,11 @@ const PermissionFilter: React.FC<PermissionFiltersProps> = ({ filters, onFilterC
           />
         </div>
         <div>
-          <FilterButtons />
+          
         </div>
         
       </div>
+      <FilterButtons />
       
   
 
