@@ -7,6 +7,7 @@ interface AuditFilterProps {
     actionType: string;
     entityType: string;
     entityId: string;
+    msisdn: string
     date: string;
   };
   onFilterChange: (name: string, value: string) => void;
@@ -18,7 +19,7 @@ const AuditFilter = ({ filters, onFilterChange }: AuditFilterProps) => {
 
   return (
     <div className="mb-6 p-4 bg-white rounded-xl shadow border border-gray-200">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 
         {/* Audit ID */}
         <div>
@@ -61,6 +62,19 @@ const AuditFilter = ({ filters, onFilterChange }: AuditFilterProps) => {
             placeholder="Filtrer par type d'action"
             value={filters.actionType}
             onChange={(e) => onFilterChange("actionType", e.target.value)}
+            className={inputClass}
+          />
+        </div>
+        <div>
+          <label htmlFor="msisdn-filter" className={labelClass}>
+            MSISDN
+          </label>
+          <input
+            id="msisdn-filter"
+            type="text"
+            placeholder="Filtrer par MSISDN"
+            value={filters.msisdn}
+            onChange={(e) => onFilterChange("msisdn", e.target.value)}
             className={inputClass}
           />
         </div>
