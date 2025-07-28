@@ -11,6 +11,7 @@ const AuditsPage = () => {
     actionType: "",
     entityType: "",
     entityId: "",
+    msisdn:"",
     date: "",
   });
 
