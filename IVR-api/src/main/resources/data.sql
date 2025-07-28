@@ -22,10 +22,9 @@ TRUNCATE TABLE ROLES;
 -- Proceed with your initialization
 DECLARE
     system_role_id NUMBER;
-    system_user_id NUMBER;
+    system_user_id NUMBER := 0;  -- Fixed ID for system user
 BEGIN
     -- Get ID 0 for system user
-    SELECT SHARED_ID_SEQ.NEXTVAL INTO system_user_id FROM DUAL;
 
     -- Get ID 1 for system role
     SELECT SHARED_ID_SEQ.NEXTVAL INTO system_role_id FROM DUAL;
