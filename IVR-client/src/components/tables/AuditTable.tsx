@@ -55,21 +55,34 @@ const AuditsTable = ({ itemsPerPage = 5, audits }: AuditsTableProps) => {
     <th className="text-center px-2 py-2 font-semibold whitespace-nowrap">ID</th>
     <th className="text-center px-2 py-2 font-semibold whitespace-nowrap">Type d'action</th>
     <th className="text-center px-2 py-2 font-semibold whitespace-nowrap">Réalisé par</th>
+    <th className="text-center px-2 py-2 font-semibold whitespace-nowrap">MSISDN</th>
     <th className="text-center px-2 py-2 font-semibold whitespace-nowrap">Date Action</th>
     <th className="text-center px-2 py-2 font-semibold whitespace-nowrap">Entité affecté</th>
   </tr>
 </thead>
-        <tbody>
+<tbody>
   {currentAudits.map((audit: Audit) => (
     <tr key={audit.auditId} className="border-t border-gray-200 hover:bg-gray-50 transition">
       <td className="text-center px-2 py-2 font-medium text-slate-800">{audit.auditId}</td>
-      <td className="text-center px-2 py-2 font-medium text-slate-800">{audit.actionType}</td>
-      <td className="text-center px-2 py-2 text-slate-800">{audit.userId}</td>
-      <td className="text-center px-2 py-2 text-slate-800">{formatTimestamp(audit.actionTimestamp)}</td>
-      <td className="text-center px-2 py-2 text-slate-800">{audit.entityId}</td>
+      <td className={`text-center px-2 py-2 font-medium ${audit.actionType == null ? "text-black" : "text-slate-800"}`}>
+        {audit.actionType ?? "—"}
+      </td>
+      <td className={`text-center px-2 py-2 ${audit.userId == null ? "text-black" : "text-slate-800"}`}>
+        {audit.userId ?? "—"}
+      </td>
+      <td className={`text-center px-2 py-2 ${audit.msisdn == null ? "text-black" : "text-slate-800"}`}>
+        {audit.msisdn ?? "—"}
+      </td>
+      <td className={`text-center px-2 py-2 ${audit.actionTimestamp == null ? "text-black" : "text-slate-800"}`}>
+        {audit.actionTimestamp ? formatTimestamp(audit.actionTimestamp) : "—"}
+      </td>
+      <td className={`text-center px-2 py-2 ${audit.entityId == null ? "text-black" : "text-slate-800"}`}>
+        {audit.entityId ?? "—"}
+      </td>
     </tr>
   ))}
 </tbody>
+
 
       </table>
 
