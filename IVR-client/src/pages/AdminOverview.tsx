@@ -71,7 +71,9 @@ const actionTypeLabels: Record<string, string> = {
     UPDATE_USER: 'a modifié un utilisateur',
     CREATE_PERMISSION: 'a créé une permission',
     DELETE_PERMISSION: 'a supprimé une permission',
-    UPDATE_PERMISSION: 'a modifié une permission',
+  UPDATE_PERMISSION: 'a modifié une permission',
+  FORGET_PASSWORD: 'a oublié son mot de passe',
+    RESET_PASSWORD: 'a réinitialisé son mot de passe'
   };
   
 
