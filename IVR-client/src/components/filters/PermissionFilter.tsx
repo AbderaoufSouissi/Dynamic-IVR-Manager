@@ -29,7 +29,7 @@ const PermissionFilter: React.FC<PermissionFiltersProps> = ({ filters, onFilterC
           <input
             id="id-filter"
             type="text"
-            placeholder="Filter by ID"
+            placeholder="Filter par ID"
             value={filters.id}
             onChange={(e) => onFilterChange("id", e.target.value)}
             className={inputClass}
@@ -43,7 +43,7 @@ const PermissionFilter: React.FC<PermissionFiltersProps> = ({ filters, onFilterC
           <input
             id="name-filter"
             type="text"
-            placeholder="Filter by name"
+            placeholder="Filter par nom"
             value={filters.name}
             onChange={(e) => onFilterChange("name", e.target.value)}
             className={inputClass}
@@ -57,7 +57,7 @@ const PermissionFilter: React.FC<PermissionFiltersProps> = ({ filters, onFilterC
           <input
             id="createdBy-filter"
             type="text"
-            placeholder="Filter by creator"
+            placeholder="Filter par créateur"
             value={filters.createdBy}
             onChange={(e) => onFilterChange("createdBy", e.target.value)}
             className={inputClass}
@@ -71,7 +71,7 @@ const PermissionFilter: React.FC<PermissionFiltersProps> = ({ filters, onFilterC
           <input
             id="updatedBy-filter"
             type="text"
-            placeholder="Filter by updater"
+            placeholder="Filter par modificateur"
             value={filters.updatedBy}
             onChange={(e) => onFilterChange("updatedBy", e.target.value)}
             className={inputClass}
