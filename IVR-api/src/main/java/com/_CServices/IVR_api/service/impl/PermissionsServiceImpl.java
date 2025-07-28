@@ -220,23 +220,7 @@ public class PermissionsServiceImpl implements PermissionsService {
         return permissionsMapper.toDto(createdPermission);
     }
 
-//    //OLD VERSION of delete method
-//    @Override
-//    public void deletePermissionById(Long id) {
-//        log.info("inside deleteById()");
-//
-//        Permissions permissionToDelete = permissionsRepository.findById(id)
-//                .orElseThrow(()-> new ResourceNotFoundException("Permission with ID: "+id+" not found"));
-//        permissionsRepository.delete(permissionToDelete);
-//
-//        auditLoggingService.logAction(
-//                ActionType.DELETE_PERMISSION.toString(),
-//                EntityType.PERMISSION.toString(),
-//                permissionToDelete.getId()
-//        );
-//
-//
-//    }
+
 
 
 
