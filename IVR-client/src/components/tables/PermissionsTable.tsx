@@ -3,6 +3,7 @@ import type { Permission } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
+import { HiChevronDown } from "react-icons/hi";
 
 interface PermissionsTableProps {
   permissions: Permission[];
@@ -107,22 +108,13 @@ const PermissionsTable = ({ permissions, itemsPerPage = 5   }: PermissionsTableP
             <select
               value={rowsPerPage}
               onChange={handleRowsPerPageChange}
-              className="appearance-none rounded-md border border-gray-300 bg-white py-1.5 pl-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="appearance-none cursor-pointer rounded-md border border-gray-300 bg-white py-1.5 pl-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               {[5, 10, 15, 20].map((size) => (
                 <option key={size} value={size}>{size}</option>
               ))}
             </select>
-            <svg
-              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="m19.5 8.25-7.5 7.5-7.5-7.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <HiChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           </div>
         </div>
 
@@ -132,7 +124,7 @@ const PermissionsTable = ({ permissions, itemsPerPage = 5   }: PermissionsTableP
             onClick={handlePrevious}
             disabled={currentPage === 1}
             className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
-              currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-100'
+              currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-100'
             }`}
           >
             <MdKeyboardArrowLeft />
@@ -141,8 +133,8 @@ const PermissionsTable = ({ permissions, itemsPerPage = 5   }: PermissionsTableP
             <button
               key={page}
               onClick={() => handlePageChange(page)}
-              className={`text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${
-                page === currentPage ? 'text-white bg-blue-600' : 'text-slate-600 hover:bg-slate-100'
+              className={`text-sm  font-medium flex size-8 items-center justify-center rounded-md transition-colors ${
+                page === currentPage ? 'text-white bg-blue-600' : 'cursor-pointer text-slate-600 hover:bg-slate-100'
               }`}
             >
               {page}
@@ -151,8 +143,8 @@ const PermissionsTable = ({ permissions, itemsPerPage = 5   }: PermissionsTableP
           <button
             onClick={handleNext}
             disabled={currentPage === totalPages}
-            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
-              currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-100'
+            className={`flex  size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
+              currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-100'
             }`}
           >
             <MdKeyboardArrowRight />

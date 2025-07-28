@@ -78,9 +78,10 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
               <td className="px-4 py-2 font-medium text-slate-800">{role.roleId}</td>
               <td className="px-4 py-2 font-medium text-slate-800">{role.name}</td>
               <td className="px-4 py-2 text-slate-800">
-                {role.permissions.map((perm: string, idx: number) => (
+                {role.permissions.length>0 ?role.permissions.map((perm: string, idx: number) => (
                   <div key={idx}>{perm}</div>
-                ))}
+                )): "pas de permissions" }
+                
               </td>
               <td className="px-4 py-2 text-slate-800">{formatTimestamp(role.createdAt)}</td>
               <td className="px-4 py-2 text-slate-800">{role.createdBy}</td>
@@ -117,7 +118,7 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
             <select
               value={rowsPerPage}
               onChange={handleRowsPerPageChange}
-              className="appearance-none rounded-md border border-gray-300 bg-white py-1.5 pl-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="appearance-none cursor-pointer rounded-md border border-gray-300 bg-white py-1.5 pl-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               {[5, 10, 15, 20].map((size) => (
                 <option key={size} value={size}>{size}</option>
@@ -132,8 +133,8 @@ const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
           <button
             onClick={handlePrevious}
             disabled={currentPage === 1}
-            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
-              currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-100"
+            className={`flex  size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
+              currentPage === 1 ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100"
             }`}
           >
             <MdKeyboardArrowLeft />

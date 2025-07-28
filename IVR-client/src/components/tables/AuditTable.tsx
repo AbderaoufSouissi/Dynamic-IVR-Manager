@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Audit } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { formatTimestamp } from "../../api/Api";
+import { HiChevronDown } from "react-icons/hi";
 
 interface AuditsTableProps {
   itemsPerPage?: number;
@@ -88,20 +89,7 @@ const AuditsTable = ({ itemsPerPage = 5, audits }: AuditsTableProps) => {
                 </option>
               ))}
             </select>
-            <svg
-              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="m19.5 8.25-7.5 7.5-7.5-7.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+             <HiChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           </div>
         </div>
 
@@ -109,10 +97,10 @@ const AuditsTable = ({ itemsPerPage = 5, audits }: AuditsTableProps) => {
           <button
             onClick={handlePrevious}
             disabled={currentPage === 1}
-            className={`cursor-pointer flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
+            className={` flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
               currentPage === 1
                 ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-slate-100"
+                : "cursor-pointer hover:bg-slate-100"
             }`}
           >
             <MdKeyboardArrowLeft />
@@ -121,10 +109,10 @@ const AuditsTable = ({ itemsPerPage = 5, audits }: AuditsTableProps) => {
             <button
               key={page}
               onClick={() => handlePageChange(page)}
-              className={`cursor-pointer text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${
+              className={` text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${
                 page === currentPage
                   ? "text-white bg-blue-600"
-                  : "text-slate-600 hover:bg-slate-100"
+                  : "cursor-pointer text-slate-600 hover:bg-slate-100"
               }`}
             >
               {page}
@@ -133,10 +121,10 @@ const AuditsTable = ({ itemsPerPage = 5, audits }: AuditsTableProps) => {
           <button
             onClick={handleNext}
             disabled={currentPage === totalPages}
-            className={`cursor-pointer flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
+            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
               currentPage === totalPages
                 ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-slate-100"
+                : "cursor-pointer hover:bg-slate-100"
             }`}
           >
             <MdKeyboardArrowRight />
