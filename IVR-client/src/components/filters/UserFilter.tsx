@@ -24,6 +24,19 @@ const UserFilter = ({ filters, onFilterChange }: UserFiltersProps) => {
     <div className="mb-6 p-4 bg-white rounded-xl shadow border border-gray-200">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div>
+          <label htmlFor="id-filter" className={labelClass}>
+            ID
+          </label>
+          <input
+            id="id-filter"
+            type="text"
+            placeholder="Filter by ID"
+            value={filters.id}
+            onChange={(e) => onFilterChange("id", e.target.value)}
+            className={inputClass}
+          />
+        </div>
+        <div>
           <label htmlFor="username-filter" className={labelClass}>
             Username
           </label>
@@ -62,19 +75,7 @@ const UserFilter = ({ filters, onFilterChange }: UserFiltersProps) => {
             className={inputClass}
           />
         </div>
-        <div>
-          <label htmlFor="id-filter" className={labelClass}>
-            ID
-          </label>
-          <input
-            id="id-filter"
-            type="text"
-            placeholder="Filter by ID"
-            value={filters.id}
-            onChange={(e) => onFilterChange("id", e.target.value)}
-            className={inputClass}
-          />
-        </div>
+        
         <div>
           <label htmlFor="firstname-filter" className={labelClass}>
             Prénom
