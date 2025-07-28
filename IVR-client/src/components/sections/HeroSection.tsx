@@ -41,14 +41,14 @@ const features = [
 
   return (
     <main className="flex-grow">
-        <section className="bg-white h-[90vh] py-20 md:py-32">
+        <section className="h-[90vh] pt-0 pb-20 md:pb-32">
           <div className="container mx-auto px-6 text-center">
             <div className="max-w-3xl mx-auto">
               <h1 className="text-9xl md:text-6xl mt-30 font-extrabold text-gray-900 mb-6 leading-tight">
                 Simplifiez la Gestion des Utilisateurs
               </h1>
               <p className="text-lg md:text-xl text-gray-600 mb-10">
-                Gérez sans effort les utilisateurs, les rôles et les permissions
+                Gérez sans effort les utilisateurs, les rôles et les MSISDN
                 avec notre système intuitif. Simplifiez l'administration et
                 améliorez la sécurité.
               </p>
