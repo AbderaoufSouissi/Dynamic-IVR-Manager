@@ -52,6 +52,7 @@ public class ClientsCrmHistService {
             }
 
         }
+
         auditLoggingService.logAction(
                 ActionType.WHITELIST_MSISDN.toString(),
                 String.valueOf(EntityType.MSISDN),

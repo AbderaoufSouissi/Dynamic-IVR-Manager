@@ -53,25 +53,25 @@ public class MsisdnController {
     public ResponseEntity<MessageResponse> whitelistMsisdn(@RequestBody MsisdnRequest msisdnRequest) {
         boolean isWhitelisted = clientsCrmHistService.isMsisdnWhiteListed(msisdnRequest.getMsisdn());
         MessageResponse messageResponse = new MessageResponse("");
-        if(!isWhitelisted) {
-            clientsCrmHistService.whitelistMsisdn(msisdnRequest.getMsisdn());
-            messageResponse.setMessage("le MSISDN " + msisdnRequest.getMsisdn() +" a été Whitelisté");
+        if(isWhitelisted) {
+            messageResponse.setMessage("le MSISDN " + msisdnRequest.getMsisdn() +" est déja Whitelistéé");
         }
         else {
-            messageResponse.setMessage("le MSISDN " + msisdnRequest.getMsisdn() +" est déja Whitelisté");
+            clientsCrmHistService.whitelistMsisdn(msisdnRequest.getMsisdn());
+            messageResponse.setMessage("le MSISDN " + msisdnRequest.getMsisdn() +" a été Whitelisté");
         }
         return ResponseEntity.ok(messageResponse);
     }
 
     // Check if MSISDN is blacklisted
     @GetMapping("/is-blacklisted")
-    public ResponseEntity<MessageResponse> isMsisdnBlacklisted(@RequestBody MsisdnRequest msisdnRequest) {
-        boolean isBlacklisted = clientsCrmHistService.isMsisdnBlacklisted(msisdnRequest.getMsisdn());
+    public ResponseEntity<MessageResponse> isMsisdnBlacklisted(@RequestParam String msisdn) {
+        boolean isBlacklisted = clientsCrmHistService.isMsisdnBlacklisted(msisdn);
         MessageResponse messageResponse = MessageResponse.builder()
-                .message("le MSISDN " + msisdnRequest.getMsisdn() +" est Blacklisté")
+                .message("le MSISDN " + msisdn +" est Blacklisté")
                 .build();
         if (!isBlacklisted) {
-            messageResponse.setMessage("le MSISDN " + msisdnRequest.getMsisdn() +" n'est pas Blacklisté");
+            messageResponse.setMessage("le MSISDN " + msisdn +" n'est pas Blacklisté");
             return ResponseEntity.ok(messageResponse);
 
         }
