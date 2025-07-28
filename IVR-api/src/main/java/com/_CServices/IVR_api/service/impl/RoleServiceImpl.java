@@ -236,7 +236,7 @@ public class RoleServiceImpl implements RoleService {
         auditLoggingService.logAction(
                 ActionType.CREATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
-                createdRole.getId()
+                createdRole.getId(),null
         );
 
         return roleMapper.toDto(createdRole);
@@ -277,7 +277,8 @@ public class RoleServiceImpl implements RoleService {
         auditLoggingService.logAction(
                 ActionType.UPDATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
-                updatedRole.getId()
+                updatedRole.getId(),
+                null
         );
 
         return roleMapper.toDto(updatedRole);
@@ -312,7 +313,8 @@ public class RoleServiceImpl implements RoleService {
         auditLoggingService.logAction(
                 ActionType.UPDATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
-                updatedRole.getId()
+                updatedRole.getId(),
+                null
         );
 
         return roleMapper.toDto(updatedRole);
@@ -330,7 +332,8 @@ public class RoleServiceImpl implements RoleService {
         auditLoggingService.logAction(
                 ActionType.DELETE_ROLE.toString(),
                 EntityType.ROLE.toString(),
-                id
+                id,
+                null
         );
     }
 
@@ -348,7 +351,8 @@ public class RoleServiceImpl implements RoleService {
         auditLoggingService.logAction(
                 ActionType.DELETE_ROLE.toString(),
                 EntityType.ROLE.toString(),
-                roleToDeleteId
+                roleToDeleteId,
+                null
         );
 
 

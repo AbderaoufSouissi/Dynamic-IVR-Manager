@@ -212,7 +212,8 @@ public class PermissionsServiceImpl implements PermissionsService {
         auditLoggingService.logAction(
                 ActionType.CREATE_PERMISSION.toString(),
                 EntityType.PERMISSION.toString(),
-                createdPermission.getId()
+                createdPermission.getId(),
+                null
         );
 
 
@@ -244,7 +245,8 @@ public class PermissionsServiceImpl implements PermissionsService {
         auditLoggingService.logAction(
                 ActionType.DELETE_PERMISSION.toString(),
                 EntityType.PERMISSION.toString(),
-                permissionToDelete.getId()
+                permissionToDelete.getId(),
+                null
         );
     }
 
@@ -260,7 +262,8 @@ public class PermissionsServiceImpl implements PermissionsService {
         auditLoggingService.logAction(
                 ActionType.DELETE_PERMISSION.toString(),
                 EntityType.PERMISSION.toString(),
-                permissionToDelete.getId()
+                permissionToDelete.getId(),
+                null
         );
 
 

@@ -26,7 +26,7 @@ public class AuditLoggingService {
     private final CurrentUserProvider currentUserProvider;
 
     @Transactional
-    public void logAction(String actionType, String entityType, Long entityId) {
+    public void logAction(String actionType, String entityType, Long entityId, String msisdn) {
         log.info("inside logAction()");
         final User user;
 
@@ -46,6 +46,7 @@ public class AuditLoggingService {
                 .actionType(actionType)
                 .entityType(entityType)
                 .entityId(entityId)
+                .msisdn(msisdn)
                 .build();
 
         auditRepository.save(auditLog);

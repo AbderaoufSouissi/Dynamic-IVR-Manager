@@ -251,7 +251,8 @@ public class UserServiceImpl implements UserService {
                 auditLoggingService.logAction(
                         ActionType.CREATE_ROLE.toString(),
                         EntityType.ROLE.toString(),
-                        defaultRole.getId()
+                        defaultRole.getId(),
+                        null
                 );
 
 
@@ -282,7 +283,8 @@ public class UserServiceImpl implements UserService {
                 auditLoggingService.logAction(
                         ActionType.CREATE_USER.toString(),
                         EntityType.USER.toString(),
-                        newUser.getId()
+                        newUser.getId(),
+                        null
                 );
 
                 return userMapper.toDto(user);
@@ -305,7 +307,8 @@ public class UserServiceImpl implements UserService {
         auditLoggingService.logAction(
                 ActionType.DELETE_USER.toString(),
                 EntityType.USER.toString(),
-                userToDeleteId
+                userToDeleteId,
+                null
         );
     }
 
@@ -324,7 +327,8 @@ public class UserServiceImpl implements UserService {
         auditLoggingService.logAction(
                 ActionType.DELETE_USER.toString(),
                 EntityType.USER.toString(),
-                userToDeleteId
+                userToDeleteId,
+                null
         );
     }
 
@@ -341,7 +345,8 @@ public class UserServiceImpl implements UserService {
         auditLoggingService.logAction(
                 ActionType.DELETE_USER.toString(),
                 EntityType.USER.toString(),
-                userToDeleteId
+                userToDeleteId,
+                null
         );
 
     }
@@ -381,7 +386,8 @@ public class UserServiceImpl implements UserService {
         auditLoggingService.logAction(
                 ActionType.UPDATE_USER.toString(),
                 EntityType.USER.toString(),
-                userToUpdate.getId()
+                userToUpdate.getId(),
+                null
         );
 
         return userMapper.toDto(userToUpdate);

@@ -40,7 +40,7 @@ public class AuthService {
 
         // Send email
         emailService.sendResetPasswordEmail(user.getUsername(), email, token);
-        auditLoggingService.logAction(ActionType.FORGET_PASSWORD.toString(),EntityType.USER.toString(),user.getId());
+        auditLoggingService.logAction(ActionType.FORGET_PASSWORD.toString(),EntityType.USER.toString(),user.getId(),null);
 
 
         log.info("Password reset email sent to: {}", email);
@@ -59,7 +59,7 @@ public class AuthService {
         userRepository.save(user);
 
 
-        auditLoggingService.logAction(ActionType.RESET_PASSWORD.toString(), String.valueOf(EntityType.USER),user.getId());
+        auditLoggingService.logAction(ActionType.RESET_PASSWORD.toString(), String.valueOf(EntityType.USER),user.getId(),null);
 
         log.info("Password reset successful for user: {}", email);
     }

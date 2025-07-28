@@ -29,7 +29,7 @@ public class Audit{
     private String actionType;
 
 
-    @Column(nullable = true)
+    @Column
     private String msisdn;
 
     private LocalDateTime actionTimeStamp;
