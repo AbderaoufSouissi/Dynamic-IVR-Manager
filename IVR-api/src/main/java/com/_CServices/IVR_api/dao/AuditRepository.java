@@ -10,14 +10,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Repository
 public interface AuditRepository extends JpaRepository<Audit, Long>, JpaSpecificationExecutor<Audit> {
-    List<Audit> findByEntityType(EntityType entityType);
-    List<Audit> findAllByEntityTypeAndActionType(EntityType entityType, ActionType actionType);
-    List<Audit> findAllByActionType(ActionType actionType);
-    List<Audit> findByActionTimeStampBetween(LocalDateTime actionTimeStampAfter, LocalDateTime actionTimeStampBefore);
 
 
     @Query(value = """

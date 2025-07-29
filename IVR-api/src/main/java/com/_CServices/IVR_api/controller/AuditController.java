@@ -37,7 +37,7 @@ public class AuditController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
         Page<AuditResponse> audits = auditService.getAuditsWithFilters(
-                id, userId, action, entity, date,   // <‑‑ extra param
+                id, userId, action, entity, date,
                 sortBy, sortDir,
                 pageable
         );

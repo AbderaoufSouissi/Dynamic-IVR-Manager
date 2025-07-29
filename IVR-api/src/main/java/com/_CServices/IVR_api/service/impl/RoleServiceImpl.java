@@ -2,10 +2,12 @@ package com._CServices.IVR_api.service.impl;
 
 import com._CServices.IVR_api.dao.PermissionsRepository;
 import com._CServices.IVR_api.dao.RoleRepository;
+import com._CServices.IVR_api.dao.UserRepository;
 import com._CServices.IVR_api.dto.response.RoleResponse;
 import com._CServices.IVR_api.dto.request.RoleRequest;
 import com._CServices.IVR_api.entity.Permissions;
 import com._CServices.IVR_api.entity.Role;
+import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.enumeration.ActionType;
 import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,6 +40,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
     private final PermissionsRepository permissionsRepository;
     private final AuditLoggingService auditLoggingService;
     private final RoleMapper roleMapper;
@@ -319,16 +323,48 @@ public class RoleServiceImpl implements RoleService {
 
         return roleMapper.toDto(updatedRole);
     }
-
+    @Transactional
     @Override
     public void deleteRoleById(Long id) {
-        log.info("inside deleteRole()");
+        log.info("Starting deletion of role with id: {}", id);
 
+        // 1. Find the role to delete
         Role roleToDelete = roleRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Role with id : "+id+" not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " not found"));
+
+        // 2. Find the default role (must exist)
+        Role defaultRole = Optional.ofNullable(roleRepository.findByName("DEFAULT_ROLE"))
+                .orElseThrow(() -> new IllegalStateException("DEFAULT_ROLE must exist in the system"));
+
+        // 3. Reassign users to DEFAULT_ROLE
+        List<User> usersWithRole = userRepository.findUsersWithRole(id);
+        if (!usersWithRole.isEmpty()) {
+            log.info("Reassigning {} users from role {} to DEFAULT_ROLE",
+                    usersWithRole.size(), roleToDelete.getName());
+
+            usersWithRole.forEach(user -> {
+                user.setRole(defaultRole);
+                userRepository.save(user);
+            });
+            userRepository.flush(); // Ensure user updates are committed
+        }
+
+        // 4. Clear all permission associations
+        log.info("Clearing {} permission associations for role {}",
+                roleToDelete.getPermissions().size(), roleToDelete.getName());
+
+        // Create a copy to avoid ConcurrentModificationException
+        Set<Permissions> permissionsCopy = new HashSet<>(roleToDelete.getPermissions());
+        permissionsCopy.forEach(permission -> {
+            roleToDelete.removePermission(permission);
+        });
+        roleRepository.saveAndFlush(roleToDelete);
+
+        // 5. Delete the role
         roleRepository.delete(roleToDelete);
+        log.info("Successfully deleted role with id: {}", id);
 
-
+        // 6. Audit logging
         auditLoggingService.logAction(
                 ActionType.DELETE_ROLE.toString(),
                 EntityType.ROLE.toString(),
