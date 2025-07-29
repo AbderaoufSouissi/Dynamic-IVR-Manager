@@ -7,9 +7,10 @@ import { HiChevronDown } from "react-icons/hi";
 interface AuditsTableProps {
   itemsPerPage?: number;
   audits: Audit[];
+  triggerRefresh: () => void;
 }
 
-const AuditsTable = ({ itemsPerPage = 5, audits }: AuditsTableProps) => {
+const AuditsTable = ({ itemsPerPage = 5, audits, triggerRefresh }: AuditsTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
 

@@ -1,4 +1,4 @@
-import FilterButtons from '../buttons/FilterButtons';
+import ResetFiltersButton from "../buttons/ResetFiltersButton";
 
 interface AuditFilterProps {
   filters: {
@@ -11,9 +11,10 @@ interface AuditFilterProps {
     date: string;
   };
   onFilterChange: (name: string, value: string) => void;
+  onResetFilters: ()=> void
 }
 
-const AuditFilter = ({ filters, onFilterChange }: AuditFilterProps) => {
+const AuditFilter = ({ filters, onFilterChange, onResetFilters }: AuditFilterProps) => {
   const labelClass = "block text-sm font-medium text-gray-700 mb-1";
   const inputClass = "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 sm:text-sm";
 
@@ -116,15 +117,16 @@ const AuditFilter = ({ filters, onFilterChange }: AuditFilterProps) => {
           </label>
           <input
             id="date-filter"
-            type="date"
+            type="text"
             value={filters.date}
+            placeholder="ex: 2020-07-28"
             onChange={(e) => onFilterChange("date", e.target.value)}
             className={inputClass}
           />
         </div>
       </div>
 
-      <FilterButtons />
+      <ResetFiltersButton onClick={onResetFilters} />
     </div>
   );
 };
