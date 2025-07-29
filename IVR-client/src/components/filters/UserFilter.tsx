@@ -1,25 +1,26 @@
-import FilterButtons from "../buttons/FilterButtons";
+import ResetFiltersButton from "../buttons/ResetFiltersButton";
 
 interface UserFiltersProps {
   filters: {
-    username: string;
-    email: string;
-    id: string;
-    firstname: string;
-    lastname: string;
-    createdBy: string;
-    updatedBy: string;
-    createdAt: string;
-    updatedAt: string;
-    role?: string;
+    id: string,
+    username: string,
+    email: string,
+    firstName: string,
+    lastName: string,
+    createdBy: string,
+    updatedBy: string,
+    createdAt: string,
+    updatedAt: string,
+    role: string,
   };
   onFilterChange: (name: string, value: string) => void;
+  onResetFilters:()=>void
 }
 
 const labelClass = "block text-sm font-medium text-gray-700 mb-1";
 const inputClass = "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 sm:text-sm";
 
-const UserFilter = ({ filters, onFilterChange }: UserFiltersProps) => {
+const UserFilter = ({ filters, onFilterChange, onResetFilters }: UserFiltersProps) => {
   return (
     <div className="mb-6 p-4 bg-white rounded-xl shadow border border-gray-200">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -30,7 +31,7 @@ const UserFilter = ({ filters, onFilterChange }: UserFiltersProps) => {
           <input
             id="id-filter"
             type="text"
-            placeholder="Filter par ID"
+            placeholder="Filtrer par ID"
             value={filters.id}
             onChange={(e) => onFilterChange("id", e.target.value)}
             className={inputClass}
@@ -43,7 +44,7 @@ const UserFilter = ({ filters, onFilterChange }: UserFiltersProps) => {
           <input
             id="username-filter"
             type="text"
-            placeholder="Filter par username"
+            placeholder="Filtrer par username"
             value={filters.username}
             onChange={(e) => onFilterChange("username", e.target.value)}
             className={inputClass}
@@ -56,7 +57,7 @@ const UserFilter = ({ filters, onFilterChange }: UserFiltersProps) => {
           <input
             id="email-filter"
             type="email"
-            placeholder="Filter par email"
+            placeholder="Filtrer par email"
             value={filters.email}
             onChange={(e) => onFilterChange("email", e.target.value)}
             className={inputClass}
@@ -69,7 +70,7 @@ const UserFilter = ({ filters, onFilterChange }: UserFiltersProps) => {
           <input
             id="role-filter"
             type="text"
-            placeholder="Filter par role"
+            placeholder="Filtrer par role"
             value={filters.role}
             onChange={(e) => onFilterChange("role", e.target.value)}
             className={inputClass}
@@ -83,9 +84,9 @@ const UserFilter = ({ filters, onFilterChange }: UserFiltersProps) => {
           <input
             id="firstname-filter"
             type="text"
-            placeholder="Filter par prénom"
-            value={filters.firstname}
-            onChange={(e) => onFilterChange("firstname", e.target.value)}
+            placeholder="Filtrer par prénom"
+            value={filters.firstName}
+            onChange={(e) => onFilterChange("firstName", e.target.value)}
             className={inputClass}
           />
         </div>
@@ -96,9 +97,9 @@ const UserFilter = ({ filters, onFilterChange }: UserFiltersProps) => {
           <input
             id="lastname-filter"
             type="text"
-            placeholder="Filter par nom"
-            value={filters.lastname}
-            onChange={(e) => onFilterChange("lastname", e.target.value)}
+            placeholder="Filtrer par nom"
+            value={filters.lastName}
+            onChange={(e) => onFilterChange("lastName", e.target.value)}
             className={inputClass}
           />
         </div>
@@ -109,7 +110,7 @@ const UserFilter = ({ filters, onFilterChange }: UserFiltersProps) => {
           <input
             id="createdBy-filter"
             type="text"
-            placeholder="Filter par créateur"
+            placeholder="Filtrer par créateur"
             value={filters.createdBy}
             onChange={(e) => onFilterChange("createdBy", e.target.value)}
             className={inputClass}
@@ -122,7 +123,7 @@ const UserFilter = ({ filters, onFilterChange }: UserFiltersProps) => {
           <input
             id="updatedBy-filter"
             type="text"
-            placeholder="Filter par modificateur"
+            placeholder="Filtrer par modificateur"
             value={filters.updatedBy}
             onChange={(e) => onFilterChange("updatedBy", e.target.value)}
             className={inputClass}
@@ -134,7 +135,8 @@ const UserFilter = ({ filters, onFilterChange }: UserFiltersProps) => {
           </label>
           <input
             id="createdAt-filter"
-            type="date"
+            type="text"
+            placeholder="ex: 2020-07-28"
             value={filters.createdAt}
             onChange={(e) => onFilterChange("createdAt", e.target.value)}
             className={inputClass}
@@ -146,13 +148,14 @@ const UserFilter = ({ filters, onFilterChange }: UserFiltersProps) => {
           </label>
           <input
             id="updatedAt-filter"
-            type="date"
+            type="text"
+            placeholder="ex: 2020-07-28"
             value={filters.updatedAt}
             onChange={(e) => onFilterChange("updatedAt", e.target.value)}
             className={inputClass}
           />
         </div>
-        <FilterButtons/>
+       <ResetFiltersButton onClick={onResetFilters} />
       </div>
     </div>
   );

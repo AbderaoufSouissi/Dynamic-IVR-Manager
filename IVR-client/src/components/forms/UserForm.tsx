@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { createUser, getUserById, updateUser } from "../../service/UserService";
 import { HiEye, HiEyeSlash } from "react-icons/hi2";
 
@@ -7,6 +7,9 @@ interface UserFormProps {
   title: Title;
   description: Description;
 }
+type UsersPageContext = {
+  triggerRefresh: () => void;
+};
 
 type Title = "Créer un nouvel utilisateur" | "Modifier un utilisateur";
 type Description =
@@ -28,6 +31,7 @@ const UserForm = ({ title, description }: UserFormProps) => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const { triggerRefresh } = useOutletContext<UsersPageContext>();
 
   const navigate = useNavigate();
 
@@ -94,6 +98,7 @@ if (formData.active !== null) {
 
         await createUser(createPayload);
       }
+       triggerRefresh()
 
       navigate("/admin/users");
     } catch (error) {

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import UserFilter from "../components/filters/UserFilter";
 import UsersTable from "../components/tables/UsersTable";
 import { HiOutlineUserAdd } from "react-icons/hi";
 
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { getUsers } from "../service/UserService";
 import type { User } from "../types/types";
 
@@ -12,8 +12,8 @@ const UsersPage = () => {
     username: "",
     email: "",
     id: "",
-    firstname: "",
-    lastname: "",
+    firstName: "",
+    lastName: "",
     createdBy: "",
     updatedBy: "",
     createdAt: "",
@@ -22,31 +22,62 @@ const UsersPage = () => {
   });
 
   const [users, setUsers] = useState<User[]>([]);
-  const location = useLocation();
+ const [refreshTrigger, setRefreshTrigger] = useState(0);
+const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
-   
-  
-  // const users: User[] = []
 
+  const isNumeric = (value: string) => /^[0-9]+$/.test(value);
+
+  const isValidDate = (value: string) => {
+    return /^\d{4}-\d{2}-\d{2}$/.test(value); // Only accept full YYYY-MM-DD
+  };
+  const validateFilters = useCallback(
+    (filters: Record<string, string>): Record<string, string> | null => {
+      const validated: Record<string, string> = {};
+
+      for (const [key, value] of Object.entries(filters)) {
+        const trimmed = value.trim();
+        if (!trimmed) continue;
+
+        if (key === "id" && !isNumeric(trimmed)) return null;
+        if (
+          (key === "createdAt" || key === "updatedAt") &&
+          !isValidDate(trimmed)
+        )
+          return null;
+
+        validated[key] = trimmed;
+      }
+
+      return validated;
+    },
+    []
+  );
 
   const fetchUsers = async () => {
+    const validatedFilters = validateFilters(filters);
+    if (validatedFilters === null) {
+      return;
+    }
+
     try {
-      const data = await getUsers();
-      console.log(data)
+      const data = await getUsers(validatedFilters);
       setUsers(data.content);
     } catch (err) {
       console.error("Erreur lors de la récupération des utilisateurs", err);
     }
   };
 
+  // Run fetchUsers on mount and on filters change with debounce
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    const delayDebounce = setTimeout(() => {
+      fetchUsers();
+    }, 500);
 
-   useEffect(() => {
-    fetchUsers();
-  }, [location]); 
+  
 
+    return () => clearTimeout(delayDebounce);
+  }, [filters,refreshTrigger]);
 
   const handleFilterChange = (name: string, value: string) => {
     setFilters((prevFilters) => ({
@@ -55,48 +86,49 @@ const UsersPage = () => {
     }));
   };
 
-  
-
   const navigate = useNavigate();
- 
+
+  const resetFilters = () => {
+    setFilters({
+      id: "",
+      username: "",
+      email: "",
+      firstName: "",
+      lastName: "",
+      createdBy: "",
+      updatedBy: "",
+      createdAt: "",
+      updatedAt: "",
+      role: "",
+    });
+  };
 
   return (
     <>
       <div>
-        {users.length === 0 ? (
-          <div className="text-center mt-10 text-gray-500">
-            <div className="mb-6 flex flex-col items-center justify-center gap-4">
-              <p className="text-3xl font-bold text-slate-900">Aucun utilisateur trouvé</p>
-              <button
-                onClick={() => navigate("/admin/users/create")}
-                className="cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl min-h-[50px] flex items-center justify-center"
-              >
-                <HiOutlineUserAdd size={20} className="mr-2" />
-                Ajouter un utilisateur
-              </button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="mb-6 flex items-center justify-between">
-              <p className="text-3xl font-bold text-slate-900">Gestion des utilisateurs</p>
-              <button
-                onClick={() => navigate("/admin/users/create")}
-                className="cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl min-h-[50px] flex items-center justify-center"
-              >
-                <HiOutlineUserAdd size={20} className="mr-2" />
-                Ajouter un utilisateur
-              </button>
-            </div>
+        <div className="mb-6 flex items-center justify-between">
+          <p className="text-3xl font-bold text-slate-900">
+            Gestion des utilisateurs
+          </p>
+          <button
+            onClick={() => navigate("/admin/users/create")}
+            className="cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl min-h-[50px] flex items-center justify-center"
+          >
+            <HiOutlineUserAdd size={20} className="mr-2" />
+            Ajouter un utilisateur
+          </button>
+        </div>
 
-            <UserFilter filters={filters} onFilterChange={handleFilterChange} />
-            <UsersTable users={users} />
-          </>
-        )}
+        <UserFilter
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onResetFilters={resetFilters}
+        />
+        <UsersTable users={users} triggerRefresh={triggerRefresh} />
       </div>
 
-      <Outlet />
+      <Outlet context={{ triggerRefresh }}/>
     </>
   );
-}
+};
 export default UsersPage;

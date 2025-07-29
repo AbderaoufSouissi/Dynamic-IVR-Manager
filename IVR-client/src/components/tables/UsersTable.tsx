@@ -10,9 +10,10 @@ import { HiChevronDown } from "react-icons/hi";
 interface UsersTableProps {
   itemsPerPage?: number;
   users: User[];
+  triggerRefresh: () => void;
 }
 
-const UsersTable = ({ itemsPerPage = 5, users }: UsersTableProps) => {
+const UsersTable = ({ itemsPerPage = 5, users, triggerRefresh }: UsersTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
 
@@ -240,8 +241,7 @@ const UsersTable = ({ itemsPerPage = 5, users }: UsersTableProps) => {
           description="Êtes-vous sûr de vouloir supprimer cet utilisateur ?"
           confirmType="danger"
           onConfirm={() => {
-            // Implement deletion logic here
-            console.log("Confirmed");
+            triggerRefresh()
             setShowModal(false);
           }}
           confirmLabel="Supprimer"
