@@ -1,5 +1,4 @@
-import React from "react";
-import FilterButtons from "../buttons/FilterButtons";
+import ResetFiltersButton from "../buttons/ResetFiltersButton";
 
 interface RoleFiltersProps {
   filters: {
@@ -11,12 +10,13 @@ interface RoleFiltersProps {
     updatedBy: string;
   };
   onFilterChange: (name: string, value: string) => void;
+  onResetFilters:()=>void
 }
 
 const labelClass = "block text-sm font-medium text-gray-700 mb-1";
 const inputClass = "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 sm:text-sm/6";
 
-const RoleFilter: React.FC<RoleFiltersProps> = ({ filters, onFilterChange }) => {
+const RoleFilter = ({ filters, onFilterChange, onResetFilters }: RoleFiltersProps) => {
   return (
     <div className="mb-6 p-4 bg-white rounded-xl shadow border border-gray-200">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -27,7 +27,7 @@ const RoleFilter: React.FC<RoleFiltersProps> = ({ filters, onFilterChange }) => 
           <input
             id="id-filter"
             type="text"
-            placeholder="Filter par ID"
+            placeholder = "Filtrer par ID"
             value={filters?.id || ''}
             onChange={(e) => onFilterChange("id", e.target.value)}
             className={inputClass}
@@ -40,7 +40,7 @@ const RoleFilter: React.FC<RoleFiltersProps> = ({ filters, onFilterChange }) => 
           <input
             id="name-filter"
             type="text"
-            placeholder="Filter par nom"
+            placeholder = "Filtrer par nom"
             value={filters?.name || ''}
             onChange={(e) => onFilterChange("name", e.target.value)}
             className={inputClass}
@@ -52,7 +52,8 @@ const RoleFilter: React.FC<RoleFiltersProps> = ({ filters, onFilterChange }) => 
           </label>
           <input
             id="createdAt-filter"
-            type="date"
+            type="text"
+            placeholder="ex: 2020-07-28"
             value={filters?.createdAt || ''}
             onChange={(e) => onFilterChange("createdAt", e.target.value)}
             className={inputClass}
@@ -64,7 +65,8 @@ const RoleFilter: React.FC<RoleFiltersProps> = ({ filters, onFilterChange }) => 
           </label>
           <input
             id="updatedAt-filter"
-            type="date"
+            type="text"
+            placeholder="ex: 2020-07-28"
             value={filters?.updatedAt || ''}
             onChange={(e) => onFilterChange("updatedAt", e.target.value)}
             className={inputClass}
@@ -77,7 +79,7 @@ const RoleFilter: React.FC<RoleFiltersProps> = ({ filters, onFilterChange }) => 
           <input
             id="createdBy-filter"
             type="text"
-            placeholder="Filter par créateur"
+            placeholder = "Filtrer par créateur"
             value={filters?.createdBy || ''}
             onChange={(e) => onFilterChange("createdBy", e.target.value)}
             className={inputClass}
@@ -90,7 +92,7 @@ const RoleFilter: React.FC<RoleFiltersProps> = ({ filters, onFilterChange }) => 
           <input
             id="updatedBy-filter"
             type="text"
-            placeholder="Filter par modificateur"
+            placeholder = "Filtrer par modificateur"
             value={filters?.updatedBy || ''}
             onChange={(e) => onFilterChange("updatedBy", e.target.value)}
             className={inputClass}
@@ -99,7 +101,7 @@ const RoleFilter: React.FC<RoleFiltersProps> = ({ filters, onFilterChange }) => 
         
       </div>
       
-  <FilterButtons />
+ <ResetFiltersButton onClick={onResetFilters} />
 
     </div>
   );

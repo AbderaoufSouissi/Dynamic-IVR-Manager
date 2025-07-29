@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import RoleFilter from "../components/filters/RoleFilter";
 import RolesTable from "../components/tables/RolesTable";
-// import content from "../data/content.json";
 import { MdAdminPanelSettings } from "react-icons/md";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { getRoles } from "../service/RoleService";
 import type { Role } from "../types/types";
 
-<div className="mb-6 flex items-center justify-between">
-  <p>Gestion des utilisateurs ici.</p>
-</div>;
+
 
 const RolesPage = () => {
   const [filters, setFilters] = useState({
@@ -21,29 +18,66 @@ const RolesPage = () => {
     updatedBy: "",
   });
 
-  const navigate = useNavigate()
-  // const roles = []
+  const navigate = useNavigate();
+
+
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
+  const isNumeric = (value: string) => /^[0-9]+$/.test(value);
   
+    const isValidDate = (value: string) => {
+      return /^\d{4}-\d{2}-\d{2}$/.test(value); // Only accept full YYYY-MM-DD
+    };
+    
+  
+  const validateFilters = useCallback(
+      (filters: Record<string, string>): Record<string, string> | null => {
+        const validated: Record<string, string> = {};
+  
+        for (const [key, value] of Object.entries(filters)) {
+          const trimmed = value.trim();
+          if (!trimmed) continue;
+  
+          if (key === "id" && !isNumeric(trimmed)) return null;
+          if (
+            (key === "createdAt" || key === "updatedAt") &&
+            !isValidDate(trimmed)
+          )
+            return null;
+  
+          validated[key] = trimmed;
+        }
+  
+        return validated;
+      },
+      []
+    );
 
- const [roles, setRoles] = useState<Role[]>([]);
-  const location = useLocation();
+  const fetchRoles = async () => {
+     const validatedFilters = validateFilters(filters);
+    if (validatedFilters === null) {
+      return;
+    }
 
-
-
-
-   const fetchRoles = async () => {
     try {
-      const data = await getRoles();
+      const data = await getRoles(validatedFilters);
       setRoles(data.content);
     } catch (err) {
       console.error("Erreur lors de la récupération des utilisateurs", err);
     }
   };
 
-  useEffect(() => {
-   
-    fetchRoles();
-  }, [location]);
+ useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      fetchRoles();
+    }, 500);
+
+  
+
+    return () => clearTimeout(delayDebounce);
+  }, [filters,refreshTrigger]);
+
 
 
 
@@ -53,48 +87,48 @@ const RolesPage = () => {
       [name]: value,
     }));
   };
-  return (
-  <>
-    <div>
-      {roles.length === 0 ? (
-        <div className="text-center mt-10 text-gray-500">
-          <div className="mb-6 flex flex-col items-center justify-center gap-4">
-            <p className="text-3xl font-bold text-slate-900">Aucun rôle trouvé</p>
-            <button
-              onClick={() => navigate("/admin/roles/create")}
-              className="cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl min-h-[50px] flex items-center justify-center"
-            >
-              <MdAdminPanelSettings size={25} className="mr-2" />
-              Ajouter un rôle
-            </button>
-          </div>
+
+  const resetFilters = () => {
+    setFilters({
+    id: "",
+    name: "",
+    createdAt: "",
+    updatedAt: "",
+    createdBy: "",
+    updatedBy: "",
+    });
+  }
+
+    return (
+      <>
+        <div>
+              <div className="mb-6 flex items-center justify-between">
+                <p className="text-3xl font-bold text-slate-900">
+                  Gestion des rôles ici.
+                </p>
+                <button
+                  onClick={() => navigate("/admin/roles/create")}
+                  className="cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl min-h-[50px] flex items-center justify-center"
+                >
+                  <MdAdminPanelSettings size={25} className="mr-2" />
+                  Ajouter un rôle
+                </button>
+              </div>
+
+              <RoleFilter
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                onResetFilters={resetFilters}
+              />
+              <RolesTable roles={roles} triggerRefresh={triggerRefresh} />
+            
+    
         </div>
-      ) : (
-        <>
-          <div className="mb-6 flex items-center justify-between">
-            <p className="text-3xl font-bold text-slate-900">Gestion des rôles ici.</p>
-            <button
-              onClick={() => navigate("/admin/roles/create")}
-              className="cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl min-h-[50px] flex items-center justify-center"
-            >
-              <MdAdminPanelSettings size={25} className="mr-2" />
-              Ajouter un rôle
-            </button>
-          </div>
 
-          <RoleFilter filters={filters} onFilterChange={handleFilterChange} />
-          <RolesTable roles={roles} />
-        </>
-      )}
-    </div>
-
-    <Outlet />
-  </>
-);
-};
-
-export default RolesPage
+        <Outlet context={{ triggerRefresh }} />
+      </>
+    );
+  };
 
 
-
-
+export default RolesPage;

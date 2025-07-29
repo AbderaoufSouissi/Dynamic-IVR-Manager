@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { createRole, getRoleById, updateRole } from "../../service/RoleService";
 import { getPermissions } from "../../service/PermissionService";
 import type { RoleRequest, Permission } from "../../types/types";
@@ -14,11 +14,14 @@ interface RoleFormProps {
   title: Title;
   description: Description;
 }
+type RolesPageContext = {
+  triggerRefresh: () => void;
+};
 
 const RoleForm = ({ title, description }: RoleFormProps) => {
   const { id } = useParams();
   const navigate = useNavigate();
-
+const { triggerRefresh } = useOutletContext<RolesPageContext>()
   const [formData, setFormData] = useState<RoleRequest>({
     name: "",
     permissions: [],
@@ -72,6 +75,7 @@ const RoleForm = ({ title, description }: RoleFormProps) => {
       } else {
         await createRole(formData);
       }
+      triggerRefresh()
       navigate("/admin/roles");
     } catch (err) {
       console.error("Erreur lors de la soumission du formulaire :", err);

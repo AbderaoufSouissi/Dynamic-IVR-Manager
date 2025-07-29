@@ -8,9 +8,10 @@ import { formatTimestamp } from "../../api/Api";
 interface RolesTableProps {
   roles: Role[];
   itemsPerPage?: number;
+  triggerRefresh: () => void;
 }
 
-const RolesTable = ({ roles, itemsPerPage = 5 }: RolesTableProps) => {
+const RolesTable = ({ roles, itemsPerPage = 5,triggerRefresh }: RolesTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage ?? 5);
   const navigate = useNavigate()
