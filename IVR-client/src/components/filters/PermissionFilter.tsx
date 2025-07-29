@@ -1,5 +1,4 @@
-import React from "react";
-import FilterButtons from "../buttons/FilterButtons";
+import ResetFiltersButton from "../buttons/ResetFiltersButton";
 
 interface PermissionFiltersProps {
   filters: {
@@ -11,6 +10,7 @@ interface PermissionFiltersProps {
     updatedAt: string;
   };
   onFilterChange: (name: string, value: string) => void;
+  onResetFilters: ()=> void
 }
 
 const labelClass =
@@ -18,7 +18,7 @@ const labelClass =
 const inputClass =
   "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 sm:text-sm/6";
 
-const PermissionFilter: React.FC<PermissionFiltersProps> = ({ filters, onFilterChange }) => {
+const PermissionFilter = ({ filters, onFilterChange, onResetFilters }: PermissionFiltersProps) => {
   return (
     <div className="mb-6 p-4 bg-white rounded-xl shadow border border-gray-200">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -84,7 +84,8 @@ const PermissionFilter: React.FC<PermissionFiltersProps> = ({ filters, onFilterC
           </label>
           <input
             id="createdAt-filter"
-            type="date"
+            type="text"
+            placeholder="ex: 2020-07-28"
             value={filters.createdAt}
             onChange={(e) => onFilterChange("createdAt", e.target.value)}
             className={inputClass}
@@ -97,7 +98,8 @@ const PermissionFilter: React.FC<PermissionFiltersProps> = ({ filters, onFilterC
           </label>
           <input
             id="updatedAt-filter"
-            type="date"
+            type="text"
+            placeholder="ex: 2020-07-28"
             value={filters.updatedAt}
             onChange={(e) => onFilterChange("updatedAt", e.target.value)}
             className={inputClass}
@@ -108,7 +110,7 @@ const PermissionFilter: React.FC<PermissionFiltersProps> = ({ filters, onFilterC
         </div>
         
       </div>
-      <FilterButtons />
+      <ResetFiltersButton onClick={onResetFilters} />
       
   
 

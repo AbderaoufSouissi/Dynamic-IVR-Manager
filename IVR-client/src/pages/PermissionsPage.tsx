@@ -17,7 +17,33 @@ const PermissionsPage = () => {
   });
 
   const [permissions, setPermissions] = useState<Permission[]>([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
   const location = useLocation();
+
+  const filteredPermissions = () => {
+  return permissions.filter((permission) => {
+    return (
+      (filters.id === "" || permission.permissionId.toString().includes(filters.id)) &&
+      (filters.name === "" || permission.name?.toLowerCase().includes(filters.name.toLowerCase())) &&
+      (filters.createdBy === "" || permission.createdBy?.toLowerCase().includes(filters.createdBy.toLowerCase())) &&
+      (filters.updatedBy === "" || permission.updatedBy?.toLowerCase().includes(filters.updatedBy.toLowerCase())) &&
+      (filters.createdAt === "" || permission.createdAt?.startsWith(filters.createdAt)) &&
+      (filters.updatedAt === "" || permission.updatedAt?.startsWith(filters.updatedAt))
+    );
+  });
+  };
+  
+  const resetFilters = () => {
+  setFilters({
+    id: "",
+    name: "",
+    createdBy: "",
+    updatedBy: "",
+    createdAt: "",
+    updatedAt: "",
+  });
+};
 
   // const permissions = []
 
@@ -76,13 +102,14 @@ const PermissionsPage = () => {
 
           <PermissionFilter
             filters={filters}
-            onFilterChange={handleFilterChange}
+                onFilterChange={handleFilterChange}
+                onResetFilters={resetFilters}
           />
-          <PermissionsTable permissions={permissions} />
+              <PermissionsTable permissions={filteredPermissions()} triggerRefresh={triggerRefresh} />
         </>
       )}
     </div>
-    <Outlet />
+    <Outlet context={{ triggerRefresh }} />
   </>
 );
 };

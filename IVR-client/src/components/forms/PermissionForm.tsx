@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { PermissionRequest } from '../../types/types';
 import { createPermission, getPermissionById } from '../../service/PermissionService';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 
 type Title = "Créer une nouvelle permission";
 type Description ="Complétez les informations ci-dessous pour créer une nouvelle permission"
@@ -11,11 +11,15 @@ interface PermissionFormProps {
   title: Title;
   description: Description;
 }
+type PermissionsPageContext = {
+  triggerRefresh: () => void;
+};
 
 const PermissionForm = ({ title, description }: PermissionFormProps) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const { triggerRefresh } = useOutletContext<PermissionsPageContext  >()
 
   const [formData, setFormData] = useState<PermissionRequest>({
     name: '',
@@ -42,6 +46,7 @@ const fetchPermission = async () => {
     e.preventDefault();
     try {
       await createPermission(formData);
+      triggerRefresh()
       navigate("/admin/permissions");
     } catch (err) {
       console.error("Erreur lors de la soumission du formulaire :", err);
