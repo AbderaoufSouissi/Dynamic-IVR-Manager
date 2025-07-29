@@ -138,9 +138,6 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
 
       {/* Footer with user info or branding */}
       <div className="p-4 border-t border-gray-200 bg-white/50">
-        <div className="text-xs text-gray-600 text-center">
-          Admin Panel v1.0
-        </div>
       </div>
     </aside>
   );
