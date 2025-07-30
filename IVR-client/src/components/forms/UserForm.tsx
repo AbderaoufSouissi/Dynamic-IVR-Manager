@@ -31,6 +31,8 @@ const UserForm = ({ title, description }: UserFormProps) => {
     active: null as boolean | null, // allow null initially
   });
 
+  const [formError, setFormError] = useState<string | null>(null);
+
   const [showPassword, setShowPassword] = useState(false);
   const { triggerRefresh } = useOutletContext<UsersPageContext>();
 
@@ -58,6 +60,17 @@ const UserForm = ({ title, description }: UserFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (
+    !formData.firstName.trim() ||
+    !formData.lastName.trim() ||
+    !formData.email.trim() ||
+    !formData.username.trim() ||
+    (!id && !formData.password.trim()) || // password required only on creation
+    formData.active === null // must explicitly choose Actif or Inactif
+  ) {
+    setFormError("Veuillez remplir tous les champs requis et sélectionner un statut.");
+    return;
+  }
 
     // common data
     const basePayload: any = {
@@ -102,8 +115,17 @@ if (formData.active !== null) {
        triggerRefresh()
 
       navigate("/admin/users");
-    } catch (error) {
-      console.error("Erreur lors de la soumission du formulaire :", error);
+    } catch (error: any) {
+  console.error("Erreur lors de la soumission du formulaire :", error);
+  
+  // Try to extract error message from response
+  const message =
+    error?.response?.data?.error || // e.g. from Spring Boot's ResponseEntity
+    error?.message ||                 // fallback: JS error message
+    "Une erreur est survenue.";      // ultimate fallback
+
+  setFormError(message);
+
       // show toast or error message
     }
   };
@@ -222,6 +244,7 @@ if (formData.active !== null) {
                   }
                   placeholder="••••••••••••••••"
                   type={showPassword ? "text" : "password"}
+              
                 />
                 <button
                   type="button"
@@ -305,6 +328,11 @@ if (formData.active !== null) {
                 </div>
               </div>
             </div>
+            {formError && (
+  <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md text-sm border border-red-300">
+    {formError}
+  </div>
+)}
 
             <FormButtons onCancel={handleCancel}/>
           </form>

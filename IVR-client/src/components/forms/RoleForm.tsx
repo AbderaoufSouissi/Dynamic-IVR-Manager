@@ -30,6 +30,7 @@ const { triggerRefresh } = useOutletContext<RolesPageContext>()
 
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [loading, setLoading] = useState(true);
+   const [formError, setFormError] = useState<string | null>(null);
 
   // Fetch permissions and role if editing
   useEffect(() => {
@@ -78,8 +79,16 @@ const { triggerRefresh } = useOutletContext<RolesPageContext>()
       }
       triggerRefresh()
       navigate("/admin/roles");
-    } catch (err) {
-      console.error("Erreur lors de la soumission du formulaire :", err);
+    } catch (error: any) {
+  console.error("Erreur lors de la soumission du formulaire :", error);
+  
+  // Try to extract error message from response
+  const message =
+    error?.response?.data?.error || // e.g. from Spring Boot's ResponseEntity
+    error?.message ||                 // fallback: JS error message
+    "Une erreur est survenue.";      // ultimate fallback
+
+  setFormError(message);
     }
   };
 
@@ -184,6 +193,11 @@ const { triggerRefresh } = useOutletContext<RolesPageContext>()
                 </div>
               </div>
             </div>
+             {formError && (
+  <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md text-sm border border-red-300">
+    {formError}
+  </div>
+)}
 
             <FormButtons onCancel={handleCancel}/>
           </form>

@@ -26,6 +26,8 @@ const PermissionForm = ({ title, description }: PermissionFormProps) => {
     name: '',
     description: ''
   });
+
+   const [formError, setFormError] = useState<string | null>(null);
 const fetchPermission = async () => {
       if (id) {
         try {
@@ -47,12 +49,29 @@ const fetchPermission = async () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.name.trim()) {
+    setFormError("Le nom de la permission est requis.");
+    return;
+  }
+
+  if (!formData.description.trim()) {
+    setFormError("La description de la permission est requise.");
+    return;
+  }
     try {
       await createPermission(formData);
       triggerRefresh()
       navigate("/admin/permissions");
-    } catch (err) {
-      console.error("Erreur lors de la soumission du formulaire :", err);
+    } catch (error: any) {
+  console.error("Erreur lors de la soumission du formulaire :", error);
+  
+  // Try to extract error message from response
+  const message =
+    error?.response?.data?.error || // e.g. from Spring Boot's ResponseEntity
+    error?.message ||                 // fallback: JS error message
+    "Une erreur est survenue.";      // ultimate fallback
+
+  setFormError(message);
     }
   };
 
@@ -97,6 +116,11 @@ const fetchPermission = async () => {
                   rows={3}
                 />
               </div>
+               {formError && (
+  <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md text-sm border border-red-300">
+    {formError}
+  </div>
+)}
               <FormButtons onCancel={handleCancel}/>
             </div>
           </form>
