@@ -1,19 +1,34 @@
 import { useState } from "react";
 import type { User } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import Modal from "../modal/Modal";
-import { FiAlertTriangle } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { MdArrowDropUp, MdArrowDropDown } from "react-icons/md";
+
+import { useNavigate} from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
 import { HiChevronDown } from "react-icons/hi";
 
 interface UsersTableProps {
   itemsPerPage?: number;
   users: User[];
-  triggerRefresh: () => void;
+  sortBy: string;
+  sortDir: "asc" | "desc";
+  onSortChange: (field: string)=> void
 }
 
-const UsersTable = ({ itemsPerPage = 5, users, triggerRefresh }: UsersTableProps) => {
+
+const userTableHeads = [
+      { key: "user_id", label: "ID" },
+      { key: "email", label: "Nom complet" },
+      { key: "username", label: "Username" },
+      { key: "role_id", label: "Role" },
+      { key: "created_at", label: "Date de création" },
+      { key: "created_by_id", label: "Créé par" },
+      { key: "updated_at", label: "Date de modification" },
+      { key: "updated_by_id", label: "Modifié par" },
+      { key: "is_active", label: "Statut" },
+    ]
+
+const UsersTable = ({ itemsPerPage = 5, users, sortBy, sortDir, onSortChange }: UsersTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
 
@@ -22,7 +37,21 @@ const UsersTable = ({ itemsPerPage = 5, users, triggerRefresh }: UsersTableProps
   const endIndex = startIndex + rowsPerPage;
   const navigate = useNavigate();
 
-  const [showModal, setShowModal] = useState(false);
+  
+ 
+
+  const handleSort = (column: string) => {
+    onSortChange(column)
+  };
+
+  const renderSortIcon = (column: string) => {
+    if (sortBy !== column) return null;
+    return sortDir === "asc" ? (
+      <MdArrowDropUp className="text-blue-600" size={20} />
+    ) : (
+      <MdArrowDropDown className="text-blue-600" size={20} />
+    );
+  };
 
   const getPageNumbers = () => {
     const pages = [];
@@ -57,39 +86,26 @@ const UsersTable = ({ itemsPerPage = 5, users, triggerRefresh }: UsersTableProps
     <div className="overflow-x-auto max-w-[100vw] rounded-xl shadow border border-gray-200 bg-white">
       <table className="w-full text-sm">
         <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
-          <tr>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              ID
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Nom complet
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Username
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Rôle
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Date de création
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Créé par
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Date de modification
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Modifié par
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Statut
-            </th>
-            <th className="p-4 text-left font-semibold text-gray-600">
-              Actions
-            </th>
-          </tr>
-        </thead>
+  <tr>
+    {userTableHeads.map(({ key, label }) => (
+      <th
+  key={key}
+  onClick={() => handleSort(key)}
+  className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary-color)] uppercase tracking-wider cursor-pointer group"
+>
+  <div className="flex items-center w-fit">
+    {label}
+    <span className={`ml-2 transition-colors duration-200 text-base ${
+      sortBy === key ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+    }`}>
+      {renderSortIcon(key) || <MdArrowDropDown />} {/* Show faint icon for visual consistency */}
+    </span>
+  </div>
+</th>
+    ))}
+    <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
+  </tr>
+</thead>
         <tbody>
           {users.slice(startIndex, endIndex).map((user) => (
             <tr
@@ -182,7 +198,7 @@ const UsersTable = ({ itemsPerPage = 5, users, triggerRefresh }: UsersTableProps
                 </option>
               ))}
             </select>
-             <HiChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <HiChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           </div>
         </div>
 
@@ -232,21 +248,6 @@ const UsersTable = ({ itemsPerPage = 5, users, triggerRefresh }: UsersTableProps
         </p>
       </div>
 
-      {showModal && (
-        <Modal
-          open={showModal}
-          onClose={() => setShowModal(false)}
-          icon={<FiAlertTriangle />}
-          title="Confirmer la suppression"
-          description="Êtes-vous sûr de vouloir supprimer cet utilisateur ?"
-          confirmType="danger"
-          onConfirm={() => {
-            triggerRefresh()
-            setShowModal(false);
-          }}
-          confirmLabel="Supprimer"
-        />
-      )}
     </div>
   );
 };

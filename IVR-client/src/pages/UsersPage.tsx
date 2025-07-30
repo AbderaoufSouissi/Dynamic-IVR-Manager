@@ -3,7 +3,7 @@ import UserFilter from "../components/filters/UserFilter";
 import UsersTable from "../components/tables/UsersTable";
 import { HiOutlineUserAdd, HiUserRemove } from "react-icons/hi";
 
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
 import { getUsers } from "../service/UserService";
 import type { User } from "../types/types";
 
@@ -20,6 +20,11 @@ const UsersPage = () => {
     updatedAt: "",
     role: "",
   });
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sortBy = searchParams.get("sortBy") || "user_id";
+ const rawSortDir = searchParams.get("sortDir") || "desc";
+  const sortDir = rawSortDir === "asc" ? "asc" : "desc"; // 
+
 
   const [users, setUsers] = useState<User[]>([]);
  const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -59,9 +64,14 @@ const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
     if (validatedFilters === null) {
       return;
     }
+    const params = {
+      ...validatedFilters,
+      sortBy,
+      sortDir,
+    };
 
     try {
-      const data = await getUsers(validatedFilters);
+      const data = await getUsers(params);
       setUsers(data.content);
     } catch (err) {
       console.error("Erreur lors de la récupération des utilisateurs", err);
@@ -73,11 +83,38 @@ const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
     const delayDebounce = setTimeout(() => {
       fetchUsers();
     }, 500);
-
   
 
     return () => clearTimeout(delayDebounce);
-  }, [filters,refreshTrigger]);
+  }, [filters, refreshTrigger,searchParams]);
+  
+const handleSortChange = (field: string) => {
+    const isSameField = field === sortBy;
+    const newSortDir = isSameField && sortDir === "asc" ? "desc" : "asc";
+
+    // Update URL params for sorting, preserving filters
+    const currentParams = Object.fromEntries(searchParams.entries());
+    setSearchParams({
+      ...currentParams,
+      sortBy: field,
+      sortDir: newSortDir,
+    });
+  };
+
+   useEffect(() => {
+    // Update URL search params except sort params (they are independent)
+    const newParams: Record<string, string> = {};
+
+    Object.entries(filters).forEach(([key, val]) => {
+      if (val.trim()) newParams[key] = val.trim();
+    });
+
+    // Preserve current sortBy/sortDir params
+    newParams.sortBy = sortBy;
+    newParams.sortDir = sortDir;
+
+    setSearchParams(newParams);
+  }, [filters, sortBy, sortDir, setSearchParams]);
 
   const handleFilterChange = (name: string, value: string) => {
     setFilters((prevFilters) => ({
@@ -126,7 +163,8 @@ const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
           onFilterChange={handleFilterChange}
           onResetFilters={resetFilters}
         />
-        {users.length != 0 ? <UsersTable users={users} triggerRefresh={triggerRefresh} />
+        {users.length != 0 ? <UsersTable users={users} sortBy={sortBy} sortDir={sortDir} onSortChange={handleSortChange} />
+
         : <div className="p-10 flex flex-col items-center text-gray-500">
         <HiUserRemove className="w-12 h-12 text-gray-300 mb-4" />
         <p className="text-lg font-medium">Aucun utilisateur trouvé</p>
