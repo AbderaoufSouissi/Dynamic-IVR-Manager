@@ -20,7 +20,7 @@ public interface AuditRepository extends JpaRepository<Audit, Long>, JpaSpecific
     WHERE (:auditId IS NULL OR audit_id = :auditId)
       AND (:userId IS NULL OR user_id = :userId)
       AND (:entityId IS NULL OR entity_id = :entityId)
-      AND (:msisdn IS NULL OR msisdn = :msis    dn)
+      AND (:msisdn IS NULL OR msisdn = :msisdn)
       AND (:actionType IS NULL OR UPPER(action_type) = UPPER(:actionType))
       AND (:entityType IS NULL OR UPPER(entity_type) = UPPER(:entityType))
       AND (:startTimestamp IS NULL OR action_time_stamp >= :startTimestamp)
