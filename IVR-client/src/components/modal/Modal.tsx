@@ -55,7 +55,7 @@ const Modal = ({
               {confirmLabel}
             </button>
            <button
-  className="border cursor-pointer border-gray-300 bg-white px-4 py-2 text-sm font-semibold dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600    hover:shadow-xl font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl transition-all duration-200 focus:ring-red-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg"
+  className="border cursor-pointer border-gray-300 bg-white px-4 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600    hover:shadow-xl font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl transition-all duration-200 focus:ring-red-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg"
   onClick={onClose}
 >
   Annuler
