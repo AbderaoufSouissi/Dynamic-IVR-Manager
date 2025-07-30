@@ -11,7 +11,7 @@ public class ClientsCrmHistRepository {
 
     public boolean existsByMsisdn(String msisdn) {
         String sql = "SELECT COUNT(*) FROM CCADMIN.CLIENTS_CRM_HIST  hist,CCADMIN.CLIENTS_CRM_LOG_MAJ maj " +
-                "WHERE HIST.DATE_MAJ=MAJ.DATE_MAJ WHERE MSISDN = ?";
+                "WHERE HIST.DATE_MAJ=MAJ.DATE_MAJ AND MSISDN = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, msisdn);
         return count != null && count > 0;
     }
