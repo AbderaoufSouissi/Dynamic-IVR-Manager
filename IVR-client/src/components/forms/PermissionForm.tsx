@@ -19,7 +19,7 @@ const PermissionForm = ({ title, description }: PermissionFormProps) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const { triggerRefresh } = useOutletContext<PermissionsPageContext  >()
+  const { triggerRefresh } = useOutletContext<PermissionsPageContext >()
 
   const [formData, setFormData] = useState<PermissionRequest>({
     name: '',
