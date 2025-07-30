@@ -47,7 +47,7 @@ const Modal = ({
             <button
               className={`rounded-md cursor-pointer px-4 py-2 text-sm font-medium transition-all duration-200 ${
                 confirmType === "danger"
-                  ? "bg-red-600 text-white hover:bg-red-700 hover:scale-[1.02]"
+                  ? "text-white px-5 py-2 font-semibold  focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm cursor-pointer bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 rounded-xl transition-all duration-200 focus:ring-red-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg"
                   : "bg-blue-600 text-white hover:bg-blue-700 hover:scale-[1.02]"
               }`}
               onClick={onConfirm}

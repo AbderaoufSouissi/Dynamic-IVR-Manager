@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { createUser, getUserById, updateUser } from "../../service/UserService";
 import { HiEye, HiEyeSlash } from "react-icons/hi2";
+import FormButtons from "../buttons/FormButtons";
 
 interface UserFormProps {
   title: Title;
@@ -123,7 +124,7 @@ if (formData.active !== null) {
             <p className="text-gray-500 text-sm mt-1">{description}</p>
           </header>
 
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
               <div>
                 <label
@@ -305,22 +306,7 @@ if (formData.active !== null) {
               </div>
             </div>
 
-            <footer className="mt-6 flex justify-between">
-              <button
-className="px-5 py-2 font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm cursor-pointer bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl transition-all duration-200 focus:ring-red-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg"
-                type="button"
-                onClick={handleCancel}
-              >
-                Annuler
-              </button>
-              <button
-                onClick={handleSubmit}
-                  className="px-5 py-2  font-semibold  hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm  cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl transition-all duration-200  focus:ring-blue-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg"
-                type="submit"
-              >
-                Valider
-              </button>
-            </footer>
+            <FormButtons onCancel={handleCancel}/>
           </form>
         </div>
       </div>
