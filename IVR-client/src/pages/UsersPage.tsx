@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import UserFilter from "../components/filters/UserFilter";
 import UsersTable from "../components/tables/UsersTable";
-import { HiOutlineUserAdd } from "react-icons/hi";
+import { HiOutlineUserAdd, HiUserRemove } from "react-icons/hi";
 
 import { Outlet, useNavigate } from "react-router-dom";
 import { getUsers } from "../service/UserService";
@@ -103,6 +103,8 @@ const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
     });
   };
 
+  
+
   return (
     <>
       <div>
@@ -124,7 +126,15 @@ const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
           onFilterChange={handleFilterChange}
           onResetFilters={resetFilters}
         />
-        <UsersTable users={users} triggerRefresh={triggerRefresh} />
+        {users.length != 0 ? <UsersTable users={users} triggerRefresh={triggerRefresh} />
+        : <div className="p-10 flex flex-col items-center text-gray-500">
+        <HiUserRemove className="w-12 h-12 text-gray-300 mb-4" />
+        <p className="text-lg font-medium">Aucun utilisateur trouvé</p>
+      </div>}
+       
+   
+
+        
       </div>
 
       <Outlet context={{ triggerRefresh }}/>
