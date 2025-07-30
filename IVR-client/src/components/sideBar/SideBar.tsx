@@ -3,10 +3,11 @@ import type { IconType } from 'react-icons';
 import { FaUserAlt, FaShieldAlt } from "react-icons/fa";
 import { HiOutlineKey } from "react-icons/hi2";
 import { FiFileText, FiPhone } from "react-icons/fi";
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { BiLogOut } from 'react-icons/bi';
 import { TbLayoutDashboard } from 'react-icons/tb';
-import { logout } from '../../service/AuthService';
+import { useState } from 'react';
+import LogoutModal from '../modal/LogoutModal';
 
 interface SidebarProps {
   activeTab: string;
@@ -26,21 +27,15 @@ const navItems: NavItem[] = [
   { id: 'permissions', label: 'Permissions', icon: HiOutlineKey, route: '/admin/permissions' },
   { id: 'auditLogs', label: 'Audit', icon: FiFileText, route: '/admin/auditLogs' },
   { id: 'msisdn', label: 'MSISDN', icon: FiPhone, route: '/admin/msisdn' },
-  { id: 'logout', label: 'Logout', icon: BiLogOut, route: '/' },
+  { id: 'logout', label: 'Logout', icon: BiLogOut, route: '/logout' },
 ];
 
 const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
-  const navigate = useNavigate();
-  const location = useLocation();
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
+  const location = useLocation();
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // 👈 Track modal visibility
+
+
 
   // Function to check if current route matches the nav item
   const isRouteActive = (route: string | undefined) => {
@@ -49,6 +44,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
   };
 
   return (
+    <>
     <aside className="flex flex-col w-64 bg-gradient-to-b from-slate-50 to-white border-r border-gray-200 min-h-screen shadow-lg">
       {/* Header */}
       <div className="flex items-center justify-center h-16 px-6 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
@@ -70,7 +66,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
           const onClick = id === 'logout'
             ? (e: React.MouseEvent) => {
                 e.preventDefault();
-                handleLogout();
+                setShowLogoutModal(true)
                 onTabChange(id);
               }
             : () => onTabChange(id);
@@ -140,6 +136,11 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
       <div className="p-4 border-t border-gray-200 bg-white/50">
       </div>
     </aside>
+    {showLogoutModal && (
+        <LogoutModal  onClose={() => setShowLogoutModal(false)}/>
+  )
+  }
+  </>
   );
 };
 
