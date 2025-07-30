@@ -83,22 +83,22 @@ public class AuditServiceImpl implements AuditService {
         String normalizedActionType = (actionType != null) ? actionType.toUpperCase() : null;
         String normalizedEntityType = (entityType != null) ? entityType.toUpperCase() : null;
 
-        String sql = """
+        String sql = String.format("""
     SELECT * FROM (
         SELECT a.*, ROWNUM rn FROM (
             SELECT * FROM general_audit
             WHERE (:auditId IS NULL OR audit_id = :auditId)
               AND (:userId IS NULL OR user_id = :userId)
-              AND (:entityId IS NULL OR entity_id = :auditId)
+              AND (:entityId IS NULL OR entity_id = :entityId)
               AND (:msisdn IS NULL OR msisdn = :msisdn)
-              AND (:actionType IS NULL OR UPPER(action_type) = :actionType)
-              AND (:entityType IS NULL OR UPPER(entity_type) = :entityType)
+              AND (:actionType IS NULL OR UPPER(action_type) LIKE UPPER(:actionType) || '%%')
+              AND (:entityType IS NULL OR UPPER(entity_type) LIKE UPPER(:entityType) || '%%')
               AND (:startTimestamp IS NULL OR action_time_stamp >= :startTimestamp)
               AND (:endTimestamp IS NULL OR action_time_stamp <= :endTimestamp)
             ORDER BY %s %s
         ) a WHERE ROWNUM <= :endRow
     ) WHERE rn > :startRow
-    """.formatted(sanitizedSortField, sanitizedSortDir);
+    """, sanitizedSortField, sanitizedSortDir);
 
         Query query = entityManager.createNativeQuery(sql, Audit.class)
                 .setParameter("auditId", auditId)

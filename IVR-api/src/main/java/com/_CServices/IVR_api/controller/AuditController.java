@@ -24,10 +24,9 @@ public class AuditController {
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long entityId,
             @RequestParam(required = false) String msisdn,
-            @RequestParam(required = false) String action,
-            @RequestParam(required = false) String entity,
+            @RequestParam(value = "action", required = false) String actionType,  // Maps 'action' param to actionType variable
+            @RequestParam(value = "entity", required = false) String entityType,
             @RequestParam(required = false) LocalDate date,
-
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "audit_id") String sortBy,
@@ -42,8 +41,8 @@ public class AuditController {
                 userId,
                 entityId,
                  msisdn,
-                action,
-                entity,
+                actionType,
+                entityType,
                 date,
                 sortBy,
                 sortDir,
