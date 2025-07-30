@@ -52,7 +52,6 @@ const AdminOverview = () => {
         sortDir: "desc"
       });
       setRecentAudits(data.content);
-      console.log("recent audits:", data);
     } catch (err) {
       console.error(err);
     }
@@ -85,7 +84,6 @@ const AdminOverview = () => {
 
 
   useEffect(() => {
-    console.log("Chargement du tableau de bord admin...");
     fetchNbActiveUsers();
     fetchNbInactiveUsers();
     fetchNbRoles();

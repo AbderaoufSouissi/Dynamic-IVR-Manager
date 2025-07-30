@@ -2,10 +2,10 @@ import ResetFiltersButton from "../buttons/ResetFiltersButton";
 
 interface AuditFilterProps {
   filters: {
-    auditId: string;
+    id: string;
     userId: string;
-    actionType: string;
-    entityType: string;
+    action: string;
+    entity: string;
     entityId: string;
     msisdn: string
     date: string;
@@ -24,15 +24,15 @@ const AuditFilter = ({ filters, onFilterChange, onResetFilters }: AuditFilterPro
 
         {/* Audit ID */}
         <div>
-          <label htmlFor="auditId-filter" className={labelClass}>
+          <label htmlFor="id-filter" className={labelClass}>
             ID Audit
           </label>
           <input
-            id="auditId-filter"
+            id="id-filter"
             type="text"
             placeholder="Filtrer par ID audit"
-            value={filters.auditId}
-            onChange={(e) => onFilterChange("auditId", e.target.value)}
+            value={filters.id}
+            onChange={(e) => onFilterChange("id", e.target.value)}
             className={inputClass}
           />
         </div>
@@ -40,12 +40,12 @@ const AuditFilter = ({ filters, onFilterChange, onResetFilters }: AuditFilterPro
         {/* User ID */}
         <div>
           <label htmlFor="userId-filter" className={labelClass}>
-            Utilisateur
+            ID Utilisateur
           </label>
           <input
             id="userId-filter"
             type="text"
-            placeholder="Filtrer par utilisateur"
+            placeholder="Filtrer par ID utilisateur"
             value={filters.userId}
             onChange={(e) => onFilterChange("userId", e.target.value)}
             className={inputClass}
@@ -54,15 +54,15 @@ const AuditFilter = ({ filters, onFilterChange, onResetFilters }: AuditFilterPro
 
         {/* Action Type */}
         <div>
-          <label htmlFor="actionType-filter" className={labelClass}>
+          <label htmlFor="action-filter" className={labelClass}>
             Type d'action
           </label>
           <input
-            id="actionType-filter"
+            id="action-filter"
             type="text"
             placeholder="Filtrer par type d'action"
-            value={filters.actionType}
-            onChange={(e) => onFilterChange("actionType", e.target.value)}
+            value={filters.action}
+            onChange={(e) => onFilterChange("action", e.target.value)}
             className={inputClass}
           />
         </div>
@@ -82,15 +82,15 @@ const AuditFilter = ({ filters, onFilterChange, onResetFilters }: AuditFilterPro
 
         {/* Entity Type */}
         <div>
-          <label htmlFor="entityType-filter" className={labelClass}>
+          <label htmlFor="entity-filter" className={labelClass}>
             Type d'entité affectée
           </label>
           <input
-            id="entityType-filter"
+            id="entity-filter"
             type="text"
             placeholder="Filtrer par type d'entité"
-            value={filters.entityType}
-            onChange={(e) => onFilterChange("entityType", e.target.value)}
+            value={filters.entity}
+            onChange={(e) => onFilterChange("entity", e.target.value)}
             className={inputClass}
           />
         </div>
