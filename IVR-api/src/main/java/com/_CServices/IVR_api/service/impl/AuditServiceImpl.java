@@ -50,13 +50,15 @@ public class AuditServiceImpl implements AuditService {
     @Override
     public Page<AuditResponse> getAuditsWithFilters(Long auditId,
                                                     Long userId,
+                                                    Long entityId,
+                                                    String msisdn,
                                                     String actionType,
                                                     String entityType,
                                                     LocalDate actionDate,
                                                     String sortBy,
                                                     String sortDir,
                                                     Pageable pageable) {
-        log.info("isnide getAuditsWithFilters");
+        log.info("inside getAuditsWithFilters");
 
         int[] bounds = getRowBounds(pageable);
         int startRow = bounds[0];
@@ -87,6 +89,8 @@ public class AuditServiceImpl implements AuditService {
             SELECT * FROM general_audit
             WHERE (:auditId IS NULL OR audit_id = :auditId)
               AND (:userId IS NULL OR user_id = :userId)
+              AND (:entityId IS NULL OR entity_id = :auditId)
+              AND (:msisdn IS NULL OR msisdn = :msisdn)
               AND (:actionType IS NULL OR UPPER(action_type) = :actionType)
               AND (:entityType IS NULL OR UPPER(entity_type) = :entityType)
               AND (:startTimestamp IS NULL OR action_time_stamp >= :startTimestamp)
@@ -99,6 +103,8 @@ public class AuditServiceImpl implements AuditService {
         Query query = entityManager.createNativeQuery(sql, Audit.class)
                 .setParameter("auditId", auditId)
                 .setParameter("userId", userId)
+                .setParameter("entityId", entityId)
+                .setParameter("msisdn", msisdn)
                 .setParameter("actionType", normalizedActionType)
                 .setParameter("entityType", normalizedEntityType)
                 .setParameter("startTimestamp", startTimestamp)
@@ -109,7 +115,7 @@ public class AuditServiceImpl implements AuditService {
         List<Audit> audits = query.getResultList();
 
         long total = auditRepository.countAuditsWithFilters(
-                auditId, userId, normalizedActionType, normalizedEntityType, startTimestamp, endTimestamp
+                auditId, userId, entityId, msisdn, normalizedActionType, normalizedEntityType, startTimestamp, endTimestamp
         );
 
         List<AuditResponse> auditResponses = audits.stream()

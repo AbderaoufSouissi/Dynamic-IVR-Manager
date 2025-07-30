@@ -37,7 +37,7 @@ public class UserController {
             @RequestParam(required = false) LocalDate createdAt,
             @RequestParam(required = false) LocalDate updatedAt,
             @RequestParam(defaultValue = "user_id") String sortBy,
-            @RequestParam(defaultValue = "desc          ") String sortDir,
+            @RequestParam(defaultValue = "desc") String sortDir,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {

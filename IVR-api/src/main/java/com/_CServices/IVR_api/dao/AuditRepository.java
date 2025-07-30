@@ -19,6 +19,8 @@ public interface AuditRepository extends JpaRepository<Audit, Long>, JpaSpecific
     SELECT COUNT(*) FROM general_audit 
     WHERE (:auditId IS NULL OR audit_id = :auditId)
       AND (:userId IS NULL OR user_id = :userId)
+      AND (:entityId IS NULL OR entity_id = :entityId)
+      AND (:msisdn IS NULL OR msisdn = :msis    dn)
       AND (:actionType IS NULL OR UPPER(action_type) = UPPER(:actionType))
       AND (:entityType IS NULL OR UPPER(entity_type) = UPPER(:entityType))
       AND (:startTimestamp IS NULL OR action_time_stamp >= :startTimestamp)
@@ -27,6 +29,8 @@ public interface AuditRepository extends JpaRepository<Audit, Long>, JpaSpecific
     long countAuditsWithFilters(
             @Param("auditId") Long auditId,
             @Param("userId") Long userId,
+            @Param("entityId") Long entityId,
+            @Param("msisdn") String msisdn,
             @Param("actionType") String actionType,
             @Param("entityType") String entityType,
             @Param("startTimestamp") LocalDateTime startTimestamp,
