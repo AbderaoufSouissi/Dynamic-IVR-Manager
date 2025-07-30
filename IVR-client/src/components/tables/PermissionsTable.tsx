@@ -11,7 +11,7 @@ interface PermissionsTableProps {
   triggerRefresh: () => void;
 }
 
-const PermissionsTable = ({ permissions, itemsPerPage = 5, triggerRefresh   }: PermissionsTableProps) => {
+const PermissionsTable = ({ permissions, itemsPerPage = 5}: PermissionsTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage ?? 5);
   const navigate = useNavigate()
