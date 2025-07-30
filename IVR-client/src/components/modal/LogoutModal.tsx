@@ -8,8 +8,8 @@ const LogoutModal = ({ onClose }: {onClose: () => void}) => {
 
   const handleConfirm = async () => {
     try {
-      await logout(); // 👈 Déconnexion côté serveur/localstorage
-      navigate('/'); // 👈 Redirige vers login ou page d'accueil
+      await logout();
+      navigate('/');
     } catch (err) {
       console.error("Logout failed", err);
     }
@@ -24,7 +24,7 @@ const LogoutModal = ({ onClose }: {onClose: () => void}) => {
       description={`Êtes-vous sûr de vouloir quitter l'application ?`}
       onConfirm={handleConfirm}
       confirmLabel="Confirmer"
-      confirmType="danger"
+      confirmType="warning"
     />
   );
 };
