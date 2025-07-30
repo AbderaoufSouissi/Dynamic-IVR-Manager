@@ -10,7 +10,7 @@ interface AuditsTableProps {
   triggerRefresh: () => void;
 }
 
-const AuditsTable = ({ itemsPerPage = 5, audits, triggerRefresh }: AuditsTableProps) => {
+const AuditsTable = ({ itemsPerPage = 5, audits }: AuditsTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
 
