@@ -34,7 +34,7 @@ public class PermissionsController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "permission_id") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir
+            @RequestParam(defaultValue = "desc") String sortDir
     ) {
         String sanitizedSortBy = SortUtils.sanitizeSortField(sortBy, SortUtils.getAllowedPermissionFields(), "permission_id");
         String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);

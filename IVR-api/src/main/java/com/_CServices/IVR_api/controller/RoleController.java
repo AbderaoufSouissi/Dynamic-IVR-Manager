@@ -31,7 +31,7 @@ public class RoleController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "role_id") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir
+            @RequestParam(defaultValue = "desc") String sortDir
     ) {
         String sanitizedSortBy = SortUtils.sanitizeSortField(sortBy, SortUtils.getAllowedRoleFields(), "role_id");
         String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
