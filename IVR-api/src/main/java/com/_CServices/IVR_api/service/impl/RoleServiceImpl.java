@@ -26,14 +26,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
+
 
 @Service
 @RequiredArgsConstructor
@@ -95,7 +95,8 @@ public class RoleServiceImpl implements RoleService {
                 "  SELECT main_query.*, ROWNUM rn FROM (" +
                 "    SELECT r.role_id, r.role_name, r.created_at, r.updated_at, r.created_by_id, r.updated_by_id, " +
                 "           NVL(creator.username, '') AS created_by_username, " +
-                "           NVL(updater.username, '') AS updated_by_username " +
+                "           NVL(updater.username, '') AS updated_by_username, " +
+                "           (SELECT COUNT(*) FROM role_permissions rp WHERE rp.role_id = r.role_id) AS permission_count " +  // <-- fixed space
                 "    FROM roles r " +
                 "    LEFT JOIN app_users creator ON r.created_by_id = creator.user_id " +
                 "    LEFT JOIN app_users updater ON r.updated_by_id = updater.user_id " +
@@ -113,12 +114,15 @@ public class RoleServiceImpl implements RoleService {
                 "          ) " +
                 "      AND ((? IS NULL AND ? IS NULL) OR (r.created_at BETWEEN ? AND ?)) " +
                 "      AND ((? IS NULL AND ? IS NULL) OR (r.updated_at BETWEEN ? AND ?)) " +
-                "    ORDER BY r." + sanitizedSortField + " " + sanitizedSortDir +
+                "    ORDER BY " + (sanitizedSortField.equals("permission_count")
+                ? "permission_count"  // use alias, not subquery again
+                : "r." + sanitizedSortField) + " " + sanitizedSortDir + " " +
                 "  ) main_query WHERE ROWNUM <= ?" +
                 ") WHERE rn > ?";
 
+
         try {
-            Query query = entityManager.createNativeQuery(sql, Role.class)
+            Query query = entityManager.createNativeQuery(sql)
                     .setParameter(1, id)
                     .setParameter(2, id)
                     .setParameter(3, name)
@@ -138,8 +142,30 @@ public class RoleServiceImpl implements RoleService {
                     .setParameter(17, endRow)
                     .setParameter(18, startRow);
 
-            List<Role> roles = query.getResultList();
+            List<Object[]> rows = query.getResultList();
 
+            List<RoleResponse> roleResponses = new ArrayList<>();
+            for (Object[] row : rows) {
+                RoleResponse dto = new RoleResponse();
+                dto.setRoleId(((Number) row[0]).longValue());
+                dto.setName((String) row[1]);
+                dto.setCreatedAt(((Timestamp) row[2]).toLocalDateTime());
+                dto.setUpdatedAt(((Timestamp) row[3]).toLocalDateTime());
+                dto.setCreatedBy((String) row[6]);
+                dto.setUpdatedBy((String) row[7]);
+                dto.setPermissionCount(((Number) row[8]).intValue());
+                List<String> permissions = entityManager.createNativeQuery(
+                                "SELECT p.permission_name " +
+                                        "FROM role_permissions rp " +
+                                        "JOIN permissions p ON rp.permission_id = p.permission_id " +
+                                        "WHERE rp.role_id = :roleId")
+                        .setParameter("roleId", dto.getRoleId())
+                        .getResultList();
+
+                dto.setPermissions(new HashSet<>(permissions));
+
+                roleResponses.add(dto);;
+            }
             // Count query
             String countSql = "SELECT COUNT(r.role_id) " +
                     "FROM roles r " +
@@ -179,12 +205,8 @@ public class RoleServiceImpl implements RoleService {
                     .setParameter(16, endUpdatedAt);
 
             long total = ((Number) countQuery.getSingleResult()).longValue();
+            return new PageImpl<>(roleResponses, pageable, total);
 
-            return new PageImpl<>(
-                    roles.stream().map(roleMapper::toDto).collect(Collectors.toList()),
-                    pageable,
-                    total
-            );
 
         } catch (Exception e) {
             log.error("Error fetching filtered roles", e);

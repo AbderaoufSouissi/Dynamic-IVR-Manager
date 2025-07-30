@@ -22,9 +22,11 @@ public class RoleMapper {
             Set<String> permissions = new HashSet<>();
             role.getPermissions().forEach(perm -> permissions.add(perm.getName()));
             roleResponse.setPermissions(permissions);
+            roleResponse.setPermissionCount(permissions.size());
         }
         else{
             roleResponse.setPermissions(new HashSet<>());
+            roleResponse.setPermissionCount(0);
         }
         return roleResponse;
     }
