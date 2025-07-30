@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Role } from "../../types/types";
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { MdArrowDropDown, MdArrowDropUp, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { HiChevronDown } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
@@ -8,10 +8,23 @@ import { formatTimestamp } from "../../api/Api";
 interface RolesTableProps {
   roles: Role[];
   itemsPerPage?: number;
-  triggerRefresh: () => void;
+  sortBy: string;
+  sortDir: "asc" | "desc";
+  onSortChange: (field: string)=> void
 }
 
-const RolesTable = ({ roles, itemsPerPage = 5,triggerRefresh }: RolesTableProps) => {
+const roleTableHeads = [
+      { key: "role_id", label: "ID" },
+      { key: "role_name", label: "Nom complet" },
+      { key: "permission_count", label: "permissions" },
+      { key: "created_at", label: "Date de création" },
+      { key: "created_by_id", label: "Créé par" },
+      { key: "updated_at", label: "Date de modification" },
+      { key: "updated_by_id", label: "Modifié par" },
+      
+    ]
+
+const RolesTable = ({ roles, itemsPerPage = 5,sortBy,sortDir,onSortChange}: RolesTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage ?? 5);
   const navigate = useNavigate()
@@ -19,7 +32,21 @@ const RolesTable = ({ roles, itemsPerPage = 5,triggerRefresh }: RolesTableProps)
   const totalPages = Math.ceil(roles.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
-   const currentRoles = roles.slice(startIndex, endIndex);
+  const currentRoles = roles.slice(startIndex, endIndex);
+  
+
+  const handleSort = (column: string) => {
+      onSortChange(column)
+    };
+  
+    const renderSortIcon = (column: string) => {
+      if (sortBy !== column) return null;
+      return sortDir === "asc" ? (
+        <MdArrowDropUp className="text-blue-600" size={20} />
+      ) : (
+        <MdArrowDropDown className="text-blue-600" size={20} />
+      );
+    };
 
 
 
@@ -61,15 +88,24 @@ const RolesTable = ({ roles, itemsPerPage = 5,triggerRefresh }: RolesTableProps)
   return (
     <div className="overflow-x-auto rounded-xl shadow border border-gray-200 bg-white">
       <table className="w-full text-sm">
-        <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+         <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
           <tr>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">ID</th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Nom du rôle</th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Permissions</th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Date de création</th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Créé par</th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Date de modification</th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Modifié par</th>
+            {roleTableHeads.map(({ key, label }) => (
+              <th
+          key={key}
+          onClick={() => handleSort(key)}
+          className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary-color)] uppercase tracking-wider cursor-pointer group"
+        >
+          <div className="flex items-center w-fit">
+            {label}
+            <span className={`ml-2 transition-colors duration-200 text-base ${
+              sortBy === key ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+            }`}>
+              {renderSortIcon(key) || <MdArrowDropDown />} {/* Show faint icon for visual consistency */}
+            </span>
+          </div>
+        </th>
+            ))}
             <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
           </tr>
         </thead>

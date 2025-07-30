@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import RoleFilter from "../components/filters/RoleFilter";
 import RolesTable from "../components/tables/RolesTable";
 import { MdAdminPanelSettings } from "react-icons/md";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
 import { getRoles } from "../service/RoleService";
 import type { Role } from "../types/types";
 import { HiShieldCheck } from "react-icons/hi2";
@@ -19,11 +19,26 @@ const RolesPage = () => {
   });
 
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+const sortBy = searchParams.get("sortBy") || "role_id"; // adjust default
+const rawSortDir = searchParams.get("sortDir") || "desc";
+const sortDir = rawSortDir === "asc" ? "asc" : "desc";
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
   const isNumeric = (value: string) => /^[0-9]+$/.test(value);
+  const handleSortChange = (field: string) => {
+  const isSameField = field === sortBy;
+  const newSortDir = isSameField && sortDir === "asc" ? "desc" : "asc";
+
+  const currentParams = Object.fromEntries(searchParams.entries());
+  setSearchParams({
+    ...currentParams,
+    sortBy: field,
+    sortDir: newSortDir,
+  });
+};
 
   const isValidDate = (value: string) => {
     return /^\d{4}-\d{2}-\d{2}$/.test(value); // Only accept full YYYY-MM-DD
@@ -57,9 +72,14 @@ const RolesPage = () => {
     if (validatedFilters === null) {
       return;
     }
+    const params = {
+    ...validatedFilters,
+    sortBy,
+    sortDir,
+  };
 
     try {
-      const data = await getRoles(validatedFilters);
+      const data = await getRoles(params);
       setRoles(data.content);
     } catch (err) {
       console.error("Erreur lors de la récupération des utilisateurs", err);
@@ -72,7 +92,24 @@ const RolesPage = () => {
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [filters, refreshTrigger]);
+  }, [filters, refreshTrigger, searchParams]);
+  
+
+
+useEffect(() => {
+  const newParams: Record<string, string> = {};
+
+  Object.entries(filters).forEach(([key, val]) => {
+    if (val.trim()) newParams[key] = val.trim();
+  });
+
+  newParams.sortBy = sortBy;
+  newParams.sortDir = sortDir;
+
+  setSearchParams(newParams);
+}, [filters, sortBy, sortDir]);
+
+
 
   const handleFilterChange = (name: string, value: string) => {
     setFilters((prevFilters) => ({
@@ -114,7 +151,9 @@ const RolesPage = () => {
           onResetFilters={resetFilters}
         />
         {roles.length != 0 ? (
-          <RolesTable roles={roles} triggerRefresh={triggerRefresh} />
+          <RolesTable roles={roles} sortBy={sortBy}
+  sortDir={sortDir}
+  onSortChange={handleSortChange} />
         ) : (
           <div className="p-10 flex flex-col items-center text-gray-500">
             <div className="relative w-12 h-12 mb-4">
