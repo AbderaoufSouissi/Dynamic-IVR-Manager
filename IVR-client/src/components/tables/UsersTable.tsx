@@ -90,7 +90,6 @@ const UsersTable = ({users, sortBy, sortDir, onSortChange, currentPage, onPageCh
 
   // Calculate current displayed range (e.g. showing 6-10 of 52)
   const fromRecord = totalCount === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
-  const toRecord = Math.min(fromRecord + users.length - 1, totalCount);
 
 
  
@@ -249,11 +248,10 @@ const UsersTable = ({users, sortBy, sortDir, onSortChange, currentPage, onPageCh
         </div>
 
         {/* Displayed range */}
-       <p className="text-sm text-slate-500">
-  {totalCount === 0
-    ? "Aucun utilisateur trouvé"
-    : `Affichage de ${toRecord} sur ${totalCount} utilisateurs`}
-</p>
+        <p className="text-sm text-slate-500">
+          Affichage de {fromRecord} sur {totalCount}{" "}
+          utilsateurs
+        </p>
       </div>
 
     </div>
