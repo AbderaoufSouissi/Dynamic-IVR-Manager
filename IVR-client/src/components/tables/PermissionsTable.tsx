@@ -126,7 +126,7 @@ const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
 
                   <button
                     onClick={() =>
-                      navigate(`/admin/permissions/delete/${permission.permissionId}`)
+                      navigate(`/admin/permissions/delete/${permission.permissionId}`, { replace: true })
                     }
                     className="text-red-600 hover:underline cursor-pointer"
                   >
