@@ -20,25 +20,36 @@ const RolesPage = () => {
 
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-const sortBy = searchParams.get("sortBy") || "role_id"; // adjust default
-const rawSortDir = searchParams.get("sortDir") || "desc";
-const sortDir = rawSortDir === "asc" ? "asc" : "desc";
+  const sortBy = searchParams.get("sortBy") || "role_id"; // adjust default
+  const rawSortDir = searchParams.get("sortDir") || "desc";
+  const sortDir = rawSortDir === "asc" ? "asc" : "desc";
+  const [page, setPage] = useState(() => {
+    const param = searchParams.get("page");
+    return param && !isNaN(+param) ? +param : 0;
+  });
+  const [pageSize, setPageSize] = useState(() => {
+    const param = searchParams.get("size");
+    return param && !isNaN(+param) ? +param : 5;
+  });
+  const [totalElements, setTotalElements] = useState(0);
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
   const isNumeric = (value: string) => /^[0-9]+$/.test(value);
   const handleSortChange = (field: string) => {
-  const isSameField = field === sortBy;
-  const newSortDir = isSameField && sortDir === "asc" ? "desc" : "asc";
+    const isSameField = field === sortBy;
+    const newSortDir = isSameField && sortDir === "asc" ? "desc" : "asc";
 
-  const currentParams = Object.fromEntries(searchParams.entries());
-  setSearchParams({
-    ...currentParams,
-    sortBy: field,
-    sortDir: newSortDir,
-  });
-};
+    const currentParams = Object.fromEntries(searchParams.entries());
+    setSearchParams({
+      ...currentParams,
+      sortBy: field,
+      sortDir: newSortDir,
+      page: "0", // reset to first page on sort
+    });
+    setPage(0); // reset local state too
+  };
 
   const isValidDate = (value: string) => {
     return /^\d{4}-\d{2}-\d{2}$/.test(value); // Only accept full YYYY-MM-DD
@@ -73,14 +84,17 @@ const sortDir = rawSortDir === "asc" ? "asc" : "desc";
       return;
     }
     const params = {
-    ...validatedFilters,
-    sortBy,
-    sortDir,
-  };
+      ...validatedFilters,
+      sortBy,
+      sortDir,
+      page,
+      size: pageSize,
+    };
 
     try {
       const data = await getRoles(params);
       setRoles(data.content);
+      setTotalElements(data.totalElements);
     } catch (err) {
       console.error("Erreur lors de la récupération des utilisateurs", err);
     }
@@ -93,23 +107,23 @@ const sortDir = rawSortDir === "asc" ? "asc" : "desc";
 
     return () => clearTimeout(delayDebounce);
   }, [filters, refreshTrigger, searchParams]);
-  
 
+  useEffect(() => {
+    // Update URL search params except sort params (they are independent)
+    const newParams: Record<string, string> = {};
 
-useEffect(() => {
-  const newParams: Record<string, string> = {};
+    Object.entries(filters).forEach(([key, val]) => {
+      if (val.trim()) newParams[key] = val.trim();
+    });
 
-  Object.entries(filters).forEach(([key, val]) => {
-    if (val.trim()) newParams[key] = val.trim();
-  });
+    // Preserve current sortBy/sortDir params
+    newParams.sortBy = sortBy;
+    newParams.sortDir = sortDir;
+    newParams.page = String(page); // Add current page to URL
+    newParams.size = String(pageSize);
 
-  newParams.sortBy = sortBy;
-  newParams.sortDir = sortDir;
-
-  setSearchParams(newParams);
-}, [filters, sortBy, sortDir]);
-
-
+    setSearchParams(newParams);
+  }, [filters, sortBy, sortDir, page, pageSize, setSearchParams]);
 
   const handleFilterChange = (name: string, value: string) => {
     setFilters((prevFilters) => ({
@@ -151,9 +165,19 @@ useEffect(() => {
           onResetFilters={resetFilters}
         />
         {roles.length != 0 ? (
-          <RolesTable roles={roles} sortBy={sortBy}
-  sortDir={sortDir}
-  onSortChange={handleSortChange} />
+          <RolesTable
+            roles={roles}
+            sortBy={sortBy}
+            sortDir={sortDir}
+            onSortChange={handleSortChange}
+            currentPage={page + 1} // backend is 0-based, UI 1-based
+            onPageChange={(newPage) => setPage(newPage - 1)}
+            totalCount={totalElements}
+            onRowsPerPageChange={(size) => {
+              setPageSize(size);
+              setPage(0); // reset page when page size changes
+            }}
+            rowsPerPage={pageSize} />
         ) : (
           <div className="p-10 flex flex-col items-center text-gray-500">
             <div className="relative w-12 h-12 mb-4">

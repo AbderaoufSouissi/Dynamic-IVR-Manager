@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { Role } from "../../types/types";
 import { MdArrowDropDown, MdArrowDropUp, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { HiChevronDown } from "react-icons/hi2";
@@ -10,7 +9,13 @@ interface RolesTableProps {
   itemsPerPage?: number;
   sortBy: string;
   sortDir: "asc" | "desc";
-  onSortChange: (field: string)=> void
+  onSortChange: (field: string) => void
+  currentPage: number;       // 1-based page index for UI
+  onPageChange: (page: number) => void;
+
+  totalCount: number;        // totalElements
+  onRowsPerPageChange: (size: number) => void;
+  rowsPerPage: number;
 }
 
 const roleTableHeads = [
@@ -24,15 +29,12 @@ const roleTableHeads = [
       
     ]
 
-const RolesTable = ({ roles, itemsPerPage = 5,sortBy,sortDir,onSortChange}: RolesTableProps) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage ?? 5);
+const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageChange, totalCount, onRowsPerPageChange, rowsPerPage }: RolesTableProps) => {
+  const totalPages = Math.ceil(totalCount / rowsPerPage);
   const navigate = useNavigate()
  
-  const totalPages = Math.ceil(roles.length / rowsPerPage);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-  const currentRoles = roles.slice(startIndex, endIndex);
+
+ 
   
 
   const handleSort = (column: string) => {
@@ -67,17 +69,21 @@ const RolesTable = ({ roles, itemsPerPage = 5,sortBy,sortDir,onSortChange}: Role
     return pages;
   };
 
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+   const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) onPageChange(page);
   };
 
   const handlePrevious = () => handlePageChange(currentPage - 1);
   const handleNext = () => handlePageChange(currentPage + 1);
 
+  // Call parent's handler on rows per page change
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(parseInt(e.target.value));
-    setCurrentPage(1);
+    const newSize = parseInt(e.target.value);
+    onRowsPerPageChange(newSize);
   };
+
+  const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
+
   
   
 
@@ -110,7 +116,7 @@ const RolesTable = ({ roles, itemsPerPage = 5,sortBy,sortDir,onSortChange}: Role
           </tr>
         </thead>
         <tbody>
-          {currentRoles.map((role) => (
+          {roles.map((role) => (
             <tr key={role.roleId} className="border-t border-gray-200 hover:bg-gray-50 transition">
               <td className="px-4 py-2 font-medium text-slate-800">{role.roleId}</td>
               <td className="px-4 py-2 font-medium text-slate-800">{role.name}</td>
@@ -200,7 +206,8 @@ const RolesTable = ({ roles, itemsPerPage = 5,sortBy,sortDir,onSortChange}: Role
 
         {/* Range summary */}
         <p className="text-sm text-slate-500">
-          Affichage de {Math.min(endIndex, roles.length)} sur {roles.length} rôles
+          Affichage de {toRecord} sur {totalCount}{" "}
+          roles
         </p>
       </div>
     </div>
