@@ -48,16 +48,17 @@ public class EmailServiceImpl implements EmailService {
 
     private String getResetPasswordMessage(String username, String host, String token) {
         return String.format(
-                "Hello %s,\n\n" +
-                        "You requested a password reset for your account.\n\n" +
-                        "Please click the link below to open the reset form:\n" +
+                "Bonjour %s,\n\n" +
+                        "Vous avez demandé la réinitialisation du mot de passe de votre compte.\n\n" +
+                        "Veuillez cliquer sur le lien ci-dessous pour accéder au formulaire de réinitialisation :\n" +
                         "%s?token=%s\n\n" +
-                        "This link will expire in 15 minutes.\n\n" +
-                        "If you didn't request this password reset, please ignore this email.\n\n" +
-                        "Best regards,\n" +
-                        "Your Application Team",
+                        "Ce lien expirera dans 15 minutes.\n\n" +
+                        "Si vous n'avez pas fait cette demande, vous pouvez ignorer cet e-mail.\n\n" +
+                        "Cordialement,\n" +
+                        "L'équipe de l'application",
                 username, host, token
         );
     }
+
 
 }
