@@ -70,6 +70,10 @@ const UserForm = ({ title, description }: UserFormProps) => {
   ) {
     setFormError("Veuillez remplir tous les champs requis et sélectionner un statut.");
     return;
+    }
+    if (id && (!formData.roleName || formData.roleName.trim() === "")) {
+    setFormError("Veuillez sélectionner un rôle pour l'utilisateur.");
+    return;
   }
 
 
@@ -90,6 +94,7 @@ if (formData.active !== null) {
 
     try {
       if (id) {
+  
         const updatePayload = {
           ...basePayload,
           password: formData.password.trim() === "" ? null : formData.password,
