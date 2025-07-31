@@ -181,7 +181,7 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
               <td className="p-4 font-medium text-blue-600">
   <div className="flex items-center gap-2">
     <button
-      onClick={() => navigate(`update/${user.userId}`)}
+      onClick={() => navigate(`update/${user.userId}`, { replace: true })}
       className="flex items-center gap-1 text-blue-600 hover:underline cursor-pointer"
     >
       <MdEdit />
@@ -191,7 +191,7 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
     {/* <span className="text-slate-300">|</span>
 
     <button
-      onClick={() => navigate(`/admin/users/delete/${user.userId}`)}
+      onClick={() => navigate(`/admin/users/delete/${user.userId}, { replace: true }`)}
       className="flex items-center gap-1 text-red-600 hover:underline cursor-pointer"
     >
       <MdDelete />
