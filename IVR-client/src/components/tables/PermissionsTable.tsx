@@ -1,4 +1,3 @@
-import { useState} from "react";
 import type { Permission } from "../../types/types";
 import { MdArrowDropDown, MdArrowDropUp, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +9,13 @@ interface PermissionsTableProps {
   sortBy: string;
   itemsPerPage?: number;
   sortDir: "asc" | "desc";
-  onSortChange: (field: string)=> void
+  onSortChange: (field: string) => void
+  currentPage: number;       // 1-based page index for UI
+  onPageChange: (page: number) => void;
+
+  totalCount: number;        // totalElements
+  onRowsPerPageChange: (size: number) => void;
+  rowsPerPage: number;
 }
 
 
@@ -26,15 +31,11 @@ const permissionTableHeads = [
 
 
 
-const PermissionsTable = ({ permissions, itemsPerPage = 5, sortBy, sortDir, onSortChange}: PermissionsTableProps) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage ?? 5);
+const PermissionsTable = ({ permissions, sortBy, sortDir, onSortChange, currentPage, onPageChange, totalCount, onRowsPerPageChange, rowsPerPage}: PermissionsTableProps) => {
   const navigate = useNavigate()
  
-  const totalPages = Math.ceil(permissions.length / rowsPerPage);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-   const currentPermissions = permissions.slice(startIndex, endIndex);
+const totalPages = Math.ceil(totalCount / rowsPerPage);
+
 
   const handleSort = (column: string) => {
       onSortChange(column)
@@ -67,18 +68,20 @@ const PermissionsTable = ({ permissions, itemsPerPage = 5, sortBy, sortDir, onSo
     return pages;
   };
 
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+   const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) onPageChange(page);
   };
+
 
   const handlePrevious = () => handlePageChange(currentPage - 1);
   const handleNext = () => handlePageChange(currentPage + 1);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(parseInt(e.target.value));
-    setCurrentPage(1);
+    const newSize = parseInt(e.target.value);
+    onRowsPerPageChange(newSize);
   };
-  
+
+const toRecord = Math.min(currentPage * rowsPerPage, totalCount);  
 
   return (
     <div className="overflow-x-auto rounded-xl shadow border border-gray-200 bg-white">
@@ -105,7 +108,7 @@ const PermissionsTable = ({ permissions, itemsPerPage = 5, sortBy, sortDir, onSo
           </tr>
         </thead>
         <tbody>
-          {currentPermissions.map((permission) => (
+          {permissions.map((permission) => (
             <tr
               key={permission.permissionId}
               className="border-t border-gray-200 hover:bg-gray-50 transition"
@@ -190,7 +193,8 @@ const PermissionsTable = ({ permissions, itemsPerPage = 5, sortBy, sortDir, onSo
 
         {/* Summary text */}
         <p className="text-sm text-slate-500">
-          Affichage de {Math.min(endIndex, permissions.length)} sur {permissions.length} permissions
+          Affichage de {toRecord} sur {totalCount}{" "}
+          permissions
         </p>
       </div>
     </div>
