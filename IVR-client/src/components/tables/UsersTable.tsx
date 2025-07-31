@@ -1,9 +1,8 @@
-import { useState } from "react";
 import type { User } from "../../types/types";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { MdArrowDropUp, MdArrowDropDown } from "react-icons/md";
 
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
 import { HiChevronDown } from "react-icons/hi";
 
@@ -12,33 +11,37 @@ interface UsersTableProps {
   users: User[];
   sortBy: string;
   sortDir: "asc" | "desc";
-  onSortChange: (field: string)=> void
+  onSortChange: (field: string) => void
+  currentPage: number;       // 1-based page index for UI
+  onPageChange: (page: number) => void;
+
+  totalCount: number;        // totalElements
+  onRowsPerPageChange: (size: number) => void;
+  rowsPerPage: number;
 }
 
 
 const userTableHeads = [
-      { key: "user_id", label: "ID" },
-      { key: "email", label: "Nom complet" },
-      { key: "username", label: "Username" },
-      { key: "role_id", label: "Role" },
-      { key: "created_at", label: "Date de création" },
-      { key: "created_by_id", label: "Créé par" },
-      { key: "updated_at", label: "Date de modification" },
-      { key: "updated_by_id", label: "Modifié par" },
-      { key: "is_active", label: "Statut" },
-    ]
+  { key: "user_id", label: "ID" },
+  { key: "email", label: "Nom complet" },
+  { key: "username", label: "Username" },
+  { key: "role_id", label: "Role" },
+  { key: "created_at", label: "Date de création" },
+  { key: "created_by_id", label: "Créé par" },
+  { key: "updated_at", label: "Date de modification" },
+  { key: "updated_by_id", label: "Modifié par" },
+  { key: "is_active", label: "Statut" },
+]
 
-const UsersTable = ({ itemsPerPage = 5, users, sortBy, sortDir, onSortChange }: UsersTableProps) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
+const UsersTable = ({users, sortBy, sortDir, onSortChange, currentPage, onPageChange, totalCount, onRowsPerPageChange, rowsPerPage }: UsersTableProps) => {
 
-  const totalPages = Math.ceil(users.length / rowsPerPage);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
+
+  const totalPages = Math.ceil(totalCount / rowsPerPage);
+ 
   const navigate = useNavigate();
 
-  
- 
+
+
 
   const handleSort = (column: string) => {
     onSortChange(column)
@@ -52,6 +55,8 @@ const UsersTable = ({ itemsPerPage = 5, users, sortBy, sortDir, onSortChange }: 
       <MdArrowDropDown className="text-blue-600" size={20} />
     );
   };
+
+
 
   const getPageNumbers = () => {
     const pages = [];
@@ -71,43 +76,49 @@ const UsersTable = ({ itemsPerPage = 5, users, sortBy, sortDir, onSortChange }: 
   };
 
   const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+    if (page >= 1 && page <= totalPages) onPageChange(page);
   };
 
   const handlePrevious = () => handlePageChange(currentPage - 1);
   const handleNext = () => handlePageChange(currentPage + 1);
 
+  // Call parent's handler on rows per page change
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(parseInt(e.target.value));
-    setCurrentPage(1); // Reset to first page on change
+    const newSize = parseInt(e.target.value);
+    onRowsPerPageChange(newSize);
   };
 
+  // Calculate current displayed range (e.g. showing 6-10 of 52)
+  const fromRecord = totalCount === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
+  const toRecord = Math.min(fromRecord + users.length - 1, totalCount);
+
+
+ 
   return (
     <div className="overflow-x-auto max-w-[100vw] rounded-xl shadow border border-gray-200 bg-white">
       <table className="w-full text-sm">
         <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
-  <tr>
-    {userTableHeads.map(({ key, label }) => (
-      <th
-  key={key}
-  onClick={() => handleSort(key)}
-  className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary-color)] uppercase tracking-wider cursor-pointer group"
->
-  <div className="flex items-center w-fit">
-    {label}
-    <span className={`ml-2 transition-colors duration-200 text-base ${
-      sortBy === key ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
-    }`}>
-      {renderSortIcon(key) || <MdArrowDropDown />} {/* Show faint icon for visual consistency */}
-    </span>
-  </div>
-</th>
-    ))}
-    <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
-  </tr>
-</thead>
+          <tr>
+            {userTableHeads.map(({ key, label }) => (
+              <th
+                key={key}
+                onClick={() => handleSort(key)}
+                className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary-color)] uppercase tracking-wider cursor-pointer group"
+              >
+                <div className="flex items-center w-fit">
+                  {label}
+                  <span className={`ml-2 transition-colors duration-200 text-base ${sortBy === key ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+                    }`}>
+                    {renderSortIcon(key) || <MdArrowDropDown />} {/* Show faint icon for visual consistency */}
+                  </span>
+                </div>
+              </th>
+            ))}
+            <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
+          </tr>
+        </thead>
         <tbody>
-          {users.slice(startIndex, endIndex).map((user) => (
+          {users.map((user) => (
             <tr
               key={user.userId}
               className="border-t border-gray-200 hover:bg-gray-50 transition"
@@ -146,11 +157,10 @@ const UsersTable = ({ itemsPerPage = 5, users, sortBy, sortDir, onSortChange }: 
               </td>
               <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
                 <span
-                  className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
-                    user.active
+                  className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${user.active
                       ? "bg-green-100 text-green-700"
                       : "bg-red-100 text-red-700"
-                  }`}
+                    }`}
                 >
                   {user.active ? "Actif" : "Inactif"}
                 </span>
@@ -207,11 +217,10 @@ const UsersTable = ({ itemsPerPage = 5, users, sortBy, sortDir, onSortChange }: 
           <button
             onClick={handlePrevious}
             disabled={currentPage === 1}
-            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
-              currentPage === 1
+            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${currentPage === 1
                 ? "opacity-50 cursor-not-allowed"
                 : "cursor-pointer hover:bg-slate-100"
-            }`}
+              }`}
           >
             <MdKeyboardArrowLeft />
           </button>
@@ -219,11 +228,10 @@ const UsersTable = ({ itemsPerPage = 5, users, sortBy, sortDir, onSortChange }: 
             <button
               key={page}
               onClick={() => handlePageChange(page)}
-              className={`text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${
-                page === currentPage
+              className={`text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${page === currentPage
                   ? "text-white bg-blue-600"
                   : "cursor-pointer text-slate-600 hover:bg-slate-100"
-              }`}
+                }`}
             >
               {page}
             </button>
@@ -231,21 +239,21 @@ const UsersTable = ({ itemsPerPage = 5, users, sortBy, sortDir, onSortChange }: 
           <button
             onClick={handleNext}
             disabled={currentPage === totalPages}
-            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
-              currentPage === totalPages
+            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${currentPage === totalPages
                 ? "opacity-50 cursor-not-allowed"
                 : "cursor-pointer hover:bg-slate-100"
-            }`}
+              }`}
           >
             <MdKeyboardArrowRight />
           </button>
         </div>
 
         {/* Displayed range */}
-        <p className="text-sm text-slate-500">
-          Affichage de {Math.min(endIndex, users.length)} sur {users.length}{" "}
-          utilsateurs
-        </p>
+       <p className="text-sm text-slate-500">
+  {totalCount === 0
+    ? "Aucun utilisateur trouvé"
+    : `Affichage de ${toRecord} sur ${totalCount} utilisateurs`}
+</p>
       </div>
 
     </div>

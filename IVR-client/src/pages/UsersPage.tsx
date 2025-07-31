@@ -20,10 +20,24 @@ const UsersPage = () => {
     updatedAt: "",
     role: "",
   });
+
+
+  
   const [searchParams, setSearchParams] = useSearchParams();
   const sortBy = searchParams.get("sortBy") || "user_id";
  const rawSortDir = searchParams.get("sortDir") || "desc";
-  const sortDir = rawSortDir === "asc" ? "asc" : "desc"; // 
+  const sortDir = rawSortDir === "asc" ? "asc" : "desc"; //
+
+const pageParam = searchParams.get("page");
+const sizeParam = searchParams.get("size");
+
+const initialPage = pageParam !== null && !isNaN(+pageParam) ? +pageParam : 0;
+const initialPageSize = sizeParam !== null && !isNaN(+sizeParam) ? +sizeParam : 5;
+
+const [page, setPage] = useState(initialPage);
+const [pageSize, setPageSize] = useState(initialPageSize);
+
+const [totalElements, setTotalElements] = useState(0);
 
 
   const [users, setUsers] = useState<User[]>([]);
@@ -60,33 +74,34 @@ const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
   );
 
   const fetchUsers = async () => {
-    const validatedFilters = validateFilters(filters);
-    if (validatedFilters === null) {
-      return;
-    }
-    const params = {
-      ...validatedFilters,
-      sortBy,
-      sortDir,
-    };
+  const validatedFilters = validateFilters(filters);
+  if (validatedFilters === null) return;
 
-    try {
-      const data = await getUsers(params);
-      setUsers(data.content);
-    } catch (err) {
-      console.error("Erreur lors de la récupération des utilisateurs", err);
-    }
+  const params = {
+    ...validatedFilters,
+    sortBy,
+    sortDir,
+    page,
+    size: pageSize,
   };
 
-  // Run fetchUsers on mount and on filters change with debounce
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      fetchUsers();
-    }, 500);
-  
+  try {
+    const data = await getUsers(params);
+    setUsers(data.content);
+    setTotalElements(data.totalElements);
+  } catch (err) {
+    console.error("Erreur lors de la récupération des utilisateurs", err);
+  }
+};
 
-    return () => clearTimeout(delayDebounce);
-  }, [filters, refreshTrigger,searchParams]);
+  // Run fetchUsers on mount and on filters change with debounce
+ useEffect(() => {
+  const delayDebounce = setTimeout(() => {
+    fetchUsers();
+  }, 500);
+
+  return () => clearTimeout(delayDebounce);
+}, [filters, refreshTrigger, searchParams, page, pageSize, sortBy, sortDir]);
   
 const handleSortChange = (field: string) => {
     const isSameField = field === sortBy;
@@ -111,10 +126,12 @@ const handleSortChange = (field: string) => {
 
     // Preserve current sortBy/sortDir params
     newParams.sortBy = sortBy;
-    newParams.sortDir = sortDir;
+     newParams.sortDir = sortDir;
+     newParams.page = String(page);       // Add current page to URL
+  newParams.size = String(pageSize);   
 
     setSearchParams(newParams);
-  }, [filters, sortBy, sortDir, setSearchParams]);
+  }, [filters, sortBy, sortDir, page, pageSize, setSearchParams]);
 
   const handleFilterChange = (name: string, value: string) => {
     setFilters((prevFilters) => ({
@@ -163,7 +180,14 @@ const handleSortChange = (field: string) => {
           onFilterChange={handleFilterChange}
           onResetFilters={resetFilters}
         />
-        {users.length != 0 ? <UsersTable users={users} sortBy={sortBy} sortDir={sortDir} onSortChange={handleSortChange} />
+        {users.length != 0 ? <UsersTable users={users} sortBy={sortBy} sortDir={sortDir} onSortChange={handleSortChange} currentPage={page + 1} // backend is 0-based, UI 1-based
+  onPageChange={(newPage) => setPage(newPage - 1)}
+  totalCount={totalElements}
+  onRowsPerPageChange={(size) => {
+    setPageSize(size);
+    setPage(0); // reset page when page size changes
+  }}
+  rowsPerPage={pageSize} />
 
         : <div className="p-10 flex flex-col items-center text-gray-500">
         <HiUserRemove className="w-12 h-12 text-gray-300 mb-4" />
