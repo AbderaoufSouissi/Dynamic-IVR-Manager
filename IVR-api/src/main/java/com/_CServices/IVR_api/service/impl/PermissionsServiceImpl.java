@@ -273,7 +273,7 @@ public class PermissionsServiceImpl implements PermissionsService {
                 .map(permissionsMapper::toDto)
                 .collect(Collectors.toList());
     }
-    
+
 
     private int[] getRowBounds(Pageable pageable) {
         int startRow = (int) pageable.getOffset(); // page * size
