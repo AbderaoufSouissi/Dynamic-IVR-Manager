@@ -1,5 +1,5 @@
 import type { Permission } from "../../types/types";
-import { MdArrowDropDown, MdArrowDropUp, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { MdArrowDropDown, MdArrowDropUp, MdDelete, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
 import { HiChevronDown } from "react-icons/hi";
@@ -130,6 +130,7 @@ const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
                     }
                     className="text-red-600 hover:underline cursor-pointer"
                   >
+                    <MdDelete />
                     Supprimer
                   </button>
                 </div>

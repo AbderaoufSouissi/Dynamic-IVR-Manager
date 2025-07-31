@@ -1,5 +1,5 @@
 import type { Role } from "../../types/types";
-import { MdArrowDropDown, MdArrowDropUp, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { MdArrowDropDown, MdArrowDropUp, MdDelete, MdEdit, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { HiChevronDown } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
@@ -136,6 +136,7 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
                     onClick={() => navigate(`update/${role.roleId}`)}
                     className="text-blue-600 hover:underline cursor-pointer"
                   >
+                    <MdEdit />
                     Éditer
                   </button>
                   <span className="text-slate-300">|</span>
@@ -143,6 +144,7 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
                     onClick={() => navigate(`/admin/roles/delete/${role.roleId}`)}
                     className="text-red-600 hover:underline cursor-pointer"
                   >
+                    <MdDelete />
                     Supprimer
                   </button>
                 </div>

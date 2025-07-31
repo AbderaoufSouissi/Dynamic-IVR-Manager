@@ -93,7 +93,7 @@ const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
              <th
          key={key}
          onClick={() => handleSort(key)}
-         className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary-color)] uppercase tracking-wider cursor-pointer group"
+         className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer group"
        >
          <div className="flex items-center w-fit">
            {label}

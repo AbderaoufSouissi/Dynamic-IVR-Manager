@@ -1,5 +1,5 @@
 import type { User } from "../../types/types";
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { MdDelete, MdEdit, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { MdArrowDropUp, MdArrowDropDown } from "react-icons/md";
 
 import { useNavigate } from "react-router-dom";
@@ -101,7 +101,7 @@ const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
               <th
                 key={key}
                 onClick={() => handleSort(key)}
-                className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary-color)] uppercase tracking-wider cursor-pointer group"
+                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer group"
               >
                 <div className="flex items-center w-fit">
                   {label}
@@ -164,26 +164,26 @@ const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
                 </span>
               </td>
               <td className="p-4 font-medium text-blue-600">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => navigate(`update/${user.userId}`)}
-                    className="text-blue-600 hover:underline cursor-pointer"
-                  >
-                    Éditer
-                  </button>
+  <div className="flex items-center gap-2">
+    <button
+      onClick={() => navigate(`update/${user.userId}`)}
+      className="flex items-center gap-1 text-blue-600 hover:underline cursor-pointer"
+    >
+      <MdEdit />
+      Éditer
+    </button>
 
-                  <span className="text-slate-300">|</span>
+    {/* <span className="text-slate-300">|</span>
 
-                  <button
-                    onClick={() =>
-                      navigate(`/admin/users/delete/${user.userId}`)
-                    }
-                    className="text-red-600 hover:underline cursor-pointer"
-                  >
-                    Supprimer
-                  </button>
-                </div>
-              </td>
+    <button
+      onClick={() => navigate(`/admin/users/delete/${user.userId}`)}
+      className="flex items-center gap-1 text-red-600 hover:underline cursor-pointer"
+    >
+      <MdDelete />
+      Supprimer
+    </button> */}
+  </div>
+</td>
             </tr>
           ))}
         </tbody>
