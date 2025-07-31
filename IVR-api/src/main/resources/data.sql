@@ -78,20 +78,19 @@ BEGIN
            );
 
     -- Insert permissions (will continue from ID 2)
-    INSERT INTO PERMISSIONS (PERMISSION_ID, PERMISSION_NAME, description, created_at, updated_at, CREATED_BY_ID,UPDATED_BY_ID)
+    INSERT INTO PERMISSIONS (PERMISSION_ID, PERMISSION_NAME, description, created_at, updated_at, CREATED_BY_ID, UPDATED_BY_ID)
     SELECT SHARED_ID_SEQ.NEXTVAL, p_name, p_desc, SYSTIMESTAMP, SYSTIMESTAMP, system_user_id, system_user_id
     FROM (
-             SELECT 'CREATE_USER' AS p_name, 'Create User' AS p_desc FROM DUAL UNION ALL
-             SELECT 'UPDATE_USER', 'Update User' FROM DUAL UNION ALL
-             SELECT 'DELETE_USER', 'Delete User' FROM DUAL UNION ALL
-             SELECT 'CREATE_ROLE', 'Create Role' FROM DUAL UNION ALL
-             SELECT 'UPDATE_ROLE', 'Update Role' FROM DUAL UNION ALL
-             SELECT 'DELETE_ROLE', 'Delete Role' FROM DUAL UNION ALL
-             SELECT 'CREATE_PERMISSION', 'Create Permission' FROM DUAL UNION ALL
-             SELECT 'DELETE_PERMISSION', 'Delete Permission' FROM DUAL UNION ALL
-             SELECT 'BLACKLIST_CUSTOMER', 'Blacklist Customer' FROM DUAL UNION ALL
-             SELECT 'WHITELIST_CUSTOMER', 'Whitelist Customer' FROM DUAL UNION ALL
-             SELECT 'RESET_NB_CALLS', 'Reset Number of Calls' FROM DUAL
+             SELECT 'CREATE_USER'         AS p_name, 'Créer un utilisateur'              AS p_desc FROM DUAL UNION ALL
+             SELECT 'UPDATE_USER'         AS p_name, 'Mettre à jour un utilisateur'      AS p_desc FROM DUAL UNION ALL
+             SELECT 'CREATE_ROLE'         AS p_name, 'Créer un rôle'                     AS p_desc FROM DUAL UNION ALL
+             SELECT 'UPDATE_ROLE'         AS p_name, 'Mettre à jour un rôle'            AS p_desc FROM DUAL UNION ALL
+             SELECT 'DELETE_ROLE'         AS p_name, 'Supprimer un rôle'                AS p_desc FROM DUAL UNION ALL
+             SELECT 'CREATE_PERMISSION'   AS p_name, 'Créer une permission'             AS p_desc FROM DUAL UNION ALL
+             SELECT 'DELETE_PERMISSION'   AS p_name, 'Supprimer une permission'         AS p_desc FROM DUAL UNION ALL
+             SELECT 'BLACKLIST_CUSTOMER'  AS p_name, 'Blacklister un MSISDN'            AS p_desc FROM DUAL UNION ALL
+             SELECT 'WHITELIST_CUSTOMER'  AS p_name, 'Whitelister un MSISDN'            AS p_desc FROM DUAL UNION ALL
+             SELECT 'RESET_NB_CALLS' AS p_name, 'Réinitialiser le nombre d’appels d’un MSISDN' AS p_desc FROM DUAL
          );
 
     -- Assign all permissions to SYSTEM_ROLE
