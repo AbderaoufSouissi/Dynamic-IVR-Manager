@@ -47,7 +47,8 @@ const { triggerRefresh } = useOutletContext<RolesPageContext>()
 
   // Load role data if editing
   useEffect(() => {
-    if (id) {
+
+if (id) {
       getRoleById(parseInt(id))
         .then(role => {
           setFormData({
@@ -60,6 +61,9 @@ const { triggerRefresh } = useOutletContext<RolesPageContext>()
         });
     }
   }, [id]);
+
+
+  
   const handlePermissionToggle = (permissionName: string) => {
     setFormData(prev => ({
       ...prev,
