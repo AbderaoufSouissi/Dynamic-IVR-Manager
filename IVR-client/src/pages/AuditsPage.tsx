@@ -6,6 +6,7 @@ import AuditFilter from "../components/filters/AuditFilter";
 import type { Audit } from "../types/types";
 import { HiX } from "react-icons/hi";
 import { HiDocumentText } from "react-icons/hi2";
+import { useSearchParams } from "react-router-dom";
 
 const AuditsPage = () => {
   const [filters, setFilters] = useState({
@@ -20,13 +21,20 @@ const AuditsPage = () => {
 
   const [audits, setAudits] = useState<Audit[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
+const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
   const isNumeric = (value: string) => /^[0-9]+$/.test(value);
 
   const isValidDate = (value: string) => {
     return /^\d{4}-\d{2}-\d{2}$/.test(value); // Only accept full YYYY-MM-DD
   };
+
+  
+
+   const [searchParams, setSearchParams] = useSearchParams();
+  const sortBy = searchParams.get("sortBy") || "audit_id";
+ const rawSortDir = searchParams.get("sortDir") || "desc";
+  const sortDir = rawSortDir === "asc" ? "asc" : "desc"; // 
 
 
  const validateFilters = useCallback((filters: Record<string, string>): Record<string, string> | null => {
@@ -55,8 +63,13 @@ const AuditsPage = () => {
     if (validatedFilters === null) {
       return;
     }
+    const params = {
+      ...validatedFilters,
+      sortBy,
+      sortDir,
+    };
     try {
-      const data = await getAudits(validatedFilters);
+      const data = await getAudits(params);
       console.log(data);
       setAudits(data.content);
     } catch (err) {
@@ -70,7 +83,7 @@ const AuditsPage = () => {
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [filters, refreshTrigger]);
+  }, [filters, refreshTrigger,searchParams]);
 
   const handleFilterChange = (name: string, value: string) => {
     setFilters((prevFilters) => ({
@@ -78,6 +91,35 @@ const AuditsPage = () => {
       [name]: value,
     }));
   };
+
+  const handleSortChange = (field: string) => {
+    const isSameField = field === sortBy;
+    const newSortDir = isSameField && sortDir === "asc" ? "desc" : "asc";
+
+    // Update URL params for sorting, preserving filters
+    const currentParams = Object.fromEntries(searchParams.entries());
+    setSearchParams({
+      ...currentParams,
+      sortBy: field,
+      sortDir: newSortDir,
+    });
+  };
+
+   useEffect(() => {
+    // Update URL search params except sort params (they are independent)
+    const newParams: Record<string, string> = {};
+
+    Object.entries(filters).forEach(([key, val]) => {
+      if (val.trim()) newParams[key] = val.trim();
+    });
+
+    // Preserve current sortBy/sortDir params
+    newParams.sortBy = sortBy;
+    newParams.sortDir = sortDir;
+
+    setSearchParams(newParams);
+  }, [filters, sortBy, sortDir, setSearchParams]);
+
 
   const resetFilters = () => {
     setFilters({
@@ -103,7 +145,7 @@ const AuditsPage = () => {
         onResetFilters={resetFilters}
       />
       {audits.length != 0 ? (
-        <AuditTable audits={audits} triggerRefresh={triggerRefresh} />
+        <AuditTable audits={audits} sortBy={sortBy} sortDir={sortDir} onSortChange={handleSortChange}/>
       ) : (
         <div className="p-10 flex flex-col items-center text-gray-500">
           <div className="relative w-12 h-12 mb-4">
