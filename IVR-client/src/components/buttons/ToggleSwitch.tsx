@@ -9,10 +9,10 @@ const ToggleSwitch = ({ checked, onToggle }: ToggleSwitchProps) => {
       {/* Status Label */}
       
 
-      {/* Toggle Switch */}
+     
       <button
         onClick={onToggle}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+        className={`cursor-pointer relative inline-flex h-5 w-10 items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 ${
           checked
             ? 'bg-green-600 focus:ring-green-500'
             : 'bg-red-600 focus:ring-red-500'
