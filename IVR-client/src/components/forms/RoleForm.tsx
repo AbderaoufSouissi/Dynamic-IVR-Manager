@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { createRole, getRoleById, updateRole } from "../../service/RoleService";
-import { getPermissions } from "../../service/PermissionService";
+import { getAllPermissions } from "../../service/PermissionService";
 import type { RoleRequest, Permission } from "../../types/types";
 import { FaRegCheckCircle, FaCheckCircle } from "react-icons/fa";
 import FormButtons from "../buttons/FormButtons";
@@ -34,9 +34,9 @@ const { triggerRefresh } = useOutletContext<RolesPageContext>()
 
   // Fetch permissions and role if editing
   useEffect(() => {
-    getPermissions()
+    getAllPermissions()
       .then(res => {
-        setPermissions(res.content);
+        setPermissions(res);
         setLoading(false);
       })
       .catch(error => {

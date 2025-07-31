@@ -1,6 +1,12 @@
 import { API_BASE_URL, axiosInstance } from "../api/Api";
 import type { PermissionRequest } from "../types/types";
 
+export const getAllPermissions = async () => {
+  const response = await axiosInstance.get(`${API_BASE_URL}/permissions/all`);
+  return response.data;
+  
+}
+
 export const getPermissions = async (params = {}) => {
   const response = await axiosInstance.get(`${API_BASE_URL}/permissions`, {
     params, 
