@@ -1,17 +1,32 @@
 import { useState} from "react";
 import type { Permission } from "../../types/types";
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { MdArrowDropDown, MdArrowDropUp, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
 import { HiChevronDown } from "react-icons/hi";
 
 interface PermissionsTableProps {
   permissions: Permission[];
+  sortBy: string;
   itemsPerPage?: number;
-  triggerRefresh: () => void;
+  sortDir: "asc" | "desc";
+  onSortChange: (field: string)=> void
 }
 
-const PermissionsTable = ({ permissions, itemsPerPage = 5}: PermissionsTableProps) => {
+
+const permissionTableHeads = [
+      { key: "permission_id", label: "ID" },
+      { key: "permission_name", label: "Nom complet" },
+      { key: "description", label: "Description" },
+      { key: "created_at", label: "Date de création" },
+      { key: "created_by_id", label: "Créé par" },
+      { key: "updated_at", label: "Date de modification" },
+      { key: "updated_by_id", label: "Modifié par" },
+    ]
+
+
+
+const PermissionsTable = ({ permissions, itemsPerPage = 5, sortBy, sortDir, onSortChange}: PermissionsTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage ?? 5);
   const navigate = useNavigate()
@@ -21,7 +36,19 @@ const PermissionsTable = ({ permissions, itemsPerPage = 5}: PermissionsTableProp
   const endIndex = startIndex + rowsPerPage;
    const currentPermissions = permissions.slice(startIndex, endIndex);
 
-
+  const handleSort = (column: string) => {
+      onSortChange(column)
+    };
+  
+    const renderSortIcon = (column: string) => {
+      if (sortBy !== column) return null;
+      return sortDir === "asc" ? (
+        <MdArrowDropUp className="text-blue-600" size={20} />
+      ) : (
+        <MdArrowDropDown className="text-blue-600" size={20} />
+      );
+    };
+  
 
   const getPageNumbers = () => {
     const pages = [];
@@ -56,16 +83,25 @@ const PermissionsTable = ({ permissions, itemsPerPage = 5}: PermissionsTableProp
   return (
     <div className="overflow-x-auto rounded-xl shadow border border-gray-200 bg-white">
       <table className="w-full text-sm">
-        <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+         <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
           <tr>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">ID</th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Nom</th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Description</th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Date de création</th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Créé par</th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Date de modification</th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Modifié par</th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">Actions</th>
+            {permissionTableHeads.map(({ key, label }) => (
+              <th
+          key={key}
+          onClick={() => handleSort(key)}
+          className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary-color)] uppercase tracking-wider cursor-pointer group"
+        >
+          <div className="flex items-center w-fit">
+            {label}
+            <span className={`ml-2 transition-colors duration-200 text-base ${
+              sortBy === key ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+            }`}>
+              {renderSortIcon(key) || <MdArrowDropDown />} {/* Show faint icon for visual consistency */}
+            </span>
+          </div>
+        </th>
+            ))}
+            <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
           </tr>
         </thead>
         <tbody>

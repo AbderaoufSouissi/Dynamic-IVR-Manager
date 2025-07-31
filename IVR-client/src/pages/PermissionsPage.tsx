@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import PermissionFilter from "../components/filters/PermissionFilter";
 import PermissionsTable from "../components/tables/PermissionsTable";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
 import { getPermissions } from "../service/PermissionService";
 import type { Permission } from "../types/types";
 import { HiKey, HiOutlineKey } from "react-icons/hi2";
@@ -20,6 +20,11 @@ const PermissionsPage = () => {
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
+
+    const [searchParams, setSearchParams] = useSearchParams();
+  const sortBy = searchParams.get("sortBy") || "user_id";
+ const rawSortDir = searchParams.get("sortDir") || "desc";
+  const sortDir = rawSortDir === "asc" ? "asc" : "desc";
  
 
   const resetFilters = () => {
@@ -67,8 +72,14 @@ const PermissionsPage = () => {
     if (validatedFilters === null) {
       return;
     }
+
+     const params = {
+      ...validatedFilters,
+      sortBy,
+      sortDir,
+    };
     try {
-      const data = await getPermissions(validatedFilters);
+      const data = await getPermissions(params);
       setPermissions(data.content);
     } catch (err) {
       console.error("Erreur lors de la récupération des utilisateurs", err);
@@ -81,7 +92,40 @@ const PermissionsPage = () => {
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [filters, refreshTrigger]);
+  }, [filters, refreshTrigger, searchParams]);
+
+
+
+
+
+  const handleSortChange = (field: string) => {
+    const isSameField = field === sortBy;
+    const newSortDir = isSameField && sortDir === "asc" ? "desc" : "asc";
+
+    // Update URL params for sorting, preserving filters
+    const currentParams = Object.fromEntries(searchParams.entries());
+    setSearchParams({
+      ...currentParams,
+      sortBy: field,
+      sortDir: newSortDir,
+    });
+  };
+
+   useEffect(() => {
+    // Update URL search params except sort params (they are independent)
+    const newParams: Record<string, string> = {};
+
+    Object.entries(filters).forEach(([key, val]) => {
+      if (val.trim()) newParams[key] = val.trim();
+    });
+
+    // Preserve current sortBy/sortDir params
+    newParams.sortBy = sortBy;
+    newParams.sortDir = sortDir;
+
+    setSearchParams(newParams);
+  }, [filters, sortBy, sortDir, setSearchParams]);
+
 
   const navigate = useNavigate();
 
@@ -112,7 +156,7 @@ const PermissionsPage = () => {
           onFilterChange={handleFilterChange}
           onResetFilters={resetFilters}
         />  
-        {permissions.length != 0 ? <PermissionsTable permissions={permissions} triggerRefresh={triggerRefresh} />
+        {permissions.length != 0 ? <PermissionsTable permissions={permissions} sortBy={sortBy} sortDir={sortDir} onSortChange={handleSortChange}/>
         : <div className="p-10 flex flex-col items-center text-gray-500">
   <div className="relative w-12 h-12 mb-4">
     <HiKey className="w-12 h-12 text-gray-300" />
