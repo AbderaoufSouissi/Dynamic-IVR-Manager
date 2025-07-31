@@ -11,6 +11,7 @@ import {
   resetNbCalls,
   WhitelistMsisdn,
 } from "../service/MsisdnService";
+import axios from "axios";
 
 const MsisdnPage = () => {
   const [msisdn, setMsisdn] = useState("");
@@ -23,20 +24,29 @@ const MsisdnPage = () => {
 
   const validateMSISDN = (number: string) => /^\d{8,15}$/.test(number);
 
-  const blacklist = async () => {
-    setIsLoading(true);
-    try {
-      const data = await blacklistMsisdn(msisdn); //
-      setStatus(data.message);
-      console.log(status);
-    } catch (err) {
-      console.error(err);
-      setStatus("Erreur lors du blacklistage.");
-    } finally {
-      setIsLoading(false);
-      setShowBlacklistModal(false);
+
+const blacklist = async () => {
+  setIsLoading(true);
+  try {
+    const data = await blacklistMsisdn(msisdn);
+    setStatus(data.message);
+    console.log(status);
+  } catch (error: unknown) {
+    console.error(error);
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        setStatus("Blacklistage impossible, MSISDN introuvable.");
+      } else {
+        setStatus("Erreur lors du blacklistage.");
+      }
+    } else {
+      setStatus("Erreur inconnue.");
     }
-  };
+  } finally {
+    setIsLoading(false);
+    setShowBlacklistModal(false);
+  }
+};
 
   const handleOnBlacklist = () => {
     if (!validateMSISDN(msisdn)) {
@@ -47,19 +57,29 @@ const MsisdnPage = () => {
     setShowBlacklistModal(true);
   };
 
-  const whitelist = async () => {
-    setIsLoading(true);
-    try {
-      const data = await WhitelistMsisdn(msisdn); // ✅ fixed
-      setStatus(data.message);
-    } catch (err) {
-      console.error(err);
-      setStatus("Erreur lors du whitelistage.");
-    } finally {
-      setIsLoading(false);
-      setShowWhitelistModal(false);
+
+const whitelist = async () => {
+  setIsLoading(true);
+  try {
+    const data = await WhitelistMsisdn(msisdn);
+    setStatus(data.message);
+  } catch (error) {
+    console.error(error);
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        setStatus("Whitelistage impossible, MSISDN introuvable.");
+      } else {
+        setStatus("Erreur lors du whitelistage.");
+      }
+    } else {
+      setStatus("Erreur inconnue.");
     }
-  };
+  } finally {
+    setIsLoading(false);
+    setShowWhitelistModal(false);
+  }
+};
+
 
   const handleOnWhitelist = () => {
     if (!validateMSISDN(msisdn)) {
@@ -70,20 +90,30 @@ const MsisdnPage = () => {
     setShowWhitelistModal(true);
   };
 
-  const reset = async () => {
-    setIsLoading(true);
-    try {
-      const data = await resetNbCalls(msisdn); // ✅ fixed
-      setStatus(data.message);
-      console.log(status);
-    } catch (err) {
-      console.error(err);
-      setStatus("Erreur lors de la réinitialisation du nombre d'appels.");
-    } finally {
-      setIsLoading(false);
-      setShowResetModal(false);
+
+const reset = async () => {
+  setIsLoading(true);
+  try {
+    const data = await resetNbCalls(msisdn);
+    setStatus(data.message);
+    console.log(status);
+  } catch (error) {
+    console.error(error);
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        setStatus("MSISDN introuvable.");
+      } else {
+        setStatus("Erreur lors de la réinitialisation du nombre d'appels.");
+      }
+    } else {
+      setStatus("Erreur inconnue.");
     }
-  };
+  } finally {
+    setIsLoading(false);
+    setShowResetModal(false);
+  }
+};
+
 
   const handleOnReset = () => {
     if (!validateMSISDN(msisdn)) {
@@ -104,18 +134,27 @@ const MsisdnPage = () => {
   };
 
   const isMsisdnBlacklisted = async () => {
-    try {
-      const data = await isBlacklisted({ msisdn }); // pass msisdn as an object with key 'msisdn'
-      setStatus(data.message);
-      console.log("status of is blacklisted  : ", data.message);
-    } catch (error) {
-      console.error(error);
-      setStatus("Erreur lors de la vérification du blacklistage.");
+  try {
+    const data = await isBlacklisted({ msisdn });
+    setStatus(data.message);
+    console.log("status of is blacklisted:", data.message);
+  } catch (error) {
+    console.error(error);
+
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        setStatus("MSISDN introuvable.");
+      } else {
+        setStatus("Erreur lors de la vérification du blacklistage.");
+      }
+    } else {
+      setStatus("Erreur inconnue.");
     }
-  };  
+  }
+};
 
   return (
-   <div className="h-screen overflow-hidden">
+    <div className="h-screen overflow-hidden">
       <main className="flex flex-1 items-center justify-center py-12 h-full">
         <div className="w-full max-w-md space-y-8 bg-white p-8 border border-gray-200 rounded-xl shadow transition-all duration-300 cursor-pointer hover:shadow-2xl hover:bg-white/80">
           <div>
@@ -173,6 +212,6 @@ const MsisdnPage = () => {
       </main>
     </div>
   );
-}
+};
 
 export default MsisdnPage;
