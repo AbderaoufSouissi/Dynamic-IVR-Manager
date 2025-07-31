@@ -21,7 +21,7 @@ const AuditsPage = () => {
 
   const [audits, setAudits] = useState<Audit[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
+  const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
   const isNumeric = (value: string) => /^[0-9]+$/.test(value);
 
@@ -29,34 +29,47 @@ const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
     return /^\d{4}-\d{2}-\d{2}$/.test(value); // Only accept full YYYY-MM-DD
   };
 
-  
-
-   const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const sortBy = searchParams.get("sortBy") || "audit_id";
- const rawSortDir = searchParams.get("sortDir") || "desc";
-  const sortDir = rawSortDir === "asc" ? "asc" : "desc"; // 
+  const rawSortDir = searchParams.get("sortDir") || "desc";
+  const sortDir = rawSortDir === "asc" ? "asc" : "desc";
 
+  const pageParam = searchParams.get("page");
+  const sizeParam = searchParams.get("size");
 
- const validateFilters = useCallback((filters: Record<string, string>): Record<string, string> | null => {
-  const validated: Record<string, string> = {};
+  const initialPage = pageParam !== null && !isNaN(+pageParam) ? +pageParam : 0;
+  const initialPageSize =
+    sizeParam !== null && !isNaN(+sizeParam) ? +sizeParam : 5;
 
-  for (const [key, value] of Object.entries(filters)) {
-    const trimmed = value.trim();
-    if (!trimmed) continue;
+  const [page, setPage] = useState(initialPage);
+  const [pageSize, setPageSize] = useState(initialPageSize);
+  const [totalPages, setTotalPages] = useState<number>(0)
 
-    // Only validate numeric fields for numbers
-    if (["id", "userId", "entityId", "msisdn"].includes(key)) {
-      if (!isNumeric(trimmed)) return null;
-    }
+  const [totalElements, setTotalElements] = useState(0);
 
-    // Date validation remains
-    if (key === "date" && !isValidDate(trimmed)) return null;
+  const validateFilters = useCallback(
+    (filters: Record<string, string>): Record<string, string> | null => {
+      const validated: Record<string, string> = {};
 
-    validated[key] = trimmed;
-  }
+      for (const [key, value] of Object.entries(filters)) {
+        const trimmed = value.trim();
+        if (!trimmed) continue;
 
-  return validated;
-}, []);
+        // Only validate numeric fields for numbers
+        if (["id", "userId", "entityId", "msisdn"].includes(key)) {
+          if (!isNumeric(trimmed)) return null;
+        }
+
+        // Date validation remains
+        if (key === "date" && !isValidDate(trimmed)) return null;
+
+        validated[key] = trimmed;
+      }
+
+      return validated;
+    },
+    []
+  );
 
   const fetchAudits = async () => {
     const validatedFilters = validateFilters(filters);
@@ -67,11 +80,14 @@ const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
       ...validatedFilters,
       sortBy,
       sortDir,
+      page,
+      size: pageSize,
     };
     try {
       const data = await getAudits(params);
-      console.log(data);
       setAudits(data.content);
+      setTotalElements(data.totalElements);
+      setTotalPages(data.totalPages)
     } catch (err) {
       console.error("Erreur lors de la récupération des utilisateurs", err);
     }
@@ -83,7 +99,7 @@ const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [filters, refreshTrigger,searchParams]);
+  }, [filters, refreshTrigger, searchParams, page, pageSize, sortBy, sortDir]);
 
   const handleFilterChange = (name: string, value: string) => {
     setFilters((prevFilters) => ({
@@ -105,7 +121,7 @@ const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
     });
   };
 
-   useEffect(() => {
+  useEffect(() => {
     // Update URL search params except sort params (they are independent)
     const newParams: Record<string, string> = {};
 
@@ -116,10 +132,11 @@ const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
     // Preserve current sortBy/sortDir params
     newParams.sortBy = sortBy;
     newParams.sortDir = sortDir;
+    newParams.page = String(page); // Add current page to URL
+    newParams.size = String(pageSize);
 
     setSearchParams(newParams);
-  }, [filters, sortBy, sortDir, setSearchParams]);
-
+  }, [filters, sortBy, sortDir, page, pageSize, setSearchParams]);
 
   const resetFilters = () => {
     setFilters({
@@ -145,7 +162,21 @@ const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
         onResetFilters={resetFilters}
       />
       {audits.length != 0 ? (
-        <AuditTable audits={audits} sortBy={sortBy} sortDir={sortDir} onSortChange={handleSortChange}/>
+        <AuditTable
+          audits={audits}
+          sortBy={sortBy}
+          sortDir={sortDir}
+          onSortChange={handleSortChange}
+          currentPage={page + 1} // backend is 0-based, UI 1-based
+          onPageChange={(newPage) => setPage(newPage - 1)}
+          totalCount={totalElements}
+          onRowsPerPageChange={(size) => {
+            setPageSize(size);
+            setPage(0); // reset page when page size changes
+          }}
+          rowsPerPage={pageSize}
+          totalPages={totalPages}
+        />
       ) : (
         <div className="p-10 flex flex-col items-center text-gray-500">
           <div className="relative w-12 h-12 mb-4">
