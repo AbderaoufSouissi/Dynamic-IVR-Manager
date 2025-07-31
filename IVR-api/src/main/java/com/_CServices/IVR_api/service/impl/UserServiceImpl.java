@@ -355,43 +355,56 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse updateUser(UpdateUserRequest request, Long id) {
-        User userToUpdate = userRepository.findById(id).map(user -> {
-            if (request.getFirstName() != null) {
-                user.setFirstName(request.getFirstName());
+        User userToUpdate = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        if (request.getEmail() != null && !request.getEmail().equals(userToUpdate.getEmail())) {
+            if (null != userRepository.findByEmail(request.getEmail())){
+                throw new ResourceAlreadyExistsException("L'email '" + request.getEmail() + "' est déjà utilisé.");
             }
-            if (request.getLastName() != null) {
-                user.setLastName(request.getLastName());
+            userToUpdate.setEmail(request.getEmail());
+        }
+
+        if (request.getUsername() != null && !request.getUsername().equals(userToUpdate.getUsername())) {
+            if (null != userRepository.findByEmail(request.getEmail())){
+                throw new ResourceAlreadyExistsException("Le nom d'utilisateur '" + request.getUsername() + "' est déjà utilisé.");
             }
-            if (request.getEmail() != null) {
-                user.setEmail(request.getEmail());
-            }
-            if (request.getUsername() != null) {
-                user.setUsername(request.getUsername());
-            }
-            if (request.getPassword() != null && !request.getPassword().isBlank()) {
-                user.setPassword(passwordEncoder.encode(request.getPassword()));
-            }
-            if (request.getActive() != null) {
-                user.setActive(request.getActive());
-            }
-            if (request.getRoleName() != null) {
-                Role updatedRole = roleRepository.findByName(request.getRoleName());
-                if (updatedRole != null) {
-                    user.setRole(updatedRole);
-                }
-            }
-            return userRepository.save(user);
-        }).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+            userToUpdate.setUsername(request.getUsername());
+        }
+
+        if (request.getFirstName() != null) {
+            userToUpdate.setFirstName(request.getFirstName());
+        }
+        if (request.getLastName() != null) {
+            userToUpdate.setLastName(request.getLastName());
+        }
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            userToUpdate.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+        if (request.getActive() != null) {
+            userToUpdate.setActive(request.getActive());
+        }
+        if (request.getRoleName() != null) {
+            Role updatedRole = Optional.ofNullable(
+                    roleRepository.findByName(request.getRoleName())
+            ).orElseThrow(() ->
+                    new ResourceNotFoundException("Le rôle '" + request.getRoleName() + "' n'existe pas.")
+            );
+            userToUpdate.setRole(updatedRole);
+        }
+
+        User savedUser = userRepository.save(userToUpdate);
 
         auditLoggingService.logAction(
                 ActionType.UPDATE_USER.toString(),
                 EntityType.USER.toString(),
-                userToUpdate.getId(),
+                savedUser.getId(),
                 null
         );
 
-        return userMapper.toDto(userToUpdate);
+        return userMapper.toDto(savedUser);
     }
+
 
 
 
