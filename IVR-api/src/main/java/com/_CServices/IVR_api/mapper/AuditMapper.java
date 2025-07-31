@@ -24,6 +24,7 @@ public class AuditMapper {
                 .entityId(audit.getEntityId())
                 .entityType(audit.getEntityType())
                 .actionTimestamp(audit.getActionTimeStamp())
+                .msisdn(audit.getMsisdn())
                 .build();
 
     }

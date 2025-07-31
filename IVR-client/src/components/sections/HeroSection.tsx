@@ -41,20 +41,20 @@ const features = [
 
   return (
     <main className="flex-grow">
-        <section className="bg-white h-[90vh] py-20 md:py-32">
+        <section className="h-[90vh] pt-0 pb-20 md:pb-32">
           <div className="container mx-auto px-6 text-center">
             <div className="max-w-3xl mx-auto">
               <h1 className="text-9xl md:text-6xl mt-30 font-extrabold text-gray-900 mb-6 leading-tight">
                 Simplifiez la Gestion des Utilisateurs
               </h1>
               <p className="text-lg md:text-xl text-gray-600 mb-10">
-                Gérez sans effort les utilisateurs, les rôles et les permissions
+                Gérez sans effort les utilisateurs, les rôles et les MSISDN
                 avec notre système intuitif. Simplifiez l'administration et
                 améliorez la sécurité.
               </p>
               <NavLink
                 to={"/login"}
-                className="inline-flex items-center justify-center rounded-lg h-12 px-8 bg-blue-600 text-white font-bold text-base shadow-lg hover:shadow-xl transition transform hover:scale-105"
+                className="inline-flex items-center justify-center h-12 px-8 bg-blue-600 text-base hover:shadow-xl hover:scale-105 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-x"
               >
                 Gérer les Utilisateurs
               </NavLink>

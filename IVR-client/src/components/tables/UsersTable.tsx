@@ -1,26 +1,62 @@
-import { useState } from "react";
 import type { User } from "../../types/types";
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import Modal from "../modal/Modal";
-import { FiAlertTriangle } from "react-icons/fi";
+import { MdDelete, MdEdit, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { MdArrowDropUp, MdArrowDropDown } from "react-icons/md";
+
 import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
+import { HiChevronDown } from "react-icons/hi";
 
 interface UsersTableProps {
   itemsPerPage?: number;
   users: User[];
+  sortBy: string;
+  sortDir: "asc" | "desc";
+  onSortChange: (field: string) => void
+  currentPage: number;       // 1-based page index for UI
+  onPageChange: (page: number) => void;
+
+  totalCount: number;        // totalElements
+  onRowsPerPageChange: (size: number) => void;
+  rowsPerPage: number;
 }
 
-const UsersTable = ({ itemsPerPage = 5, users }: UsersTableProps) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
 
-  const totalPages = Math.ceil(users.length / rowsPerPage);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
+const userTableHeads = [
+  { key: "user_id", label: "ID" },
+  { key: "email", label: "Nom complet" },
+  { key: "username", label: "Username" },
+  { key: "role_id", label: "Role" },
+  { key: "created_at", label: "Date de création" },
+  { key: "created_by_id", label: "Créé par" },
+  { key: "updated_at", label: "Date de modification" },
+  { key: "updated_by_id", label: "Modifié par" },
+  { key: "is_active", label: "Statut" },
+]
+
+const UsersTable = ({users, sortBy, sortDir, onSortChange, currentPage, onPageChange, totalCount, onRowsPerPageChange, rowsPerPage }: UsersTableProps) => {
+
+
+  const totalPages = Math.ceil(totalCount / rowsPerPage);
+ 
   const navigate = useNavigate();
 
-  const [showModal, setShowModal] = useState(false);
+
+
+
+  const handleSort = (column: string) => {
+    onSortChange(column)
+  };
+
+  const renderSortIcon = (column: string) => {
+    if (sortBy !== column) return null;
+    return sortDir === "asc" ? (
+      <MdArrowDropUp className="text-blue-600" size={20} />
+    ) : (
+      <MdArrowDropDown className="text-blue-600" size={20} />
+    );
+  };
+
+
 
   const getPageNumbers = () => {
     const pages = [];
@@ -40,56 +76,47 @@ const UsersTable = ({ itemsPerPage = 5, users }: UsersTableProps) => {
   };
 
   const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+    if (page >= 1 && page <= totalPages) onPageChange(page);
   };
 
   const handlePrevious = () => handlePageChange(currentPage - 1);
   const handleNext = () => handlePageChange(currentPage + 1);
 
+  // Call parent's handler on rows per page change
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(parseInt(e.target.value));
-    setCurrentPage(1); // Reset to first page on change
+    const newSize = parseInt(e.target.value);
+    onRowsPerPageChange(newSize);
   };
 
+  // Calculate current displayed range (e.g. showing 6-10 of 52)
+const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
+
+ 
   return (
     <div className="overflow-x-auto max-w-[100vw] rounded-xl shadow border border-gray-200 bg-white">
       <table className="w-full text-sm">
         <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
           <tr>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              ID
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Nom complet
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Username
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Rôle
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Date de création
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Créé par
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Date de modification
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Modifié par
-            </th>
-            <th className="text-left px-4 py-2 font-semibold whitespace-nowrap">
-              Statut
-            </th>
-            <th className="p-4 text-left font-semibold text-gray-600">
-              Actions
-            </th>
+            {userTableHeads.map(({ key, label }) => (
+              <th
+                key={key}
+                onClick={() => handleSort(key)}
+                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer group"
+              >
+                <div className="flex items-center w-fit">
+                  {label}
+                  <span className={`ml-2 transition-colors duration-200 text-base ${sortBy === key ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+                    }`}>
+                    {renderSortIcon(key) || <MdArrowDropDown />} {/* Show faint icon for visual consistency */}
+                  </span>
+                </div>
+              </th>
+            ))}
+            <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {users.slice(startIndex, endIndex).map((user) => (
+          {users.map((user) => (
             <tr
               key={user.userId}
               className="border-t border-gray-200 hover:bg-gray-50 transition"
@@ -128,36 +155,35 @@ const UsersTable = ({ itemsPerPage = 5, users }: UsersTableProps) => {
               </td>
               <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
                 <span
-                  className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
-                    user.active
+                  className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${user.active
                       ? "bg-green-100 text-green-700"
                       : "bg-red-100 text-red-700"
-                  }`}
+                    }`}
                 >
                   {user.active ? "Actif" : "Inactif"}
                 </span>
               </td>
               <td className="p-4 font-medium text-blue-600">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => navigate(`update/${user.userId}`)}
-                    className="text-blue-600 hover:underline cursor-pointer"
-                  >
-                    Éditer
-                  </button>
+  <div className="flex items-center gap-2">
+    <button
+      onClick={() => navigate(`update/${user.userId}`)}
+      className="flex items-center gap-1 text-blue-600 hover:underline cursor-pointer"
+    >
+      <MdEdit />
+      Éditer
+    </button>
 
-                  <span className="text-slate-300">|</span>
+    {/* <span className="text-slate-300">|</span>
 
-                  <button
-                    onClick={() =>
-                      navigate(`/admin/users/delete/${user.userId}`)
-                    }
-                    className="text-red-600 hover:underline cursor-pointer"
-                  >
-                    Supprimer
-                  </button>
-                </div>
-              </td>
+    <button
+      onClick={() => navigate(`/admin/users/delete/${user.userId}`)}
+      className="flex items-center gap-1 text-red-600 hover:underline cursor-pointer"
+    >
+      <MdDelete />
+      Supprimer
+    </button> */}
+  </div>
+</td>
             </tr>
           ))}
         </tbody>
@@ -180,20 +206,7 @@ const UsersTable = ({ itemsPerPage = 5, users }: UsersTableProps) => {
                 </option>
               ))}
             </select>
-            <svg
-              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="m19.5 8.25-7.5 7.5-7.5-7.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <HiChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           </div>
         </div>
 
@@ -202,11 +215,10 @@ const UsersTable = ({ itemsPerPage = 5, users }: UsersTableProps) => {
           <button
             onClick={handlePrevious}
             disabled={currentPage === 1}
-            className={`cursor-pointer flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
-              currentPage === 1
+            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${currentPage === 1
                 ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-slate-100"
-            }`}
+                : "cursor-pointer hover:bg-slate-100"
+              }`}
           >
             <MdKeyboardArrowLeft />
           </button>
@@ -214,11 +226,10 @@ const UsersTable = ({ itemsPerPage = 5, users }: UsersTableProps) => {
             <button
               key={page}
               onClick={() => handlePageChange(page)}
-              className={`cursor-pointer text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${
-                page === currentPage
+              className={`text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${page === currentPage
                   ? "text-white bg-blue-600"
-                  : "text-slate-600 hover:bg-slate-100"
-              }`}
+                  : "cursor-pointer text-slate-600 hover:bg-slate-100"
+                }`}
             >
               {page}
             </button>
@@ -226,11 +237,10 @@ const UsersTable = ({ itemsPerPage = 5, users }: UsersTableProps) => {
           <button
             onClick={handleNext}
             disabled={currentPage === totalPages}
-            className={`cursor-pointer flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
-              currentPage === totalPages
+            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${currentPage === totalPages
                 ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-slate-100"
-            }`}
+                : "cursor-pointer hover:bg-slate-100"
+              }`}
           >
             <MdKeyboardArrowRight />
           </button>
@@ -238,27 +248,11 @@ const UsersTable = ({ itemsPerPage = 5, users }: UsersTableProps) => {
 
         {/* Displayed range */}
         <p className="text-sm text-slate-500">
-          Affichage de {Math.min(endIndex, users.length)} sur {users.length}{" "}
+          Affichage de {toRecord} sur {totalCount}{" "}
           utilsateurs
         </p>
       </div>
 
-      {showModal && (
-        <Modal
-          open={showModal}
-          onClose={() => setShowModal(false)}
-          icon={<FiAlertTriangle />}
-          title="Confirmer la suppression"
-          description="Êtes-vous sûr de vouloir supprimer cet utilisateur ?"
-          confirmType="danger"
-          onConfirm={() => {
-            // Implement deletion logic here
-            console.log("Confirmed");
-            setShowModal(false);
-          }}
-          confirmLabel="Supprimer"
-        />
-      )}
     </div>
   );
 };

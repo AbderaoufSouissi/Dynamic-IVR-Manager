@@ -6,14 +6,12 @@ import com._CServices.IVR_api.dto.request.PermissionsRequest;
 import com._CServices.IVR_api.dto.response.PermissionsResponse;
 import com._CServices.IVR_api.entity.Permissions;
 import com._CServices.IVR_api.entity.Role;
-import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.enumeration.ActionType;
 import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.PermissionsMapper;
-import com._CServices.IVR_api.security.AuthService;
-import com._CServices.IVR_api.service.AuditService;
+import com._CServices.IVR_api.audit.AuditLoggingService;
 import com._CServices.IVR_api.service.PermissionsService;
 import com._CServices.IVR_api.utils.SortUtils;
 import jakarta.persistence.EntityManager;
@@ -41,7 +39,7 @@ import java.util.stream.Collectors;
 public class PermissionsServiceImpl implements PermissionsService {
     private final PermissionsRepository permissionsRepository;
     private final PermissionsMapper permissionsMapper;
-    private final AuditService auditService;
+    private final AuditLoggingService auditLoggingService;
     private final EntityManager entityManager;
 
 
@@ -211,10 +209,11 @@ public class PermissionsServiceImpl implements PermissionsService {
 
         Permissions createdPermission = permissionsRepository.save(newPermissions);
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.CREATE_PERMISSION.toString(),
                 EntityType.PERMISSION.toString(),
-                createdPermission.getId()
+                createdPermission.getId(),
+                null
         );
 
 
@@ -222,23 +221,7 @@ public class PermissionsServiceImpl implements PermissionsService {
         return permissionsMapper.toDto(createdPermission);
     }
 
-//    //OLD VERSION of delete method
-//    @Override
-//    public void deletePermissionById(Long id) {
-//        log.info("inside deleteById()");
-//
-//        Permissions permissionToDelete = permissionsRepository.findById(id)
-//                .orElseThrow(()-> new ResourceNotFoundException("Permission with ID: "+id+" not found"));
-//        permissionsRepository.delete(permissionToDelete);
-//
-//        auditService.logAction(
-//                ActionType.DELETE_PERMISSION.toString(),
-//                EntityType.PERMISSION.toString(),
-//                permissionToDelete.getId()
-//        );
-//
-//
-//    }
+
 
 
 
@@ -259,10 +242,11 @@ public class PermissionsServiceImpl implements PermissionsService {
         // Now it's safe to delete the permission
         permissionsRepository.delete(permissionToDelete);
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.DELETE_PERMISSION.toString(),
                 EntityType.PERMISSION.toString(),
-                permissionToDelete.getId()
+                permissionToDelete.getId(),
+                null
         );
     }
 
@@ -275,10 +259,11 @@ public class PermissionsServiceImpl implements PermissionsService {
 
         permissionsRepository.delete(permissionToDelete);
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.DELETE_PERMISSION.toString(),
                 EntityType.PERMISSION.toString(),
-                permissionToDelete.getId()
+                permissionToDelete.getId(),
+                null
         );
 
 

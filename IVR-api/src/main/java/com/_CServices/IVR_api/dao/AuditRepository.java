@@ -10,28 +10,27 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Repository
 public interface AuditRepository extends JpaRepository<Audit, Long>, JpaSpecificationExecutor<Audit> {
-    List<Audit> findByEntityType(EntityType entityType);
-    List<Audit> findAllByEntityTypeAndActionType(EntityType entityType, ActionType actionType);
-    List<Audit> findAllByActionType(ActionType actionType);
-    List<Audit> findByActionTimeStampBetween(LocalDateTime actionTimeStampAfter, LocalDateTime actionTimeStampBefore);
 
 
     @Query(value = """
     SELECT COUNT(*) FROM general_audit 
     WHERE (:auditId IS NULL OR audit_id = :auditId)
       AND (:userId IS NULL OR user_id = :userId)
-      AND (:actionType IS NULL OR UPPER(action_type) = UPPER(:actionType))
-      AND (:entityType IS NULL OR UPPER(entity_type) = UPPER(:entityType))
+      AND (:entityId IS NULL OR entity_id = :entityId)
+      AND (:msisdn IS NULL OR msisdn = :msisdn)
+      AND (:actionType IS NULL OR UPPER(action_type) LIKE UPPER(:actionType) || '%')
+      AND (:entityType IS NULL OR UPPER(entity_type) LIKE UPPER(:entityType) || '%')
       AND (:startTimestamp IS NULL OR action_time_stamp >= :startTimestamp)
       AND (:endTimestamp IS NULL OR action_time_stamp <= :endTimestamp)
     """, nativeQuery = true)
     long countAuditsWithFilters(
             @Param("auditId") Long auditId,
             @Param("userId") Long userId,
+            @Param("entityId") Long entityId,
+            @Param("msisdn") String msisdn,
             @Param("actionType") String actionType,
             @Param("entityType") String entityType,
             @Param("startTimestamp") LocalDateTime startTimestamp,

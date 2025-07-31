@@ -8,8 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-
-
+import java.time.LocalTime;
 
 
 @RestController
@@ -23,8 +22,10 @@ public class AuditController {
     public ResponseEntity<Page<AuditResponse>> getAudits(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) Long userId,
-            @RequestParam(required = false) String action,
-            @RequestParam(required = false) String entity,
+            @RequestParam(required = false) Long entityId,
+            @RequestParam(required = false) String msisdn,
+            @RequestParam(value = "action", required = false) String actionType,  // Maps 'action' param to actionType variable
+            @RequestParam(value = "entity", required = false) String entityType,
             @RequestParam(required = false) LocalDate date,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
@@ -36,9 +37,15 @@ public class AuditController {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<AuditResponse> audits = auditService.getAuditsWithFilters(
-                id, userId, action, entity, date,   // <‑‑ extra param
-                sortBy, sortDir,
+        Page<AuditResponse> audits = auditService.getAuditsWithFilters(id,
+                userId,
+                entityId,
+                 msisdn,
+                actionType,
+                entityType,
+                date,
+                sortBy,
+                sortDir,
                 pageable
         );
 

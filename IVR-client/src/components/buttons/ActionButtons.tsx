@@ -6,7 +6,7 @@ import { TfiSearch } from "react-icons/tfi";
 
 interface ActionButtonsProps {
   isLoading: boolean;
-  onCheck: () => void;
+  onVerify: () => void;
   onBlacklist: () => void;
   onWhitelist: () => void;
   onReset: () => void;
@@ -14,7 +14,7 @@ interface ActionButtonsProps {
 
 const ActionButtons = ({
   isLoading,
-  onCheck,
+  onVerify,
   onBlacklist,
   onWhitelist,
   onReset,
@@ -25,16 +25,15 @@ const ActionButtons = ({
             className="
       text-center
       cursor-pointer
-        bg-blue-600 text-white
-        hover:bg-blue-700 hover:scale-105
+       bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed hover:scale-105
         flex w-full items-center justify-center
-        rounded-md h-12 px-4
-        text-sm font-semibold tracking-wide
-        transition-all duration-200
-        disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100
+        h-12  
+        text-sm tracking-wide
+        disabled:opacity-70 disabled:scale-100
+         shadow-lg hover:shadow-xl min-h-[50px]
       "
       disabled={isLoading}
-      onClick={onCheck}
+      onClick={onVerify}
         >
             <TfiSearch className="mr-1"/>
             {isLoading ? "Vérification en cours..." : "Vérifier"}
@@ -44,15 +43,16 @@ const ActionButtons = ({
     {/* Danger Action (Blacklist) */}
     <button
       className="
-        bg-gray-200
-        cursor-pointer
-        text-gray-900
-        hover:bg-gray-300 hover:scale-105
-        flex w-full items-center justify-center
-        rounded-md h-12 px-4
-        text-sm font-semibold tracking-wide
-        transition-all duration-200
-      "
+    cursor-pointer bg-gray-200 py-3 px-6 rounded-xl text-blue-600 font-semibold hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl
+    text-center
+  
+    disabled:from-gray-400 disabled:to-gray-500 hover:scale-105
+    flex w-full items-center justify-center
+    h-12  
+    text-sm tracking-wide
+    disabled:opacity-70 disabled:scale-100
+    min-h-[50px]
+  "
       onClick={onBlacklist}
     >
       <FaBan className="mr-1 text-red-800" />
@@ -61,31 +61,34 @@ const ActionButtons = ({
 
     {/* Success Action (Whitelist) */}
     <button
-      className="bg-gray-200
-            cursor-pointer
-      text-gray-900
-        hover:bg-gray-300 hover:scale-105
-        flex w-full items-center justify-center
-        rounded-md h-12 px-4
-        text-sm font-semibold tracking-wide
-        transition-all duration-200
-      "
-      onClick={onWhitelist}
-    >
-      <FiCheckCircle className="mr-1 text-green-800" />
-      Whitelister
-    </button>
+      className="
+  cursor-pointer bg-gray-200 py-3 px-6 rounded-xl text-blue-600 font-semibold hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl
+    text-center
+  
+    disabled:from-gray-400 disabled:to-gray-500 hover:scale-105
+    flex w-full items-center justify-center
+    h-12  
+    text-sm tracking-wide
+    disabled:opacity-70 disabled:scale-100
+    min-h-[50px]
+  "
+  onClick={onWhitelist}
+>
+  <FiCheckCircle className="mr-1 text-green-700" />
+  Whitelister
+</button>
 
     {/* Secondary Action (Reset) */}
     <button
       className="
-      cursor-pointer
-        bg-gray-600 text-white
-        hover:bg-gray-700 hover:scale-105
-        flex w-full items-center justify-center
-        rounded-md h-12 px-4
-        text-sm font-semibold tracking-wide
-        transition-all duration-200
+      text-center
+    cursor-pointer
+    bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-gray-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed hover:scale-105
+    flex w-full items-center justify-center
+    h-12  
+    text-sm tracking-wide
+    disabled:opacity-70 disabled:scale-100
+    shadow-lg hover:shadow-xl min-h-[50px]
       "
       onClick={onReset}
     > <HiOutlineRefresh className="mr-1"/>

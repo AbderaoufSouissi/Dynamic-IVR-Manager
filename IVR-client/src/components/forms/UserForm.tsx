@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { createUser, getUserById, updateUser } from "../../service/UserService";
 import { HiEye, HiEyeSlash } from "react-icons/hi2";
+import FormButtons from "../buttons/FormButtons";
 
 interface UserFormProps {
   title: Title;
   description: Description;
 }
+type UsersPageContext = {
+  triggerRefresh: () => void;
+};
 
 type Title = "Créer un nouvel utilisateur" | "Modifier un utilisateur";
 type Description =
@@ -27,7 +31,10 @@ const UserForm = ({ title, description }: UserFormProps) => {
     active: null as boolean | null, // allow null initially
   });
 
+  const [formError, setFormError] = useState<string | null>(null);
+
   const [showPassword, setShowPassword] = useState(false);
+  const { triggerRefresh } = useOutletContext<UsersPageContext>();
 
   const navigate = useNavigate();
 
@@ -53,6 +60,17 @@ const UserForm = ({ title, description }: UserFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (
+    !formData.firstName.trim() ||
+    !formData.lastName.trim() ||
+    !formData.email.trim() ||
+    !formData.username.trim() ||
+    (!id && !formData.password.trim()) || // password required only on creation
+    formData.active === null // must explicitly choose Actif or Inactif
+  ) {
+    setFormError("Veuillez remplir tous les champs requis et sélectionner un statut.");
+    return;
+  }
 
     // common data
     const basePayload: any = {
@@ -94,10 +112,20 @@ if (formData.active !== null) {
 
         await createUser(createPayload);
       }
+       triggerRefresh()
 
       navigate("/admin/users");
-    } catch (error) {
-      console.error("Erreur lors de la soumission du formulaire :", error);
+    } catch (error: any) {
+  console.error("Erreur lors de la soumission du formulaire :", error);
+  
+  // Try to extract error message from response
+  const message =
+    error?.response?.data?.error || // e.g. from Spring Boot's ResponseEntity
+    error?.message ||                 // fallback: JS error message
+    "Une erreur est survenue.";      // ultimate fallback
+
+  setFormError(message);
+
       // show toast or error message
     }
   };
@@ -118,7 +146,7 @@ if (formData.active !== null) {
             <p className="text-gray-500 text-sm mt-1">{description}</p>
           </header>
 
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
               <div>
                 <label
@@ -216,6 +244,7 @@ if (formData.active !== null) {
                   }
                   placeholder="••••••••••••••••"
                   type={showPassword ? "text" : "password"}
+              
                 />
                 <button
                   type="button"
@@ -299,23 +328,13 @@ if (formData.active !== null) {
                 </div>
               </div>
             </div>
+            {formError && (
+  <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md text-sm border border-red-300">
+    {formError}
+  </div>
+)}
 
-            <footer className="mt-6 flex justify-between">
-              <button
-                className="px-4 cursor-pointer py-2 bg-red-700 text-white font-medium rounded-lg hover:bg-red-800 transition text-sm"
-                type="button"
-                onClick={handleCancel}
-              >
-                Annuler
-              </button>
-              <button
-                onClick={handleSubmit}
-                className="px-5 cursor-pointer py-2 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition text-sm"
-                type="submit"
-              >
-                Valider
-              </button>
-            </footer>
+            <FormButtons onCancel={handleCancel}/>
           </form>
         </div>
       </div>

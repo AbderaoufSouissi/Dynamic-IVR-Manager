@@ -14,6 +14,7 @@ public class AuditResponse {
     private String actionType;
     private String entityType;
     private Long entityId;
+    private String msisdn;
     private LocalDateTime actionTimestamp;
 
 

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { createRole, getRoleById, updateRole } from "../../service/RoleService";
 import { getPermissions } from "../../service/PermissionService";
 import type { RoleRequest, Permission } from "../../types/types";
 import { FaRegCheckCircle, FaCheckCircle } from "react-icons/fa";
+import FormButtons from "../buttons/FormButtons";
 
 type Title = "Créer un nouveau role" | "Modifier un role";
 type Description =
@@ -14,11 +15,14 @@ interface RoleFormProps {
   title: Title;
   description: Description;
 }
+type RolesPageContext = {
+  triggerRefresh: () => void;
+};
 
 const RoleForm = ({ title, description }: RoleFormProps) => {
   const { id } = useParams();
   const navigate = useNavigate();
-
+const { triggerRefresh } = useOutletContext<RolesPageContext>()
   const [formData, setFormData] = useState<RoleRequest>({
     name: "",
     permissions: [],
@@ -26,6 +30,7 @@ const RoleForm = ({ title, description }: RoleFormProps) => {
 
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [loading, setLoading] = useState(true);
+   const [formError, setFormError] = useState<string | null>(null);
 
   // Fetch permissions and role if editing
   useEffect(() => {
@@ -72,9 +77,18 @@ const RoleForm = ({ title, description }: RoleFormProps) => {
       } else {
         await createRole(formData);
       }
+      triggerRefresh()
       navigate("/admin/roles");
-    } catch (err) {
-      console.error("Erreur lors de la soumission du formulaire :", err);
+    } catch (error: any) {
+  console.error("Erreur lors de la soumission du formulaire :", error);
+  
+  // Try to extract error message from response
+  const message =
+    error?.response?.data?.error || // e.g. from Spring Boot's ResponseEntity
+    error?.message ||                 // fallback: JS error message
+    "Une erreur est survenue.";      // ultimate fallback
+
+  setFormError(message);
     }
   };
 
@@ -179,23 +193,13 @@ const RoleForm = ({ title, description }: RoleFormProps) => {
                 </div>
               </div>
             </div>
+             {formError && (
+  <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md text-sm border border-red-300">
+    {formError}
+  </div>
+)}
 
-            {/* Footer Buttons */}
-            <footer className="mt-6 flex justify-between">
-              <button
-                type="button"
-                className="px-4 cursor-pointer py-2 bg-red-700 text-white font-medium rounded-lg hover:bg-red-800 transition text-sm"
-                onClick={handleCancel}
-              >
-                Annuler
-              </button>
-              <button
-                type="submit"
-                className="px-5 cursor-pointer py-2 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition text-sm"
-              >
-                Valider
-              </button>
-            </footer>
+            <FormButtons onCancel={handleCancel}/>
           </form>
         </div>
       </div>

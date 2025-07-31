@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import type { PermissionRequest } from '../../types/types';
 import { createPermission, getPermissionById } from '../../service/PermissionService';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import FormButtons from '../buttons/FormButtons';
 
 type Title = "Créer une nouvelle permission";
 type Description ="Complétez les informations ci-dessous pour créer une nouvelle permission"
@@ -11,16 +12,22 @@ interface PermissionFormProps {
   title: Title;
   description: Description;
 }
+type PermissionsPageContext = {
+  triggerRefresh: () => void;
+};
 
 const PermissionForm = ({ title, description }: PermissionFormProps) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const { triggerRefresh } = useOutletContext<PermissionsPageContext >()
 
   const [formData, setFormData] = useState<PermissionRequest>({
     name: '',
     description: ''
   });
+
+   const [formError, setFormError] = useState<string | null>(null);
 const fetchPermission = async () => {
       if (id) {
         try {
@@ -38,13 +45,33 @@ const fetchPermission = async () => {
     fetchPermission();
   }, [id]);
 
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.name.trim()) {
+    setFormError("Le nom de la permission est requis.");
+    return;
+  }
+
+  if (!formData.description.trim()) {
+    setFormError("La description de la permission est requise.");
+    return;
+  }
     try {
       await createPermission(formData);
+      triggerRefresh()
       navigate("/admin/permissions");
-    } catch (err) {
-      console.error("Erreur lors de la soumission du formulaire :", err);
+    } catch (error: any) {
+  console.error("Erreur lors de la soumission du formulaire :", error);
+  
+  // Try to extract error message from response
+  const message =
+    error?.response?.data?.error || // e.g. from Spring Boot's ResponseEntity
+    error?.message ||                 // fallback: JS error message
+    "Une erreur est survenue.";      // ultimate fallback
+
+  setFormError(message);
     }
   };
 
@@ -89,24 +116,12 @@ const fetchPermission = async () => {
                   rows={3}
                 />
               </div>
-
-              <footer className="mt-6 flex justify-between">
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-red-700 text-white font-medium rounded-lg hover:bg-red-800 transition text-sm"
-                  onClick={handleCancel}
-                >
-                  Annuler
-                </button>
-                <button
-                  type="submit"
-                                  className="px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition text-sm"
-                                 
-
-                >
-                  Valider
-                </button>
-              </footer>
+               {formError && (
+  <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md text-sm border border-red-300">
+    {formError}
+  </div>
+)}
+              <FormButtons onCancel={handleCancel}/>
             </div>
           </form>
         </div>

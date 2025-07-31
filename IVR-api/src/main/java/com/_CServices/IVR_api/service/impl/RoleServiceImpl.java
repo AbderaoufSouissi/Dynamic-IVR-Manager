@@ -2,22 +2,18 @@ package com._CServices.IVR_api.service.impl;
 
 import com._CServices.IVR_api.dao.PermissionsRepository;
 import com._CServices.IVR_api.dao.RoleRepository;
-
+import com._CServices.IVR_api.dao.UserRepository;
 import com._CServices.IVR_api.dto.response.RoleResponse;
-
-
 import com._CServices.IVR_api.dto.request.RoleRequest;
-import com._CServices.IVR_api.dto.response.RoleResponse;
 import com._CServices.IVR_api.entity.Permissions;
 import com._CServices.IVR_api.entity.Role;
-
+import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.enumeration.ActionType;
 import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.RoleMapper;
-import com._CServices.IVR_api.security.AuthService;
-import com._CServices.IVR_api.service.AuditService;
+import com._CServices.IVR_api.audit.AuditLoggingService;
 import com._CServices.IVR_api.service.RoleService;
 import com._CServices.IVR_api.utils.SortUtils;
 import jakarta.persistence.EntityManager;
@@ -28,23 +24,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+
+
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
+
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
     private final PermissionsRepository permissionsRepository;
-    private final AuditService auditService;
+    private final AuditLoggingService auditLoggingService;
     private final RoleMapper roleMapper;
     private final EntityManager entityManager;
 
@@ -97,7 +95,8 @@ public class RoleServiceImpl implements RoleService {
                 "  SELECT main_query.*, ROWNUM rn FROM (" +
                 "    SELECT r.role_id, r.role_name, r.created_at, r.updated_at, r.created_by_id, r.updated_by_id, " +
                 "           NVL(creator.username, '') AS created_by_username, " +
-                "           NVL(updater.username, '') AS updated_by_username " +
+                "           NVL(updater.username, '') AS updated_by_username, " +
+                "           (SELECT COUNT(*) FROM role_permissions rp WHERE rp.role_id = r.role_id) AS permission_count " +  // <-- fixed space
                 "    FROM roles r " +
                 "    LEFT JOIN app_users creator ON r.created_by_id = creator.user_id " +
                 "    LEFT JOIN app_users updater ON r.updated_by_id = updater.user_id " +
@@ -115,12 +114,15 @@ public class RoleServiceImpl implements RoleService {
                 "          ) " +
                 "      AND ((? IS NULL AND ? IS NULL) OR (r.created_at BETWEEN ? AND ?)) " +
                 "      AND ((? IS NULL AND ? IS NULL) OR (r.updated_at BETWEEN ? AND ?)) " +
-                "    ORDER BY r." + sanitizedSortField + " " + sanitizedSortDir +
+                "    ORDER BY " + (sanitizedSortField.equals("permission_count")
+                ? "permission_count"  // use alias, not subquery again
+                : "r." + sanitizedSortField) + " " + sanitizedSortDir + " " +
                 "  ) main_query WHERE ROWNUM <= ?" +
                 ") WHERE rn > ?";
 
+
         try {
-            Query query = entityManager.createNativeQuery(sql, Role.class)
+            Query query = entityManager.createNativeQuery(sql)
                     .setParameter(1, id)
                     .setParameter(2, id)
                     .setParameter(3, name)
@@ -140,8 +142,30 @@ public class RoleServiceImpl implements RoleService {
                     .setParameter(17, endRow)
                     .setParameter(18, startRow);
 
-            List<Role> roles = query.getResultList();
+            List<Object[]> rows = query.getResultList();
 
+            List<RoleResponse> roleResponses = new ArrayList<>();
+            for (Object[] row : rows) {
+                RoleResponse dto = new RoleResponse();
+                dto.setRoleId(((Number) row[0]).longValue());
+                dto.setName((String) row[1]);
+                dto.setCreatedAt(((Timestamp) row[2]).toLocalDateTime());
+                dto.setUpdatedAt(((Timestamp) row[3]).toLocalDateTime());
+                dto.setCreatedBy((String) row[6]);
+                dto.setUpdatedBy((String) row[7]);
+                dto.setPermissionCount(((Number) row[8]).intValue());
+                List<String> permissions = entityManager.createNativeQuery(
+                                "SELECT p.permission_name " +
+                                        "FROM role_permissions rp " +
+                                        "JOIN permissions p ON rp.permission_id = p.permission_id " +
+                                        "WHERE rp.role_id = :roleId")
+                        .setParameter("roleId", dto.getRoleId())
+                        .getResultList();
+
+                dto.setPermissions(new HashSet<>(permissions));
+
+                roleResponses.add(dto);;
+            }
             // Count query
             String countSql = "SELECT COUNT(r.role_id) " +
                     "FROM roles r " +
@@ -181,12 +205,8 @@ public class RoleServiceImpl implements RoleService {
                     .setParameter(16, endUpdatedAt);
 
             long total = ((Number) countQuery.getSingleResult()).longValue();
+            return new PageImpl<>(roleResponses, pageable, total);
 
-            return new PageImpl<>(
-                    roles.stream().map(roleMapper::toDto).collect(Collectors.toList()),
-                    pageable,
-                    total
-            );
 
         } catch (Exception e) {
             log.error("Error fetching filtered roles", e);
@@ -239,10 +259,10 @@ public class RoleServiceImpl implements RoleService {
                 .build();
         Role createdRole = roleRepository.save(role);
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.CREATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
-                createdRole.getId()
+                createdRole.getId(),null
         );
 
         return roleMapper.toDto(createdRole);
@@ -280,10 +300,11 @@ public class RoleServiceImpl implements RoleService {
 
 
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.UPDATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
-                updatedRole.getId()
+                updatedRole.getId(),
+                null
         );
 
         return roleMapper.toDto(updatedRole);
@@ -315,28 +336,62 @@ public class RoleServiceImpl implements RoleService {
         Role updatedRole = roleRepository.save(roleToUpdate);
 
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.UPDATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
-                updatedRole.getId()
+                updatedRole.getId(),
+                null
         );
 
         return roleMapper.toDto(updatedRole);
     }
-
+    @Transactional
     @Override
     public void deleteRoleById(Long id) {
-        log.info("inside deleteRole()");
+        log.info("Starting deletion of role with id: {}", id);
 
+        // 1. Find the role to delete
         Role roleToDelete = roleRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Role with id : "+id+" not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " not found"));
+
+        // 2. Find the default role (must exist)
+        Role defaultRole = Optional.ofNullable(roleRepository.findByName("DEFAULT_ROLE"))
+                .orElseThrow(() -> new IllegalStateException("DEFAULT_ROLE must exist in the system"));
+
+        // 3. Reassign users to DEFAULT_ROLE
+        List<User> usersWithRole = userRepository.findUsersWithRole(id);
+        if (!usersWithRole.isEmpty()) {
+            log.info("Reassigning {} users from role {} to DEFAULT_ROLE",
+                    usersWithRole.size(), roleToDelete.getName());
+
+            usersWithRole.forEach(user -> {
+                user.setRole(defaultRole);
+                userRepository.save(user);
+            });
+            userRepository.flush(); // Ensure user updates are committed
+        }
+
+        // 4. Clear all permission associations
+        log.info("Clearing {} permission associations for role {}",
+                roleToDelete.getPermissions().size(), roleToDelete.getName());
+
+        // Create a copy to avoid ConcurrentModificationException
+        Set<Permissions> permissionsCopy = new HashSet<>(roleToDelete.getPermissions());
+        permissionsCopy.forEach(permission -> {
+            roleToDelete.removePermission(permission);
+        });
+        roleRepository.saveAndFlush(roleToDelete);
+
+        // 5. Delete the role
         roleRepository.delete(roleToDelete);
+        log.info("Successfully deleted role with id: {}", id);
 
-
-        auditService.logAction(
+        // 6. Audit logging
+        auditLoggingService.logAction(
                 ActionType.DELETE_ROLE.toString(),
                 EntityType.ROLE.toString(),
-                id
+                id,
+                null
         );
     }
 
@@ -351,10 +406,11 @@ public class RoleServiceImpl implements RoleService {
 
         roleRepository.delete(roleToDelete);
 
-        auditService.logAction(
+        auditLoggingService.logAction(
                 ActionType.DELETE_ROLE.toString(),
                 EntityType.ROLE.toString(),
-                roleToDeleteId
+                roleToDeleteId,
+                null
         );
 
 

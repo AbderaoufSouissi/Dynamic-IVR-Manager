@@ -15,9 +15,10 @@ public class Constants {
     public static final String CREATE_PERMISSION_DESCRIPTION="Creér une permission";
     public static final String DELETE_PERMISSION_DESCRIPTION="Supprimer une permission";
 
-    public static final String BLACKLIST_CUSTOMER_DESCRIPTION="Blacklister un client";
-    public static final String WHITELIST_CUSTOMER_DESCRIPTION="Whitelister un client";
+    public static final String BLACKLIST_MSISDN_DESCRIPTION="Blacklister un client";
+    public static final String WHITELIST_MSISDN_DESCRIPTION="Whitelister un client";
     public static final String RESET_NB_CALLS_DESCRIPTION="Réinitialiser le nombre d'appels d'un client";
 
     public static final String FORGET_PASSWORD_DESCRIPTION = "Mot de passe oublié";
+    public static final String RESET_PASSWORD_DESCRIPTION = "Mot de passe réinitialisé";
 }

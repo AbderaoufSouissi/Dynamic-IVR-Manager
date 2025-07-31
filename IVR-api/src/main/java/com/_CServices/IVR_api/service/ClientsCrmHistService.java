@@ -1,6 +1,9 @@
 package com._CServices.IVR_api.service;
 
+import com._CServices.IVR_api.audit.AuditLoggingService;
 import com._CServices.IVR_api.dao.ClientsCrmHistRepository;
+import com._CServices.IVR_api.enumeration.ActionType;
+import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ClientsCrmHistService {
 
     private final ClientsCrmHistRepository clientsCrmHistRepository;
+    private final AuditLoggingService auditLoggingService;
 
     @Transactional
     public void blacklistMsisdn(String msisdn) {
@@ -27,6 +31,12 @@ public class ClientsCrmHistService {
             }
 
         }
+        auditLoggingService.logAction(
+                ActionType.BLACKLIST_MSISDN.toString(),
+                String.valueOf(EntityType.MSISDN),
+                null,
+                msisdn
+        );
 
     }
     @Transactional
@@ -42,6 +52,13 @@ public class ClientsCrmHistService {
             }
 
         }
+
+        auditLoggingService.logAction(
+                ActionType.WHITELIST_MSISDN.toString(),
+                String.valueOf(EntityType.MSISDN),
+                null,
+                msisdn
+        );
 
     }
 

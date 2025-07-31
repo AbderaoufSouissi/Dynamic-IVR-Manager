@@ -47,19 +47,23 @@ const Modal = ({
             <button
               className={`rounded-md cursor-pointer px-4 py-2 text-sm font-medium transition-all duration-200 ${
                 confirmType === "danger"
-                  ? "bg-red-600 text-white hover:bg-red-700 hover:scale-[1.02]"
-                  : "bg-blue-600 text-white hover:bg-blue-700 hover:scale-[1.02]"
+                  ? "text-white px-5 py-2 font-semibold  focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm cursor-pointer bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 rounded-xl transition-all duration-200 focus:ring-red-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg"
+                  : "text-white hover:scale-[1.02] px-5 py-2 font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 rounded-xl transition-all duration-200 focus:ring-blue-500/20 transform  active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg"
               }`}
               onClick={onConfirm}
             >
               {confirmLabel}
             </button>
-            <button
-              className="rounded-md border cursor-pointer border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50 hover:scale-[1.02] dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-              onClick={onClose}
-            >
-              Annuler
-            </button>
+           <button
+className="cursor-pointer px-4 py-2 text-sm font-semibold text-gray-700 rounded-xl shadow-sm transition-all duration-200 transform
+bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400
+focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400/30
+hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
+disabled:from-gray-300 disabled:to-gray-400 disabled:text-gray-500 disabled:cursor-not-allowed disabled:transform-none"
+  onClick={onClose}
+>
+  Annuler
+</button>
           </div>
         </div>
       </div>

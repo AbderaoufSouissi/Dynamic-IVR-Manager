@@ -1,4 +1,4 @@
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation, useOutletContext } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FiAlertTriangle } from "react-icons/fi";
 import Modal from "./Modal";
@@ -6,10 +6,16 @@ import { deleteUser, getUserById } from "../../service/UserService";
 import { deleteRole, getRoleById } from "../../service/RoleService";
 import { deletePermission, getPermissionById } from "../../service/PermissionService";
 
+
+interface DeleteEntityModalContext {
+  triggerRefresh: () => void;
+}
+
 const DeleteEntityModal = () => {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const { triggerRefresh } = useOutletContext<DeleteEntityModalContext>();
 
   const [entityName, setEntityName] = useState<string | null>(null);
 
@@ -74,6 +80,7 @@ const DeleteEntityModal = () => {
           await deletePermission(numericId);
           break;
       }
+      triggerRefresh();
 
       navigate(`/admin/${entityType}s`);
     } catch (error) {

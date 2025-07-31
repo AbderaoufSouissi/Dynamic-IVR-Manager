@@ -19,6 +19,7 @@ import java.util.Set;
         "roleId",
         "name",
         "permissions",
+        "permissionCount",
         "createdAt",
         "createdBy",
         "updatedAt",
@@ -32,4 +33,6 @@ public class RoleResponse extends BaseDto {
 
     @Builder.Default
     private Set<String> permissions = new HashSet<>();
+
+    private Integer permissionCount;
 }
