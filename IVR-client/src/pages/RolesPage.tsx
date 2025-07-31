@@ -118,7 +118,6 @@ const RolesPage = () => {
 
   useEffect(() => {
     
-    if (!isRootRolesPage) return;
     // Update URL search params except sort params (they are independent)
     const newParams: Record<string, string> = {};
 
