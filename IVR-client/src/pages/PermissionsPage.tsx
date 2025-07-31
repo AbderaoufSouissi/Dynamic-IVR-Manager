@@ -22,7 +22,7 @@ const PermissionsPage = () => {
   const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
     const [searchParams, setSearchParams] = useSearchParams();
-  const sortBy = searchParams.get("sortBy") || "user_id";
+  const sortBy = searchParams.get("sortBy") || "permission_id";
  const rawSortDir = searchParams.get("sortDir") || "desc";
   const sortDir = rawSortDir === "asc" ? "asc" : "desc";
  
