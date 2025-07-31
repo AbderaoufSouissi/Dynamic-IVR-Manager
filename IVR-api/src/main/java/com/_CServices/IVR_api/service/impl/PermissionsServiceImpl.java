@@ -27,10 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -268,6 +265,15 @@ public class PermissionsServiceImpl implements PermissionsService {
 
 
     }
+
+    @Override
+    public List<PermissionsResponse> getAllPermissions() {
+        List<Permissions> permissions = permissionsRepository.findAll();
+        return permissions.stream()
+                .map(permissionsMapper::toDto)
+                .collect(Collectors.toList());
+    }
+    
 
     private int[] getRowBounds(Pageable pageable) {
         int startRow = (int) pageable.getOffset(); // page * size

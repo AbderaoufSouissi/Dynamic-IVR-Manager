@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface PermissionsService {
     Page<PermissionsResponse> getPermissionsWithFilters(
@@ -25,4 +26,5 @@ public interface PermissionsService {
     void deletePermissionById(Long id);
     void deletePermissionByName(String permissionName);
 
+    List<PermissionsResponse> getAllPermissions();
 }
