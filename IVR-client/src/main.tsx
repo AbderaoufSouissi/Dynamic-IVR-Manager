@@ -7,7 +7,6 @@ import UsersPage from "./pages/UsersPage.tsx";
 import RolesPage from "./pages/RolesPage.tsx";
 import PermissionsPage from "./pages/PermissionsPage.tsx";
 import MsisdnPage from "./pages/MsisdnPage.tsx";
-import AdminDashboard from "./pages/AdminDashboard.tsx";
 import UserForm from "./components/forms/UserForm.tsx";
 import HomePage from "./pages/HomePage.tsx";
 import ResetPasswordPage from "./auth/ResetPasswordPage.tsx";
@@ -18,6 +17,8 @@ import RoleForm from "./components/forms/RoleForm.tsx";
 import AdminOverview from "./pages/AdminOverview.tsx";
 import PermissionForm from "./components/forms/PermissionForm.tsx";
 import AuditsPage from "./pages/AuditsPage.tsx";
+import App from "./App.tsx";
+
 
 const router = createBrowserRouter([
   {
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <AdminDashboard />, // Admin layout/dashboard wrapper
+        element: <App />, // Admin layout/dashboard wrapper
         children: [
           {
             path: "users",
