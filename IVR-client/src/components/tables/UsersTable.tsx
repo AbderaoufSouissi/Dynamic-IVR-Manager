@@ -126,7 +126,7 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
               <th
                 key={key}
                 onClick={() => handleSort(key)}
-                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer group"
+                className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer group"
               >
                 <div className="flex items-center w-fit">
                   {label}
@@ -137,7 +137,7 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
                 </div>
               </th>
             ))}
-            <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -146,12 +146,12 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
               key={user.userId}
               className="border-t border-gray-200 hover:bg-gray-50 transition"
             >
-              <td className="px-4 py-2 font-medium whitespace-nowrap text-slate-800  ">
+              <td className="px-4 py-3 font-medium whitespace-nowrap text-slate-800">
                 {user.userId}
               </td>
-              <td className="py-4 whitespace-nowrap">
+              <td className="px-4 py-3 whitespace-nowrap">
                 <div className="flex items-center">
-                  <div className="ml-4">
+                  <div>
                     <div className="text-sm font-medium text-gray-900">
                       {user.firstName} {user.lastName}
                     </div>
@@ -159,51 +159,48 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
                   </div>
                 </div>
               </td>
-
-              <td className="px-6 py-2 font-medium whitespace-nowrap text-slate-800 ">
+              <td className="px-4 py-3 font-medium whitespace-nowrap text-slate-800">
                 {user.username}
               </td>
-              <td className="px-4 py-2 font-medium whitespace-nowrap text-slate-800 ">
+              <td className="px-4 py-3 font-medium whitespace-nowrap text-slate-800">
                 {user.roleName}
               </td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
+              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
                 {formatTimestamp(user.createdAt)}
               </td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
+              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
                 {user.createdBy}
               </td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
+              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
                 {formatTimestamp(user.updatedAt)}
               </td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
+              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
                 {user.updatedBy}
               </td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
-                
+              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
                 <ToggleSwitch checked={user.active} onToggle={() => handleToggleStatus(user.userId, !user.active)}/>
-                
               </td>
-              <td className="p-4 font-medium text-blue-600">
-  <div className="flex items-center gap-2">
-    <button
-      onClick={() => navigate(`update/${user.userId}`, { replace: true })}
-      className="flex items-center gap-1 text-blue-600 hover:underline cursor-pointer"
-    >
-      <MdEdit />
-      Éditer
-    </button>
+              <td className="px-4 py-3 font-medium text-blue-600">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => navigate(`update/${user.userId}`, { replace: true })}
+                    className="flex items-center gap-1 text-blue-600 hover:underline cursor-pointer"
+                  >
+                    <MdEdit />
+                    Éditer
+                  </button>
 
-    {/* <span className="text-slate-300">|</span>
+                  {/* <span className="text-slate-300">|</span>
 
-    <button
-      onClick={() => navigate(`/admin/users/delete/${user.userId}, { replace: true }`)}
-      className="flex items-center gap-1 text-red-600 hover:underline cursor-pointer"
-    >
-      <MdDelete />
-      Supprimer
-    </button> */}
-  </div>
-</td>
+                  <button
+                    onClick={() => navigate(`/admin/users/delete/${user.userId}, { replace: true }`)}
+                    className="flex items-center gap-1 text-red-600 hover:underline cursor-pointer"
+                  >
+                    <MdDelete />
+                    Supprimer
+                  </button> */}
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>
