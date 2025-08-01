@@ -5,6 +5,7 @@ import { getAllPermissions } from "../../service/PermissionService";
 import type { RoleRequest, Permission } from "../../types/types";
 import { FaRegCheckCircle, FaCheckCircle } from "react-icons/fa";
 import FormButtons from "../buttons/FormButtons";
+import { toastError, toastSuccess } from "../../service/ToastService";
 
 type Title = "Créer un nouveau role" | "Modifier un role";
 type Description =
@@ -78,13 +79,16 @@ if (id) {
     try {
       if (id) {
         await updateRole(parseInt(id), formData);
+        toastSuccess(`Le Role ${formData.name} a été modifié avec succés`)
       } else {
         await createRole(formData);
+        toastSuccess(`Le Role ${formData.name} a été créé avec succés`)
       }
       triggerRefresh()
       navigate("/admin/roles");
     } catch (error: any) {
-  console.error("Erreur lors de la soumission du formulaire :", error);
+      console.error("Erreur lors de la soumission du formulaire :", error);
+      toastError("Erreur lors de la soumission du formulaire")
   
   // Try to extract error message from response
   const message =
