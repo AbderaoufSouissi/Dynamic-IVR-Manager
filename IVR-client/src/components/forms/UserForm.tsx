@@ -3,6 +3,7 @@ import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { createUser, getUserById, updateUser } from "../../service/UserService";
 import { HiEye, HiEyeSlash } from "react-icons/hi2";
 import FormButtons from "../buttons/FormButtons";
+import { toastError, toastSuccess } from "../../service/ToastService";
 
 interface UserFormProps {
   title: Title;
@@ -103,6 +104,7 @@ if (formData.active !== null) {
         
 
         await updateUser(parseInt(id), updatePayload);
+        toastSuccess(`L'utilisateur ${updatePayload.username} a été modifié avec succés`)
       } else {
         if (formData.password.trim() === "") {
           throw new Error("Password is required to create a new user.");
@@ -113,11 +115,13 @@ if (formData.active !== null) {
         };
 
         await createUser(createPayload);
+         toastSuccess(`L'utilisateur ${createPayload.username} a été créé avec succés`)
       }
        triggerRefresh()
 
       navigate("/admin/users");
     } catch (error: any) {
+      toastError("Erreur lors de la soumission du formulaire" )
   console.error("Erreur lors de la soumission du formulaire :", error);
   
 
