@@ -39,6 +39,9 @@ const UsersPage = () => {
   const [totalElements, setTotalElements] = useState(0);
 
   const [users, setUsers] = useState<User[]>([]);
+
+
+  
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
@@ -90,6 +93,15 @@ const UsersPage = () => {
       console.error("Erreur lors de la récupération des utilisateurs", err);
     }
   };
+
+  const handleUserStatusChange = (userId: number, newStatus: boolean) => {
+  setUsers((prevUsers) =>
+    prevUsers.map((user) =>
+      user.userId === userId ? { ...user, active: newStatus } : user
+    )
+  );
+};
+
 
   // Run fetchUsers on mount and on filters change with debounce
   useEffect(() => {
@@ -178,6 +190,7 @@ const UsersPage = () => {
         {users.length != 0 ? (
           <UsersTable
             users={users}
+            onUserStatusChange={handleUserStatusChange}
             sortBy={sortBy}
             sortDir={sortDir}
             onSortChange={handleSortChange}

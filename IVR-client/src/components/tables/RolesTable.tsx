@@ -34,7 +34,8 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
   const navigate = useNavigate()
  
 
- 
+
+
   
 
   const handleSort = (column: string) => {
@@ -133,7 +134,10 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
               <td className="p-4 font-medium text-blue-600">
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => navigate(`update/${role.roleId}`)}
+                    onClick={() => navigate({
+      pathname: `/admin/roles/update/${role.roleId}`,
+      search: "", // remove search params
+    })}
                     className="text-blue-600 hover:underline cursor-pointer"
                   >
                     <MdEdit />
@@ -141,7 +145,13 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
                   </button>
                   <span className="text-slate-300">|</span>
                   <button
-                    onClick={() => navigate(`/admin/roles/delete/${role.roleId}`)}
+                    onClick={() =>
+  navigate({
+    pathname: `/admin/roles/delete/${role.roleId}`,
+    search: "", // clears query params like ?page=...&sort=...
+  })
+}
+
                     className="text-red-600 hover:underline cursor-pointer"
                   >
                     <MdDelete />

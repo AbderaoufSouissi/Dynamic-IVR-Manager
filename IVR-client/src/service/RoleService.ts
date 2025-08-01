@@ -19,6 +19,7 @@ export const getRoleById = async (id: number) => {
   return response.data;
 };
 
+
 export const updateRole = async (id: number, RoleData: RoleRequest) => {
     const response = await axiosInstance.put(`${API_BASE_URL}/roles/${id}`,RoleData);
     return response.data

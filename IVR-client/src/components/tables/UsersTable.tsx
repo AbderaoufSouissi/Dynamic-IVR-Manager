@@ -1,14 +1,17 @@
 import type { User } from "../../types/types";
-import { MdDelete, MdEdit, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { MdEdit, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { MdArrowDropUp, MdArrowDropDown } from "react-icons/md";
 
 import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
 import { HiChevronDown } from "react-icons/hi";
+import ToggleSwitch from "../buttons/ToggleSwitch";
+import { updateUser } from "../../service/UserService";
 
 interface UsersTableProps {
   itemsPerPage?: number;
   users: User[];
+  onUserStatusChange:(userId: number, newStatus: boolean) => void;
   sortBy: string;
   sortDir: "asc" | "desc";
   onSortChange: (field: string) => void
@@ -33,7 +36,7 @@ const userTableHeads = [
   { key: "is_active", label: "Statut" },
 ]
 
-const UsersTable = ({users, sortBy, sortDir, onSortChange, currentPage, onPageChange, totalCount, onRowsPerPageChange, rowsPerPage }: UsersTableProps) => {
+const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, currentPage, onPageChange, totalCount, onRowsPerPageChange, rowsPerPage }: UsersTableProps) => {
 
 
   const totalPages = Math.ceil(totalCount / rowsPerPage);
@@ -89,7 +92,24 @@ const UsersTable = ({users, sortBy, sortDir, onSortChange, currentPage, onPageCh
   };
 
   // Calculate current displayed range (e.g. showing 6-10 of 52)
-const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
+  const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
+  
+  const handleToggleStatus = async (userId: number, newStatus: boolean) => {
+  try {
+    const userToUpdate = users.find(u => u.userId === userId);
+    if (!userToUpdate) return;
+
+    const updatedUser = { ...userToUpdate, active: newStatus };
+
+    await updateUser(userId, updatedUser);
+
+    // Optimistically update UI
+    onUserStatusChange(userId, newStatus);
+  } catch (error) {
+    console.error("Failed to update user status", error);
+  }
+};
+
 
  
   return (
@@ -154,19 +174,14 @@ const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
                 {user.updatedBy}
               </td>
               <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
-                <span
-                  className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${user.active
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                    }`}
-                >
-                  {user.active ? "Actif" : "Inactif"}
-                </span>
+                
+                <ToggleSwitch checked={user.active} onToggle={() => handleToggleStatus(user.userId, !user.active)}/>
+                
               </td>
               <td className="p-4 font-medium text-blue-600">
   <div className="flex items-center gap-2">
     <button
-      onClick={() => navigate(`update/${user.userId}`)}
+      onClick={() => navigate(`update/${user.userId}`, { replace: true })}
       className="flex items-center gap-1 text-blue-600 hover:underline cursor-pointer"
     >
       <MdEdit />
@@ -176,7 +191,7 @@ const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
     {/* <span className="text-slate-300">|</span>
 
     <button
-      onClick={() => navigate(`/admin/users/delete/${user.userId}`)}
+      onClick={() => navigate(`/admin/users/delete/${user.userId}, { replace: true }`)}
       className="flex items-center gap-1 text-red-600 hover:underline cursor-pointer"
     >
       <MdDelete />

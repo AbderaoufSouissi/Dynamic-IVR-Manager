@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-
+import java.util.List;
 
 
 @RestController
@@ -32,7 +32,7 @@ public class PermissionsController {
             @RequestParam(required = false) LocalDate createdAt,
             @RequestParam(required = false) LocalDate updatedAt,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) int size,
             @RequestParam(defaultValue = "permission_id") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir
     ) {
@@ -52,6 +52,11 @@ public class PermissionsController {
                 id, name, createdBy, updatedBy, createdAt, updatedAt, sanitizedSortBy, sanitizedSortDir,pageable
                 )
         );
+    }
+    @GetMapping("/all")
+    public ResponseEntity<List<PermissionsResponse>> getAllPermissions() {
+        List<PermissionsResponse> permissions = permissionsService.getAllPermissions();
+        return ResponseEntity.ok(permissions);
     }
 
 

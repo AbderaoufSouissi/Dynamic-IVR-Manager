@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import RoleFilter from "../components/filters/RoleFilter";
 import RolesTable from "../components/tables/RolesTable";
 import { MdAdminPanelSettings } from "react-icons/md";
-import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { getRoles } from "../service/RoleService";
 import type { Role } from "../types/types";
 import { HiShieldCheck } from "react-icons/hi2";
@@ -37,9 +37,14 @@ const RolesPage = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
   const isNumeric = (value: string) => /^[0-9]+$/.test(value);
+   const location = useLocation();
+  const isRootRolesPage = location.pathname === "/admin/roles";
+
+
   const handleSortChange = (field: string) => {
     const isSameField = field === sortBy;
     const newSortDir = isSameField && sortDir === "asc" ? "desc" : "asc";
+
 
     const currentParams = Object.fromEntries(searchParams.entries());
     setSearchParams({
@@ -50,6 +55,7 @@ const RolesPage = () => {
     });
     setPage(0); // reset local state too
   };
+  
 
   const isValidDate = (value: string) => {
     return /^\d{4}-\d{2}-\d{2}$/.test(value); // Only accept full YYYY-MM-DD
@@ -99,8 +105,10 @@ const RolesPage = () => {
       console.error("Erreur lors de la récupération des utilisateurs", err);
     }
   };
+  
 
   useEffect(() => {
+    if (!isRootRolesPage) return;
     const delayDebounce = setTimeout(() => {
       fetchRoles();
     }, 500);
@@ -109,6 +117,7 @@ const RolesPage = () => {
   }, [filters, refreshTrigger, searchParams]);
 
   useEffect(() => {
+    
     // Update URL search params except sort params (they are independent)
     const newParams: Record<string, string> = {};
 
@@ -132,6 +141,12 @@ const RolesPage = () => {
     }));
   };
 
+  useEffect(() => {
+  if (location.search) {
+    navigate(location.pathname, { replace: true });
+  }
+}, []);
+
   const resetFilters = () => {
     setFilters({
       id: "",
@@ -151,7 +166,10 @@ const RolesPage = () => {
             Gestion des rôles ici.
           </p>
           <button
-            onClick={() => navigate("/admin/roles/create")}
+            onClick={() => navigate({
+  pathname: "/admin/roles/create",
+  search: "", // Clear any ?size=5 etc
+})}
             className="cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl min-h-[50px] flex items-center justify-center"
           >
             <MdAdminPanelSettings size={25} className="mr-2" />

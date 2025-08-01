@@ -1,6 +1,7 @@
 package com._CServices.IVR_api.dao;
 
 import com._CServices.IVR_api.entity.User;
+import jakarta.validation.constraints.Email;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
@@ -20,7 +21,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Alternative if the above doesn't work due to entity relationship
     @Query("SELECT u FROM User u JOIN u.role r WHERE r.id = :roleId")
     List<User> findUsersWithRole(@Param("roleId") Long roleId);
-
-
+    
 }
 
