@@ -39,7 +39,7 @@ public class UserController {
             @RequestParam(defaultValue = "user_id") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "5") int size
     ) {
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ?
                 Sort.Direction.DESC : Sort.Direction.ASC;

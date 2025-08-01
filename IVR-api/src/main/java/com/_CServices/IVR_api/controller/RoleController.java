@@ -29,7 +29,7 @@ public class RoleController {
             @RequestParam(required = false) LocalDate createdAt,
             @RequestParam(required = false) LocalDate updatedAt,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "role_id") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir
     ) {

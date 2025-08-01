@@ -1,23 +1,52 @@
-import { useState } from "react";
 import type { Audit } from "../../types/types";
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { MdArrowDropDown, MdArrowDropUp, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { formatTimestamp } from "../../api/Api";
 import { HiChevronDown } from "react-icons/hi";
 
 interface AuditsTableProps {
   itemsPerPage?: number;
   audits: Audit[];
-  triggerRefresh: () => void;
+  sortBy: string;
+  sortDir: "asc" | "desc";
+  onSortChange: (field: string) => void
+  currentPage: number;       // 1-based page index for UI
+  onPageChange: (page: number) => void;
+
+  totalCount: number;        // totalElements
+  onRowsPerPageChange: (size: number) => void;
+  rowsPerPage: number;
+  totalPages: number
 }
 
-const AuditsTable = ({ itemsPerPage = 5, audits }: AuditsTableProps) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(itemsPerPage);
 
-  const totalPages = Math.ceil(audits.length / rowsPerPage);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-  const currentAudits = audits.slice(startIndex, endIndex);
+const auditTableHeads = [
+      { key: "audit_id", label: "ID" },
+      { key: "action_type", label: "Type d'action" },
+      { key: "user_id", label: "Réalisé par" },
+      { key: "msisdn", label: "MSISDN" },
+      { key: "action_time_stamp", label: "Date Action" },
+      { key: "entity_id", label: "Entité affecté" },
+    
+    ]
+
+const AuditsTable = ({ audits , sortBy, sortDir, onSortChange, currentPage, onPageChange, totalCount, onRowsPerPageChange, rowsPerPage,totalPages}: AuditsTableProps) => {
+  
+
+
+
+   const handleSort = (column: string) => {
+      onSortChange(column)
+    };
+  
+    const renderSortIcon = (column: string) => {
+      if (sortBy !== column) return null;
+      return sortDir === "asc" ? (
+        <MdArrowDropUp className="text-blue-600" size={20} />
+      ) : (
+        <MdArrowDropDown className="text-blue-600" size={20} />
+      );
+    };
+
 
   const getPageNumbers = () => {
     const pages = [];
@@ -37,32 +66,49 @@ const AuditsTable = ({ itemsPerPage = 5, audits }: AuditsTableProps) => {
   };
 
   const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+    if (page >= 1 && page <= totalPages) onPageChange(page);
   };
+
+
 
   const handlePrevious = () => handlePageChange(currentPage - 1);
   const handleNext = () => handlePageChange(currentPage + 1);
 
+  // Call parent's handler on rows per page change
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(parseInt(e.target.value));
-    setCurrentPage(1); // Reset to first page on change
+    const newSize = parseInt(e.target.value);
+    onRowsPerPageChange(newSize);
   };
+
+  // Calculate current displayed range (e.g. showing 6-10 of 52)
+const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
+
 
   return (
     <div className="overflow-x-auto max-w-[100vw] rounded-xl shadow border border-gray-200 bg-white">
       <table className="w-full text-sm">
         <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
-  <tr>
-    <th className="text-center px-2 py-2 font-semibold whitespace-nowrap">ID</th>
-    <th className="text-center px-2 py-2 font-semibold whitespace-nowrap">Type d'action</th>
-    <th className="text-center px-2 py-2 font-semibold whitespace-nowrap">Réalisé par</th>
-    <th className="text-center px-2 py-2 font-semibold whitespace-nowrap">MSISDN</th>
-    <th className="text-center px-2 py-2 font-semibold whitespace-nowrap">Date Action</th>
-    <th className="text-center px-2 py-2 font-semibold whitespace-nowrap">Entité affecté</th>
-  </tr>
-</thead>
+         <tr>
+           {auditTableHeads.map(({ key, label }) => (
+             <th
+         key={key}
+         onClick={() => handleSort(key)}
+         className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer group"
+       >
+         <div className="flex items-center w-fit">
+           {label}
+           <span className={`ml-2 transition-colors duration-200 text-base ${
+             sortBy === key ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+           }`}>
+             {renderSortIcon(key) || <MdArrowDropDown />} {/* Show faint icon for visual consistency */}
+           </span>
+         </div>
+       </th>
+           ))}
+         </tr>
+       </thead>
 <tbody>
-  {currentAudits.map((audit: Audit) => (
+  {audits.map((audit: Audit) => (
     <tr key={audit.auditId} className="border-t border-gray-200 hover:bg-gray-50 transition">
       <td className="text-center px-2 py-2 font-medium text-slate-800">{audit.auditId}</td>
       <td className={`text-center px-2 py-2 font-medium ${audit.actionType == null ? "text-black" : "text-slate-800"}`}>
@@ -146,7 +192,7 @@ const AuditsTable = ({ itemsPerPage = 5, audits }: AuditsTableProps) => {
         </div>
 
         <p className="text-sm text-slate-500">
-          Affichage de {Math.min(endIndex, audits.length)} sur {audits.length} audits
+         Affichage de {toRecord} sur {totalCount}{" "} audits
         </p>
       </div>
     </div>
