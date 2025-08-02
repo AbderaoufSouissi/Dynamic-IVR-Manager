@@ -60,6 +60,12 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/status")
+    public ResponseEntity<Long> getUsersByActive(@RequestParam int active){
+        return ResponseEntity.ok(userService.getUsersByActive(active));
+
+    }
+
 
 
 

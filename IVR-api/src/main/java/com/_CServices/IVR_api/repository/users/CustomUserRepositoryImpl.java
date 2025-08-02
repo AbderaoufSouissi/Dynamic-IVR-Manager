@@ -23,7 +23,8 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
         List<Object> params = new ArrayList<>();
 
         sql.append("SELECT * FROM ( ")
-                .append("  SELECT inner_query.*, ROWNUM rn FROM ( ")
+                .append("  SELECT u.*, ROWNUM rn ")
+                .append("  FROM ( ")
                 .append("    SELECT u.*, r.role_name, ")
                 .append("           creator.username AS created_by_username, ")
                 .append("           updater.username AS updated_by_username ")
@@ -80,7 +81,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
             params.add(filter.getUpdatedAt().atTime(LocalTime.MAX));
         }
 
-        // Support sorting by joined columns
         String resolvedSortColumn;
         switch (sortBy) {
             case "roleName":
@@ -109,15 +109,16 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
                 resolvedSortColumn = "u.user_id";
                 break;
             default:
-                resolvedSortColumn = "u.user_id"; // fallback
+                resolvedSortColumn = "u.user_id";
         }
 
-        sql.append("    ORDER BY ").append(resolvedSortColumn).append(" ").append(sortDir);
-        sql.append("  ) inner_query WHERE ROWNUM <= ? ");
-        sql.append(") WHERE rn > ?");
+        sql.append("    ORDER BY ").append(resolvedSortColumn).append(" ").append(sortDir)
+                .append("  ) u ")
+                .append("  WHERE ROWNUM <= ? ")
+                .append(") WHERE rn > ?");
 
-        params.add(offset + limit); // upper bound
-        params.add(offset);         // lower bound
+        params.add(offset + limit); // upper limit
+        params.add(offset);         // lower limit
 
         return jdbcTemplate.query(sql.toString(), params.toArray(), userResponseRowMapper);
     }
@@ -191,7 +192,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
         user.setLastName(rs.getString("last_name"));
         user.setUsername(rs.getString("username"));
         user.setEmail(rs.getString("email"));
-        user.setPassword(rs.getString("password")); // Caution: Usually should not return this
+        user.setPassword(rs.getString("password")); // Be careful about exposing this
         user.setActive(rs.getBoolean("is_active"));
         user.setRoleName(rs.getString("role_name"));
         user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());

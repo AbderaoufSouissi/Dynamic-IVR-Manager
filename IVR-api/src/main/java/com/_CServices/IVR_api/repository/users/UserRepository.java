@@ -18,6 +18,9 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
     User findByUsername(String username);;
     @Query("SELECT u FROM User u JOIN u.role r WHERE r.id = :roleId")
     List<User> findUsersWithRole(@Param("roleId") Long roleId);
+
+    @Query(value = "SELECT COUNT(*) FROM APP_USERS WHERE IS_ACTIVE = :active", nativeQuery = true)
+    long countByActive(@Param("active") int active);
     
 }
 

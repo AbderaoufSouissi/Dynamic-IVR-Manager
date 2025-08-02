@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getUsers } from "../service/UserService";
+import {getUsersByActive } from "../service/UserService";
 import { getRoles } from "../service/RoleService";
 import { FaUser } from "react-icons/fa6";
 import { SiSpringsecurity } from "react-icons/si";
@@ -19,16 +19,16 @@ const AdminOverview = () => {
 
   const fetchNbActiveUsers = async () => {
     try {
-      const data = await getUsers({ active: true });
-      setActiveUserCount(data.totalElements);
+      const data = await getUsersByActive({ active: 1 });
+      setActiveUserCount(data);
     } catch (err) {
       console.error(err);
     }
   };
   const fetchNbInactiveUsers = async () => {
     try {
-      const data = await getUsers({ active: false });
-      setInactiveUserCount(data.totalElements);
+      const data = await getUsersByActive({ active: 0 });
+      setInactiveUserCount(data);
     } catch (err) {
       console.error(err);
     }

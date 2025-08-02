@@ -250,7 +250,10 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(savedUser);
     }
 
-
+    @Override
+    public long getUsersByActive(int active) {
+        return userRepository.countByActive(active);
+    }
 
 
     private int[] getRowBounds(Pageable pageable) {

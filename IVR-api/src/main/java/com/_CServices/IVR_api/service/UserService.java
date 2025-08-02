@@ -14,6 +14,7 @@ public interface UserService {
     UserResponse getUserById(Long id);
     UserResponse createUser(CreateUserRequest request);
     UserResponse updateUser(UpdateUserRequest userRequest, Long id);
+    long getUsersByActive(int active);
     void deleteUserById(Long id);
     void deleteUserByEmail(String email);
     void deleteUserByUsername(String username);
