@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -17,6 +18,16 @@ public class CustomPermissionsRepositoryImpl implements CustomPermissionsReposit
 
     private final JdbcTemplate jdbcTemplate;
 
+    // Map of sanitized sortBy values to actual SQL columns
+    private static final Map<String, String> PERMISSION_SORT_COLUMN_MAP = Map.of(
+            "permission_id", "p.permission_id",
+            "permission_name", "p.permission_name",
+            "description", "p.description",
+            "created_at", "p.created_at",
+            "updated_at", "p.updated_at",
+            "created_by_id", "creator.username",
+            "updated_by_id", "updater.username"
+    );
 
     @Override
     public List<PermissionsResponse> findPermissionsWithFilters(
@@ -26,15 +37,16 @@ public class CustomPermissionsRepositoryImpl implements CustomPermissionsReposit
         List<Object> params = new ArrayList<>();
 
         sql.append("SELECT * FROM ( ")
-                .append("  SELECT p.*, ")
-                .append("         NVL(creator.username, '') AS created_by_username, ")
-                .append("         NVL(updater.username, '') AS updated_by_username, ")
-                .append("         ROWNUM rn ")
-                .append("  FROM permissions p ")
-                .append("  LEFT JOIN app_users creator ON p.created_by_id = creator.user_id ")
-                .append("  LEFT JOIN app_users updater ON p.updated_by_id = updater.user_id ")
-                .append("  WHERE 1 = 1 ");
+                .append("  SELECT inner_query.*, ROWNUM rn FROM ( ")
+                .append("    SELECT p.*, ")
+                .append("           NVL(creator.username, '') AS created_by_username, ")
+                .append("           NVL(updater.username, '') AS updated_by_username ")
+                .append("    FROM permissions p ")
+                .append("    LEFT JOIN app_users creator ON p.created_by_id = creator.user_id ")
+                .append("    LEFT JOIN app_users updater ON p.updated_by_id = updater.user_id ")
+                .append("    WHERE 1 = 1 ");
 
+        // Filters
         if (filter.getId() != null) {
             sql.append(" AND p.permission_id = ? ");
             params.add(filter.getId());
@@ -62,11 +74,15 @@ public class CustomPermissionsRepositoryImpl implements CustomPermissionsReposit
             params.add(filter.getUpdatedAt().atTime(LocalTime.MAX));
         }
 
-        sql.append("  ORDER BY p.").append(sortBy).append(" ").append(sortDir);
-        sql.append(") WHERE rn > ? AND rn <= ?");
+        // Resolve the SQL sort column from the sanitized sortBy, fallback to permission_id
+        String resolvedSortColumn = PERMISSION_SORT_COLUMN_MAP.getOrDefault(sortBy, "p.permission_id");
 
-        params.add(offset);
-        params.add(offset + limit);
+        sql.append(" ORDER BY ").append(resolvedSortColumn).append(" ").append(sortDir);
+        sql.append("  ) inner_query WHERE ROWNUM <= ? ");
+        sql.append(") WHERE rn > ?");
+
+        params.add(offset + limit); // ROWNUM <= offset + limit
+        params.add(offset);         // rn > offset
 
         return jdbcTemplate.query(sql.toString(), params.toArray(), rowMapper);
     }
@@ -110,7 +126,6 @@ public class CustomPermissionsRepositoryImpl implements CustomPermissionsReposit
 
         return jdbcTemplate.queryForObject(sql.toString(), params.toArray(), Long.class);
     }
-
 
     private final RowMapper<PermissionsResponse> rowMapper = (rs, rowNum) -> {
         PermissionsResponse permissions = new PermissionsResponse();

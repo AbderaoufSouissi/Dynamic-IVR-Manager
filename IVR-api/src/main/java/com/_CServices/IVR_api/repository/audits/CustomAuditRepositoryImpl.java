@@ -31,10 +31,11 @@ public class CustomAuditRepositoryImpl implements CustomAuditRepository {
         List<Object> params = new ArrayList<>();
 
         sql.append("SELECT * FROM ( ")
-                .append("  SELECT a.*, u.username, ROWNUM rn ")
-                .append("  FROM general_audit a ")
-                .append("  LEFT JOIN app_users u ON a.user_id = u.user_id ")
-                .append("  WHERE 1 = 1 ");
+                .append("  SELECT inner_query.*, ROWNUM rn FROM ( ")
+                .append("    SELECT a.*, u.username ")
+                .append("    FROM general_audit a ")
+                .append("    LEFT JOIN app_users u ON a.user_id = u.user_id ")
+                .append("    WHERE 1 = 1 ");
 
         if (filter.getId() != null) {
             sql.append(" AND a.audit_id = ? ");
@@ -66,11 +67,22 @@ public class CustomAuditRepositoryImpl implements CustomAuditRepository {
             params.add(filter.getDate().atTime(LocalTime.MAX));
         }
 
-        sql.append("  ORDER BY a.").append(sortBy).append(" ").append(sortDir);
-        sql.append(") WHERE rn > ? AND rn <= ?");
+        // sorting (you can optionally sanitize or whitelist sortBy to avoid SQL injection)
+        sql.append(" ORDER BY ");
+        if ("username".equalsIgnoreCase(sortBy)) {
+            sql.append(" u.username ");
+        } else {
+            sql.append(" a.").append(sortBy).append(" ");
+        }
+        sql.append(sortDir);
 
-        params.add(offset);
+        sql.append("  ) inner_query ")
+                .append("  WHERE ROWNUM <= ? ")
+                .append(") ")
+                .append("WHERE rn > ?");
+
         params.add(offset + limit);
+        params.add(offset);
 
         return jdbcTemplate.query(sql.toString(), params.toArray(), rowMapper);
     }
