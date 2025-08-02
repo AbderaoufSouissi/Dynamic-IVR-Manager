@@ -1,6 +1,6 @@
 package com._CServices.IVR_api.service.impl;
 
-import com._CServices.IVR_api.dao.RoleRepository;
+import com._CServices.IVR_api.repository.RoleRepository;
 
 
 import com._CServices.IVR_api.dto.request.CreateUserRequest;

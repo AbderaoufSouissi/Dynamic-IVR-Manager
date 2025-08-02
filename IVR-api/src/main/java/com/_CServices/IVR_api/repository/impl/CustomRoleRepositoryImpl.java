@@ -3,6 +3,7 @@ package com._CServices.IVR_api.repository.impl;
 import com._CServices.IVR_api.dto.response.PermissionsResponse;
 import com._CServices.IVR_api.dto.response.RoleResponse;
 import com._CServices.IVR_api.filter.RoleFilter;
+import com._CServices.IVR_api.repository.CustomRoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
-public class CustomRoleRepository {
+public class CustomRoleRepositoryImpl implements CustomRoleRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
