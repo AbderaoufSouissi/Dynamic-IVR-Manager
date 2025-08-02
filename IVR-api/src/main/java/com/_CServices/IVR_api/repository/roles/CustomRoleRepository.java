@@ -1,4 +1,4 @@
-package com._CServices.IVR_api.repository;
+package com._CServices.IVR_api.repository.roles;
 
 import com._CServices.IVR_api.dto.response.RoleResponse;
 import com._CServices.IVR_api.filter.RoleFilter;

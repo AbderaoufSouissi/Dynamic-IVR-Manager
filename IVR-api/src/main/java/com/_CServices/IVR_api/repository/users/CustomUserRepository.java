@@ -1,4 +1,4 @@
-package com._CServices.IVR_api.repository;
+package com._CServices.IVR_api.repository.users;
 
 import com._CServices.IVR_api.dto.response.UserResponse;
 import com._CServices.IVR_api.filter.UserFilter;

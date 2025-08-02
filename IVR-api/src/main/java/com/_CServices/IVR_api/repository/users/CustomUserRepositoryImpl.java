@@ -1,8 +1,7 @@
-package com._CServices.IVR_api.repository.impl;
+package com._CServices.IVR_api.repository.users;
 
 import com._CServices.IVR_api.dto.response.UserResponse;
 import com._CServices.IVR_api.filter.UserFilter;
-import com._CServices.IVR_api.repository.CustomUserRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.jdbc.core.JdbcTemplate;

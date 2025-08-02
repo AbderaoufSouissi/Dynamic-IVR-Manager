@@ -1,6 +1,6 @@
 package com._CServices.IVR_api.service.impl;
 
-import com._CServices.IVR_api.repository.RoleRepository;
+import com._CServices.IVR_api.repository.roles.RoleRepository;
 
 
 import com._CServices.IVR_api.dto.request.CreateUserRequest;
@@ -16,7 +16,7 @@ import com._CServices.IVR_api.filter.UserFilter;
 import com._CServices.IVR_api.mapper.UserMapper;
 import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.audit.AuditLoggingService;
-import com._CServices.IVR_api.repository.UserRepository;
+import com._CServices.IVR_api.repository.users.UserRepository;
 import com._CServices.IVR_api.service.UserService;
 import com._CServices.IVR_api.utils.SortUtils;
 import lombok.RequiredArgsConstructor;

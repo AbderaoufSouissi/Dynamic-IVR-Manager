@@ -1,6 +1,6 @@
 package com._CServices.IVR_api.security;
 
-import com._CServices.IVR_api.repository.UserRepository;
+import com._CServices.IVR_api.repository.users.UserRepository;
 import com._CServices.IVR_api.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

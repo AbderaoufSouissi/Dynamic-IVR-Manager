@@ -1,4 +1,4 @@
-package com._CServices.IVR_api.repository;
+package com._CServices.IVR_api.repository.audits;
 
 import com._CServices.IVR_api.entity.Audit;
 import org.springframework.data.jpa.repository.JpaRepository;

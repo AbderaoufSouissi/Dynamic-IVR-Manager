@@ -3,7 +3,7 @@ package com._CServices.IVR_api.service.impl;
 
 import com._CServices.IVR_api.dto.response.PagedResponse;
 import com._CServices.IVR_api.filter.PermissionsFilter;
-import com._CServices.IVR_api.repository.PermissionsRepository;
+import com._CServices.IVR_api.repository.permissions.PermissionsRepository;
 import com._CServices.IVR_api.dto.request.PermissionsRequest;
 import com._CServices.IVR_api.dto.response.PermissionsResponse;
 import com._CServices.IVR_api.entity.Permissions;
@@ -16,19 +16,12 @@ import com._CServices.IVR_api.mapper.PermissionsMapper;
 import com._CServices.IVR_api.audit.AuditLoggingService;
 import com._CServices.IVR_api.service.PermissionsService;
 import com._CServices.IVR_api.utils.SortUtils;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 

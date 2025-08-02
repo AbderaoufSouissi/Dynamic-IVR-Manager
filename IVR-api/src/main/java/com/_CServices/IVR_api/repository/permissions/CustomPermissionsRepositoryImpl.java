@@ -1,8 +1,7 @@
-package com._CServices.IVR_api.repository.impl;
+package com._CServices.IVR_api.repository.permissions;
 
 import com._CServices.IVR_api.dto.response.PermissionsResponse;
 import com._CServices.IVR_api.filter.PermissionsFilter;
-import com._CServices.IVR_api.repository.CustomPermissionsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

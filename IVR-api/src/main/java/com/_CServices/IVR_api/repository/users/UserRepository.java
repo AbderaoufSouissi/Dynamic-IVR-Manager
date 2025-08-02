@@ -1,7 +1,6 @@
-package com._CServices.IVR_api.repository;
+package com._CServices.IVR_api.repository.users;
 
 import com._CServices.IVR_api.entity.User;
-import com._CServices.IVR_api.repository.CustomUserRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

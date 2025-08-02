@@ -1,4 +1,4 @@
-package com._CServices.IVR_api.repository;
+package com._CServices.IVR_api.repository.audits;
 
 import com._CServices.IVR_api.dto.response.AuditResponse;
 import com._CServices.IVR_api.filter.AuditFilter;

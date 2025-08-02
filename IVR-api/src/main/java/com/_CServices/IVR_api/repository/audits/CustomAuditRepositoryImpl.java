@@ -1,10 +1,9 @@
-package com._CServices.IVR_api.repository.impl;
+package com._CServices.IVR_api.repository.audits;
 
 
 
 import com._CServices.IVR_api.dto.response.AuditResponse;
 import com._CServices.IVR_api.filter.AuditFilter;
-import com._CServices.IVR_api.repository.CustomAuditRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

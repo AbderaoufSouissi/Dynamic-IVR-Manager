@@ -1,9 +1,9 @@
 package com._CServices.IVR_api.service.impl;
 
-import com._CServices.IVR_api.repository.PermissionsRepository;
+import com._CServices.IVR_api.repository.permissions.PermissionsRepository;
 import com._CServices.IVR_api.dto.response.PagedResponse;
 import com._CServices.IVR_api.filter.RoleFilter;
-import com._CServices.IVR_api.repository.RoleRepository;
+import com._CServices.IVR_api.repository.roles.RoleRepository;
 
 import com._CServices.IVR_api.dto.response.RoleResponse;
 import com._CServices.IVR_api.dto.request.RoleRequest;
@@ -16,7 +16,7 @@ import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.RoleMapper;
 import com._CServices.IVR_api.audit.AuditLoggingService;
-import com._CServices.IVR_api.repository.UserRepository;
+import com._CServices.IVR_api.repository.users.UserRepository;
 import com._CServices.IVR_api.service.RoleService;
 import com._CServices.IVR_api.utils.SortUtils;
 import lombok.RequiredArgsConstructor;

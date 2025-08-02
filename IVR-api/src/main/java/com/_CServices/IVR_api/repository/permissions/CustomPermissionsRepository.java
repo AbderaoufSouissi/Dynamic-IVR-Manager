@@ -1,4 +1,4 @@
-package com._CServices.IVR_api.repository;
+package com._CServices.IVR_api.repository.permissions;
 
 import com._CServices.IVR_api.dto.response.PermissionsResponse;
 import com._CServices.IVR_api.filter.PermissionsFilter;

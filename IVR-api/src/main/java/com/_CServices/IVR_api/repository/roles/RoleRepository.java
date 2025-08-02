@@ -1,4 +1,4 @@
-package com._CServices.IVR_api.repository;
+package com._CServices.IVR_api.repository.roles;
 
 import com._CServices.IVR_api.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;

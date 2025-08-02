@@ -1,6 +1,6 @@
 package com._CServices.IVR_api.service.impl;
 
-import com._CServices.IVR_api.repository.AuditRepository;
+import com._CServices.IVR_api.repository.audits.AuditRepository;
 
 import com._CServices.IVR_api.dto.response.AuditResponse;
 import com._CServices.IVR_api.dto.response.PagedResponse;
