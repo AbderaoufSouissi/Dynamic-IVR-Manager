@@ -47,10 +47,10 @@ public class RoleServiceImpl implements RoleService {
 
         String sanitizedSortBy = SortUtils.sanitizeSortField(
                 sortBy,
-                SortUtils.getAllowedPermissionFields(),
+                SortUtils.getAllowedRoleFields(),
                 "role_id"
         );
-        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
+        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);;
 
         List<RoleResponse> roles = roleRepository.findRolesWithFilters(filter, offset, size, sanitizedSortBy, sanitizedSortDir);
         int totalElements = roleRepository.countRolesWithFilters(filter);
