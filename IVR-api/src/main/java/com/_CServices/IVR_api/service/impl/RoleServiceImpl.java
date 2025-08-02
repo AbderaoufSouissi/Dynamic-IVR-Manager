@@ -2,7 +2,7 @@ package com._CServices.IVR_api.service.impl;
 
 import com._CServices.IVR_api.dao.PermissionsRepository;
 import com._CServices.IVR_api.dao.RoleRepository;
-import com._CServices.IVR_api.dao.UserRepository;
+
 import com._CServices.IVR_api.dto.response.RoleResponse;
 import com._CServices.IVR_api.dto.request.RoleRequest;
 import com._CServices.IVR_api.entity.Permissions;
@@ -14,6 +14,7 @@ import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.RoleMapper;
 import com._CServices.IVR_api.audit.AuditLoggingService;
+import com._CServices.IVR_api.repository.UserRepository;
 import com._CServices.IVR_api.service.RoleService;
 import com._CServices.IVR_api.utils.SortUtils;
 import jakarta.persistence.EntityManager;
