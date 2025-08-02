@@ -51,8 +51,8 @@ public class UserServiceImpl implements UserService {
 
         String sanitizedSortBy = SortUtils.sanitizeSortField(
                 sortBy,
-                SortUtils.getAllowedPermissionFields(),
-                "role_id"
+                SortUtils.getAllowedUserFields(),
+                "user_id"
         );
         String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
 

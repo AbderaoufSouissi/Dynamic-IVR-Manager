@@ -3,9 +3,7 @@ package com._CServices.IVR_api.repository.users;
 import com._CServices.IVR_api.dto.response.UserResponse;
 import com._CServices.IVR_api.filter.UserFilter;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.jdbc.core.JdbcTemplate;
-
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -25,15 +23,15 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
         List<Object> params = new ArrayList<>();
 
         sql.append("SELECT * FROM ( ")
-                .append("  SELECT u.*, r.role_name, ")
-                .append("         creator.username AS created_by_username, ")
-                .append("         updater.username AS updated_by_username, ")
-                .append("         ROWNUM rn ")
-                .append("  FROM app_users u ")
-                .append("  LEFT JOIN roles r ON u.role_id = r.role_id ")
-                .append("  LEFT JOIN app_users creator ON u.created_by_id = creator.user_id ")
-                .append("  LEFT JOIN app_users updater ON u.updated_by_id = updater.user_id ")
-                .append("  WHERE 1 = 1 ");
+                .append("  SELECT inner_query.*, ROWNUM rn FROM ( ")
+                .append("    SELECT u.*, r.role_name, ")
+                .append("           creator.username AS created_by_username, ")
+                .append("           updater.username AS updated_by_username ")
+                .append("    FROM app_users u ")
+                .append("    LEFT JOIN roles r ON u.role_id = r.role_id ")
+                .append("    LEFT JOIN app_users creator ON u.created_by_id = creator.user_id ")
+                .append("    LEFT JOIN app_users updater ON u.updated_by_id = updater.user_id ")
+                .append("    WHERE 1 = 1 ");
 
         if (filter.getId() != null) {
             sql.append(" AND u.user_id = ? ");
@@ -82,11 +80,44 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
             params.add(filter.getUpdatedAt().atTime(LocalTime.MAX));
         }
 
-        sql.append("  ORDER BY u.").append(sortBy).append(" ").append(sortDir);
-        sql.append(") WHERE rn > ? AND rn <= ?");
+        // Support sorting by joined columns
+        String resolvedSortColumn;
+        switch (sortBy) {
+            case "roleName":
+                resolvedSortColumn = "r.role_name";
+                break;
+            case "createdBy":
+                resolvedSortColumn = "creator.username";
+                break;
+            case "updatedBy":
+                resolvedSortColumn = "updater.username";
+                break;
+            case "createdAt":
+                resolvedSortColumn = "u.created_at";
+                break;
+            case "updatedAt":
+                resolvedSortColumn = "u.updated_at";
+                break;
+            case "email":
+                resolvedSortColumn = "u.email";
+                break;
+            case "username":
+                resolvedSortColumn = "u.username";
+                break;
+            case "id":
+            case "userId":
+                resolvedSortColumn = "u.user_id";
+                break;
+            default:
+                resolvedSortColumn = "u.user_id"; // fallback
+        }
 
-        params.add(offset);
-        params.add(offset + limit);
+        sql.append("    ORDER BY ").append(resolvedSortColumn).append(" ").append(sortDir);
+        sql.append("  ) inner_query WHERE ROWNUM <= ? ");
+        sql.append(") WHERE rn > ?");
+
+        params.add(offset + limit); // upper bound
+        params.add(offset);         // lower bound
 
         return jdbcTemplate.query(sql.toString(), params.toArray(), userResponseRowMapper);
     }
@@ -160,17 +191,13 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
         user.setLastName(rs.getString("last_name"));
         user.setUsername(rs.getString("username"));
         user.setEmail(rs.getString("email"));
-        user.setPassword(rs.getString("password")); // Optional, depending on what you expose
+        user.setPassword(rs.getString("password")); // Caution: Usually should not return this
         user.setActive(rs.getBoolean("is_active"));
         user.setRoleName(rs.getString("role_name"));
         user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         user.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
-
-        // Use joined values for createdBy/updatedBy
         user.setCreatedBy(rs.getString("created_by_username"));
         user.setUpdatedBy(rs.getString("updated_by_username"));
-
         return user;
     };
-
 }
