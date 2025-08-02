@@ -1,9 +1,10 @@
 package com._CServices.IVR_api.controller;
 
 import com._CServices.IVR_api.dto.request.PermissionsRequest;
+import com._CServices.IVR_api.dto.response.PagedResponse;
 import com._CServices.IVR_api.dto.response.PermissionsResponse;
+import com._CServices.IVR_api.filter.PermissionsFilter;
 import com._CServices.IVR_api.service.PermissionsService;
-import com._CServices.IVR_api.utils.SortUtils;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,37 +23,36 @@ import java.util.List;
 public class PermissionsController {
     private final PermissionsService permissionsService;
 
-
     @GetMapping
-    public ResponseEntity<Page<PermissionsResponse>> getPermissions(
+    public ResponseEntity<PagedResponse<PermissionsResponse>> getPermissions(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String createdBy,
             @RequestParam(required = false) String updatedBy,
             @RequestParam(required = false) LocalDate createdAt,
             @RequestParam(required = false) LocalDate updatedAt,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(required = false) int size,
-            @RequestParam(defaultValue = "permission_id") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir
+            @RequestParam(required = false, defaultValue = "permission_id") String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortDir,
+            Pageable pageable
     ) {
-        String sanitizedSortBy = SortUtils.sanitizeSortField(sortBy, SortUtils.getAllowedPermissionFields(), "permission_id");
-        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
+        PermissionsFilter filter = PermissionsFilter.builder()
+                .id(id)
+                .name(name)
+                .createdBy(createdBy)
+                .updatedBy(updatedBy)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .build();
 
-        Pageable pageable = org.springframework.data.domain.PageRequest.of(
-                page,
-                size,
-                sanitizedSortDir.equalsIgnoreCase("desc")
-                        ? org.springframework.data.domain.Sort.by(sanitizedSortBy).descending()
-                        : org.springframework.data.domain.Sort.by(sanitizedSortBy).ascending()
-        );
 
-        return ResponseEntity.ok(
-                permissionsService.getPermissionsWithFilters(
-                id, name, createdBy, updatedBy, createdAt, updatedAt, sanitizedSortBy, sanitizedSortDir,pageable
-                )
-        );
+        PagedResponse<PermissionsResponse> response = permissionsService
+                .getFilteredPermissions(filter, pageable, sortBy, sortDir);
+
+        return ResponseEntity.ok(response);
     }
+
+
+
     @GetMapping("/all")
     public ResponseEntity<List<PermissionsResponse>> getAllPermissions() {
         List<PermissionsResponse> permissions = permissionsService.getAllPermissions();

@@ -2,6 +2,7 @@ package com._CServices.IVR_api.repository.impl;
 
 import com._CServices.IVR_api.dto.response.PermissionsResponse;
 import com._CServices.IVR_api.filter.PermissionsFilter;
+import com._CServices.IVR_api.repository.CustomPermissionsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,22 +14,12 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class CustomPermissionsRepository {
+public class CustomPermissionsRepositoryImpl implements CustomPermissionsRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<PermissionsResponse> rowMapper = (rs, rowNum) -> {
-        PermissionsResponse permissions = new PermissionsResponse();
-        permissions.setPermissionId(rs.getLong("permission_id"));
-        permissions.setName(rs.getString("permission_name"));
-        permissions.setDescription(rs.getString("description"));
-        permissions.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        permissions.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
-        permissions.setCreatedBy(rs.getString("created_by_username"));
-        permissions.setUpdatedBy(rs.getString("updated_by_username"));
-        return permissions;
-    };
 
+    @Override
     public List<PermissionsResponse> findPermissionsWithFilters(
             PermissionsFilter filter, String sortBy, String sortDir, int offset, int limit
     ) {
@@ -81,6 +72,7 @@ public class CustomPermissionsRepository {
         return jdbcTemplate.query(sql.toString(), params.toArray(), rowMapper);
     }
 
+    @Override
     public long countPermissionsWithFilters(PermissionsFilter filter) {
         StringBuilder sql = new StringBuilder();
         List<Object> params = new ArrayList<>();
@@ -119,4 +111,17 @@ public class CustomPermissionsRepository {
 
         return jdbcTemplate.queryForObject(sql.toString(), params.toArray(), Long.class);
     }
+
+
+    private final RowMapper<PermissionsResponse> rowMapper = (rs, rowNum) -> {
+        PermissionsResponse permissions = new PermissionsResponse();
+        permissions.setPermissionId(rs.getLong("permission_id"));
+        permissions.setName(rs.getString("permission_name"));
+        permissions.setDescription(rs.getString("description"));
+        permissions.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        permissions.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        permissions.setCreatedBy(rs.getString("created_by_username"));
+        permissions.setUpdatedBy(rs.getString("updated_by_username"));
+        return permissions;
+    };
 }

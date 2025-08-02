@@ -1,4 +1,4 @@
-package com._CServices.IVR_api.dao;
+package com._CServices.IVR_api.repository;
 
 import com._CServices.IVR_api.entity.Permissions;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PermissionsRepository extends JpaRepository<Permissions,Long>{
+public interface PermissionsRepository extends JpaRepository<Permissions,Long> , CustomPermissionsRepository{
     @Query("SELECT COUNT(p) > 0 FROM Permissions p WHERE p.name = :name")
     boolean existsByName(@Param("name") String name);
 

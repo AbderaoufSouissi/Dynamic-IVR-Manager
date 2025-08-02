@@ -1,6 +1,6 @@
 package com._CServices.IVR_api.service.impl;
 
-import com._CServices.IVR_api.dao.PermissionsRepository;
+import com._CServices.IVR_api.repository.PermissionsRepository;
 import com._CServices.IVR_api.dto.response.PagedResponse;
 import com._CServices.IVR_api.filter.RoleFilter;
 import com._CServices.IVR_api.repository.RoleRepository;
@@ -19,22 +19,13 @@ import com._CServices.IVR_api.audit.AuditLoggingService;
 import com._CServices.IVR_api.repository.UserRepository;
 import com._CServices.IVR_api.service.RoleService;
 import com._CServices.IVR_api.utils.SortUtils;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 
 
