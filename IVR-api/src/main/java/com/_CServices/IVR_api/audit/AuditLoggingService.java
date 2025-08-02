@@ -1,6 +1,6 @@
 package com._CServices.IVR_api.audit;
 
-import com._CServices.IVR_api.dao.AuditRepository;
+import com._CServices.IVR_api.repository.AuditRepository;
 import com._CServices.IVR_api.repository.UserRepository;
 import com._CServices.IVR_api.entity.Audit;
 import com._CServices.IVR_api.entity.User;

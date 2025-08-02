@@ -4,6 +4,7 @@ package com._CServices.IVR_api.repository.impl;
 
 import com._CServices.IVR_api.dto.response.AuditResponse;
 import com._CServices.IVR_api.filter.AuditFilter;
+import com._CServices.IVR_api.repository.CustomAuditRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,25 +16,11 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class CustomAuditRepository {
+public class CustomAuditRepositoryImpl implements CustomAuditRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final RowMapper<AuditResponse> rowMapper = (rs, rowNum) -> {
-        AuditResponse audit = new AuditResponse();
-        audit.setAuditId(rs.getLong("audit_id"));
-        audit.setUserId(rs.getLong("user_id"));
-        audit.setActionType(rs.getString("action_type"));
-        audit.setEntityType(rs.getString("entity_type"));
-        audit.setEntityId(rs.getLong("entity_id"));
-        audit.setMsisdn(rs.getString("msisdn"));
-        audit.setActionTimestamp(rs.getTimestamp("action_time_stamp").toLocalDateTime());
-
-
-
-        return audit;
-    };
-
+    @Override
     public List<AuditResponse> findAuditsWithFilters(
             AuditFilter filter,
             String sortBy,
@@ -89,6 +76,7 @@ public class CustomAuditRepository {
         return jdbcTemplate.query(sql.toString(), params.toArray(), rowMapper);
     }
 
+    @Override
     public long countAuditsWithFilters(AuditFilter filter) {
         StringBuilder sql = new StringBuilder();
         List<Object> params = new ArrayList<>();
@@ -129,5 +117,23 @@ public class CustomAuditRepository {
 
         return jdbcTemplate.queryForObject(sql.toString(), params.toArray(), Long.class);
     }
+
+
+
+    private final RowMapper<AuditResponse> rowMapper = (rs, rowNum) -> {
+        AuditResponse audit = new AuditResponse();
+        audit.setAuditId(rs.getLong("audit_id"));
+        audit.setUserId(rs.getLong("user_id"));
+        audit.setActionType(rs.getString("action_type"));
+        audit.setEntityType(rs.getString("entity_type"));
+        audit.setEntityId(rs.getLong("entity_id"));
+        audit.setMsisdn(rs.getString("msisdn"));
+        audit.setActionTimestamp(rs.getTimestamp("action_time_stamp").toLocalDateTime());
+
+
+
+        return audit;
+    };
+
 }
 

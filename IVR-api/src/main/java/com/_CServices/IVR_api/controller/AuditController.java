@@ -1,6 +1,8 @@
 package com._CServices.IVR_api.controller;
 
 import com._CServices.IVR_api.dto.response.AuditResponse;
+import com._CServices.IVR_api.dto.response.PagedResponse;
+import com._CServices.IVR_api.filter.AuditFilter;
 import com._CServices.IVR_api.service.AuditService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -8,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 
 @RestController
@@ -19,37 +20,32 @@ public class AuditController {
     private final AuditService auditService;
 
     @GetMapping
-    public ResponseEntity<Page<AuditResponse>> getAudits(
+    public ResponseEntity<PagedResponse<AuditResponse>> getAudits(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) String actionType,
+            @RequestParam(required = false) String entityType,
             @RequestParam(required = false) Long entityId,
             @RequestParam(required = false) String msisdn,
-            @RequestParam(value = "action", required = false) String actionType,  // Maps 'action' param to actionType variable
-            @RequestParam(value = "entity", required = false) String entityType,
             @RequestParam(required = false) LocalDate date,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "audit_id") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir
+            @RequestParam(required = false, defaultValue = "audit_id") String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortDir,
+            Pageable pageable
     ) {
-        Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ?
-                Sort.Direction.DESC : Sort.Direction.ASC;
+        AuditFilter filter = AuditFilter.builder()
+                .id(id)
+                .userId(userId)
+                .actionType(actionType)
+                .entityType(entityType)
+                .entityId(entityId)
+                .msisdn(msisdn)
+                .date(date)
+                .build();
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        PagedResponse<AuditResponse> response = auditService
+                .getFilteredAudits(filter, pageable, sortBy, sortDir);
 
-        Page<AuditResponse> audits = auditService.getAuditsWithFilters(id,
-                userId,
-                entityId,
-                 msisdn,
-                actionType,
-                entityType,
-                date,
-                sortBy,
-                sortDir,
-                pageable
-        );
-
-        return ResponseEntity.ok(audits);
+        return ResponseEntity.ok(response);
     }
 
 

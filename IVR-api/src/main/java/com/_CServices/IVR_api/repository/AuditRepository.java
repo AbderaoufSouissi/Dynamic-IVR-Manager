@@ -1,10 +1,7 @@
-package com._CServices.IVR_api.dao;
+package com._CServices.IVR_api.repository;
 
 import com._CServices.IVR_api.entity.Audit;
-import com._CServices.IVR_api.enumeration.ActionType;
-import com._CServices.IVR_api.enumeration.EntityType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 
 @Repository
-public interface AuditRepository extends JpaRepository<Audit, Long>, JpaSpecificationExecutor<Audit> {
+public interface AuditRepository extends JpaRepository<Audit, Long>, CustomAuditRepository {
 
 
     @Query(value = """
