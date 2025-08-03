@@ -1,6 +1,6 @@
 package com._CServices.IVR_api.config;
 
-import com._CServices.IVR_api.dao.UserRepository;
+import com._CServices.IVR_api.repository.users.UserRepository;
 import com._CServices.IVR_api.domain.RequestContext;
 import com._CServices.IVR_api.entity.User;
 import lombok.RequiredArgsConstructor;

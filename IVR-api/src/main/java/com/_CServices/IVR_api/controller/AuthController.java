@@ -6,7 +6,9 @@ import com._CServices.IVR_api.dto.request.ForgetPasswordRequest;
 import com._CServices.IVR_api.dto.request.ResetPasswordRequest;
 import com._CServices.IVR_api.dto.response.MessageResponse;
 import com._CServices.IVR_api.entity.User;
+import com._CServices.IVR_api.mapper.UserMapper;
 import com._CServices.IVR_api.security.AuthService;
+import com._CServices.IVR_api.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 
 @RestController
@@ -29,6 +30,7 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserService userService;
 
     @PostMapping("/forget-password")
     public ResponseEntity<MessageResponse> forgotPassword(@Valid @RequestBody ForgetPasswordRequest request) {
@@ -52,6 +54,7 @@ public class AuthController {
 
 
     @GetMapping("/user")
+    @Transactional
     public ResponseEntity<?> getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -68,11 +71,7 @@ public class AuthController {
 
         User user = (User) principal;
 
-        return ResponseEntity.ok(Map.of(
-                "id", user.getId(),
-                "username", user.getUsername(),
-                "email", user.getEmail()
-        ));
+        return ResponseEntity.ok(userService.getUserById(user.getId()));
     }
 
 }

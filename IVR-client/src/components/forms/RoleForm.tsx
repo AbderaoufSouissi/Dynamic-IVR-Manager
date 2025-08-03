@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { createRole, getRoleById, updateRole } from "../../service/RoleService";
-import { getPermissions } from "../../service/PermissionService";
+import { getAllPermissions } from "../../service/PermissionService";
 import type { RoleRequest, Permission } from "../../types/types";
 import { FaRegCheckCircle, FaCheckCircle } from "react-icons/fa";
 import FormButtons from "../buttons/FormButtons";
+import { toastError, toastSuccess } from "../../service/ToastService";
 
 type Title = "Créer un nouveau role" | "Modifier un role";
 type Description =
@@ -34,9 +35,9 @@ const { triggerRefresh } = useOutletContext<RolesPageContext>()
 
   // Fetch permissions and role if editing
   useEffect(() => {
-    getPermissions()
+    getAllPermissions()
       .then(res => {
-        setPermissions(res.content);
+        setPermissions(res);
         setLoading(false);
       })
       .catch(error => {
@@ -47,7 +48,8 @@ const { triggerRefresh } = useOutletContext<RolesPageContext>()
 
   // Load role data if editing
   useEffect(() => {
-    if (id) {
+
+if (id) {
       getRoleById(parseInt(id))
         .then(role => {
           setFormData({
@@ -60,6 +62,9 @@ const { triggerRefresh } = useOutletContext<RolesPageContext>()
         });
     }
   }, [id]);
+
+
+  
   const handlePermissionToggle = (permissionName: string) => {
     setFormData(prev => ({
       ...prev,
@@ -74,13 +79,16 @@ const { triggerRefresh } = useOutletContext<RolesPageContext>()
     try {
       if (id) {
         await updateRole(parseInt(id), formData);
+        toastSuccess(`Le Role ${formData.name} a été modifié avec succés`)
       } else {
         await createRole(formData);
+        toastSuccess(`Le Role ${formData.name} a été créé avec succés`)
       }
       triggerRefresh()
       navigate("/admin/roles");
     } catch (error: any) {
-  console.error("Erreur lors de la soumission du formulaire :", error);
+      console.error("Erreur lors de la soumission du formulaire :", error);
+      toastError("Erreur lors de la soumission du formulaire")
   
   // Try to extract error message from response
   const message =

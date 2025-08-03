@@ -1,23 +1,18 @@
 package com._CServices.IVR_api.service;
 
+import com._CServices.IVR_api.dto.response.PagedResponse;
 import com._CServices.IVR_api.dto.response.PermissionsResponse;
 import com._CServices.IVR_api.dto.request.PermissionsRequest;
-import org.springframework.data.domain.Page;
+import com._CServices.IVR_api.filter.PermissionsFilter;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDate;
+import java.util.List;
 
 public interface PermissionsService {
-    Page<PermissionsResponse> getPermissionsWithFilters(
-            Long id,
-            String name,
-            String createdByUsername,
-            String updatedByUsername,
-            LocalDate createdAt,
-            LocalDate updatedAt,
-            String sortBy,
-            String sortDir,
-            Pageable pageable);
+    PagedResponse<PermissionsResponse> getFilteredPermissions(PermissionsFilter filter,
+                                                              Pageable pageable,
+                                                              String sortBy,
+                                                              String sortDir);
     PermissionsResponse getPermissionById(Long id);
     PermissionsResponse getPermissionByName(String name);
     PermissionsResponse getPermissionByDescription(String description);
@@ -25,4 +20,5 @@ public interface PermissionsService {
     void deletePermissionById(Long id);
     void deletePermissionByName(String permissionName);
 
+    List<PermissionsResponse> getAllPermissions();
 }

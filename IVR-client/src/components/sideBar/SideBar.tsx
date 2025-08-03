@@ -5,7 +5,6 @@ import { HiOutlineKey } from "react-icons/hi2";
 import { FiFileText, FiPhone } from "react-icons/fi";
 import { NavLink, useLocation } from 'react-router-dom';
 import { BiLogOut } from 'react-icons/bi';
-import { TbLayoutDashboard } from 'react-icons/tb';
 import { useState } from 'react';
 import LogoutModal from '../modal/LogoutModal';
 
@@ -27,7 +26,7 @@ const navItems: NavItem[] = [
   { id: 'permissions', label: 'Permissions', icon: HiOutlineKey, route: '/admin/permissions' },
   { id: 'auditLogs', label: 'Audit', icon: FiFileText, route: '/admin/auditLogs' },
   { id: 'msisdn', label: 'MSISDN', icon: FiPhone, route: '/admin/msisdn' },
-  { id: 'logout', label: 'Logout', icon: BiLogOut, route: '/logout' },
+  { id: 'logout', label: 'Se Déconnecter', icon: BiLogOut, route: '/logout' },
 ];
 
 const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
@@ -45,17 +44,8 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
 
   return (
     <>
-    <aside className="flex flex-col w-64 bg-gradient-to-b from-slate-50 to-white border-r border-gray-200 min-h-screen shadow-lg">
-      {/* Header */}
-      <div className="flex items-center justify-center h-16 px-6 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
-        <TbLayoutDashboard size={30} className='text-blue-700 mr-2' />
-        <NavLink 
-          className="text-xl font-bold text-gray-900 hover:text-blue-700 transition-colors" 
-          to={'/admin'}
-        >
-          Tableau de Bord
-        </NavLink>
-      </div>
+    <aside className="flex flex-col w-64 bg-white border-r border-gray-200 min-h-screen shadow-lg">
+  
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
@@ -132,9 +122,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
         })}
       </nav>
 
-      {/* Footer with user info or branding */}
-      <div className="p-4 border-t border-gray-200 bg-white/50">
-      </div>
+
     </aside>
     {showLogoutModal && (
         <LogoutModal  onClose={() => setShowLogoutModal(false)}/>

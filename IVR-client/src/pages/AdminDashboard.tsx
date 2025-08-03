@@ -1,19 +1,26 @@
-import { Outlet } from 'react-router-dom';
-import Sidebar from '../components/sideBar/SideBar';
+// adjust path if needed
+import { Outlet } from "react-router-dom";
+import DashboardHeader from "../components/header/DashboardHeader";
+import Sidebar from "../components/sideBar/SideBar";
 
 const AdminDashboard = () => {
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <Sidebar activeTab={""} onTabChange={() => {}} />
+    <div className="flex flex-col min-h-screen">
+      
+      {/* Header - Full width at top */}
+      <DashboardHeader/>
+      {/* Content area with sidebar and main content side by side */}
+      <div className="flex flex-1">
+        {/* Sidebar - Fixed on the left */}
+        <Sidebar activeTab={""} onTabChange={() => { }} />
 
-      <main className="flex-1 overflow-auto p-6">
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        {/* Main content area - Matches UsersPage styling */}
+        <main className="flex-1 overflow-auto p-6 bg-slate-50">
           <Outlet />
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };
-
 
 export default AdminDashboard;

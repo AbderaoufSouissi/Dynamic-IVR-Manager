@@ -35,6 +35,8 @@ export interface UpdateUserRequest{
     roleName: string | null,
 }
 
+
+
 export interface RoleRequest {
     name: string
     permissions: string[]

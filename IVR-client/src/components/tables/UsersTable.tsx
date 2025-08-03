@@ -1,14 +1,18 @@
 import type { User } from "../../types/types";
-import { MdDelete, MdEdit, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { MdEdit, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { MdArrowDropUp, MdArrowDropDown } from "react-icons/md";
 
 import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
 import { HiChevronDown } from "react-icons/hi";
+import ToggleSwitch from "../buttons/ToggleSwitch";
+import { updateUser } from "../../service/UserService";
+import { toastSuccess } from "../../service/ToastService";
 
 interface UsersTableProps {
   itemsPerPage?: number;
   users: User[];
+  onUserStatusChange:(userId: number, newStatus: boolean) => void;
   sortBy: string;
   sortDir: "asc" | "desc";
   onSortChange: (field: string) => void
@@ -24,7 +28,7 @@ interface UsersTableProps {
 const userTableHeads = [
   { key: "user_id", label: "ID" },
   { key: "email", label: "Nom complet" },
-  { key: "username", label: "Username" },
+  { key: "Nom d'utilisateur", label: "Username" },
   { key: "role_id", label: "Role" },
   { key: "created_at", label: "Date de création" },
   { key: "created_by_id", label: "Créé par" },
@@ -33,7 +37,7 @@ const userTableHeads = [
   { key: "is_active", label: "Statut" },
 ]
 
-const UsersTable = ({users, sortBy, sortDir, onSortChange, currentPage, onPageChange, totalCount, onRowsPerPageChange, rowsPerPage }: UsersTableProps) => {
+const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, currentPage, onPageChange, totalCount, onRowsPerPageChange, rowsPerPage }: UsersTableProps) => {
 
 
   const totalPages = Math.ceil(totalCount / rowsPerPage);
@@ -89,7 +93,28 @@ const UsersTable = ({users, sortBy, sortDir, onSortChange, currentPage, onPageCh
   };
 
   // Calculate current displayed range (e.g. showing 6-10 of 52)
-const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
+  const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
+  
+  const handleToggleStatus = async (userId: number, newStatus: boolean) => {
+  try {
+    const userToUpdate = users.find(u => u.userId === userId);
+    if (!userToUpdate) return;
+
+    const updatedUser = { ...userToUpdate, active: newStatus };
+
+    await updateUser(userId, updatedUser);
+    
+    
+
+
+    // Optimistically update UI
+    onUserStatusChange(userId, newStatus);
+    newStatus == true ? toastSuccess(`L'utilisateur ${updatedUser.username} est maintenant Activé`) : toastSuccess(`L'utilisateur ${updatedUser.username} est maintenant Désactivé`);
+  } catch (error) {
+    console.error("Failed to update user status", error);
+  }
+};
+
 
  
   return (
@@ -101,7 +126,7 @@ const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
               <th
                 key={key}
                 onClick={() => handleSort(key)}
-                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer group"
+                className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer group"
               >
                 <div className="flex items-center w-fit">
                   {label}
@@ -112,7 +137,7 @@ const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
                 </div>
               </th>
             ))}
-            <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -121,12 +146,12 @@ const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
               key={user.userId}
               className="border-t border-gray-200 hover:bg-gray-50 transition"
             >
-              <td className="px-4 py-2 font-medium whitespace-nowrap text-slate-800  ">
+              <td className="px-4 py-3 font-medium whitespace-nowrap text-slate-800">
                 {user.userId}
               </td>
-              <td className="py-4 whitespace-nowrap">
+              <td className="px-4 py-3 whitespace-nowrap">
                 <div className="flex items-center">
-                  <div className="ml-4">
+                  <div>
                     <div className="text-sm font-medium text-gray-900">
                       {user.firstName} {user.lastName}
                     </div>
@@ -134,56 +159,48 @@ const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
                   </div>
                 </div>
               </td>
-
-              <td className="px-6 py-2 font-medium whitespace-nowrap text-slate-800 ">
+              <td className="px-4 py-3 font-medium whitespace-nowrap text-slate-800">
                 {user.username}
               </td>
-              <td className="px-4 py-2 font-medium whitespace-nowrap text-slate-800 ">
+              <td className="px-4 py-3 font-medium whitespace-nowrap text-slate-800">
                 {user.roleName}
               </td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
+              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
                 {formatTimestamp(user.createdAt)}
               </td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
+              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
                 {user.createdBy}
               </td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
+              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
                 {formatTimestamp(user.updatedAt)}
               </td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
+              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
                 {user.updatedBy}
               </td>
-              <td className="px-4 py-2 whitespace-nowrap text-slate-800 ">
-                <span
-                  className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${user.active
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                    }`}
-                >
-                  {user.active ? "Actif" : "Inactif"}
-                </span>
+              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
+                <ToggleSwitch checked={user.active} onToggle={() => handleToggleStatus(user.userId, !user.active)}/>
               </td>
-              <td className="p-4 font-medium text-blue-600">
-  <div className="flex items-center gap-2">
-    <button
-      onClick={() => navigate(`update/${user.userId}`)}
-      className="flex items-center gap-1 text-blue-600 hover:underline cursor-pointer"
-    >
-      <MdEdit />
-      Éditer
-    </button>
+              <td className="px-4 py-3 font-medium text-blue-600">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => navigate(`update/${user.userId}`, { replace: true })}
+                    className="flex items-center gap-1 text-blue-600 hover:underline cursor-pointer"
+                  >
+                    <MdEdit />
+                    Éditer
+                  </button>
 
-    {/* <span className="text-slate-300">|</span>
+                  {/* <span className="text-slate-300">|</span>
 
-    <button
-      onClick={() => navigate(`/admin/users/delete/${user.userId}`)}
-      className="flex items-center gap-1 text-red-600 hover:underline cursor-pointer"
-    >
-      <MdDelete />
-      Supprimer
-    </button> */}
-  </div>
-</td>
+                  <button
+                    onClick={() => navigate(`/admin/users/delete/${user.userId}, { replace: true }`)}
+                    className="flex items-center gap-1 text-red-600 hover:underline cursor-pointer"
+                  >
+                    <MdDelete />
+                    Supprimer
+                  </button> */}
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -193,7 +210,7 @@ const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-4 p-4 border-t border-gray-200 gap-4">
         {/* Rows per page selector */}
         <div className="flex items-center gap-2">
-          <p className="text-sm text-gray-700">Rows per page:</p>
+          <p className="text-sm font-semibold text-gray-700">Lignes par page :</p>
           <div className="relative">
             <select
               value={rowsPerPage}
@@ -247,7 +264,7 @@ const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
         </div>
 
         {/* Displayed range */}
-        <p className="text-sm text-slate-500">
+        <p className="text-sm font-semibold text-slate-500">
           Affichage de {toRecord} sur {totalCount}{" "}
           utilsateurs
         </p>

@@ -1,8 +1,10 @@
 package com._CServices.IVR_api.service.impl;
 
-import com._CServices.IVR_api.dao.PermissionsRepository;
-import com._CServices.IVR_api.dao.RoleRepository;
-import com._CServices.IVR_api.dao.UserRepository;
+import com._CServices.IVR_api.repository.permissions.PermissionsRepository;
+import com._CServices.IVR_api.dto.response.PagedResponse;
+import com._CServices.IVR_api.filter.RoleFilter;
+import com._CServices.IVR_api.repository.roles.RoleRepository;
+
 import com._CServices.IVR_api.dto.response.RoleResponse;
 import com._CServices.IVR_api.dto.request.RoleRequest;
 import com._CServices.IVR_api.entity.Permissions;
@@ -14,24 +16,16 @@ import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
 import com._CServices.IVR_api.mapper.RoleMapper;
 import com._CServices.IVR_api.audit.AuditLoggingService;
+import com._CServices.IVR_api.repository.users.UserRepository;
 import com._CServices.IVR_api.service.RoleService;
 import com._CServices.IVR_api.utils.SortUtils;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 
 
@@ -44,176 +38,32 @@ public class RoleServiceImpl implements RoleService {
     private final PermissionsRepository permissionsRepository;
     private final AuditLoggingService auditLoggingService;
     private final RoleMapper roleMapper;
-    private final EntityManager entityManager;
 
 
 
     @Override
-    public Page<RoleResponse> getRolesWithFilters(
-            Long id,
-            String name,
-            String createdByUsername,
-            String updatedByUsername,
-            LocalDate createdAt,
-            LocalDate updatedAt,
-            String sortBy,
-            String sortDir,
-            Pageable pageable) {
+    public PagedResponse<RoleResponse> getRolesWithFilters(RoleFilter filter, int page, int size, String sortBy, String sortDir) {
+        int offset = page * size;
 
-        log.info("Fetching roles with filters");
-
-        // Sanitize sorting
-        String sanitizedSortField = SortUtils.sanitizeSortField(
-                sortBy != null ? sortBy.toLowerCase() : "",
+        String sanitizedSortBy = SortUtils.sanitizeSortField(
+                sortBy,
                 SortUtils.getAllowedRoleFields(),
                 "role_id"
         );
-        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
+        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);;
 
-        // Pagination bounds
-        int[] bounds = getRowBounds(pageable);
-        int startRow = bounds[0];
-        int endRow = bounds[1];
+        List<RoleResponse> roles = roleRepository.findRolesWithFilters(filter, offset, size, sanitizedSortBy, sanitizedSortDir);
+        int totalElements = roleRepository.countRolesWithFilters(filter);
 
-        // Date-time filtering ranges
-        LocalDateTime startCreatedAt = null;
-        LocalDateTime endCreatedAt = null;
-        if (createdAt != null) {
-            startCreatedAt = createdAt.atStartOfDay();
-            endCreatedAt = createdAt.atTime(LocalTime.MAX);
-        }
+        return PagedResponse.<RoleResponse>builder()
+                .content(roles)
+                .page(page)
+                .size(size)
+                .totalElements(totalElements)
+                .totalPages((int) Math.ceil((double) totalElements / size))
+                .build();
 
-        LocalDateTime startUpdatedAt = null;
-        LocalDateTime endUpdatedAt = null;
-        if (updatedAt != null) {
-            startUpdatedAt = updatedAt.atStartOfDay();
-            endUpdatedAt = updatedAt.atTime(LocalTime.MAX);
-        }
-
-        // Main query SQL
-        String sql = "SELECT * FROM (" +
-                "  SELECT main_query.*, ROWNUM rn FROM (" +
-                "    SELECT r.role_id, r.role_name, r.created_at, r.updated_at, r.created_by_id, r.updated_by_id, " +
-                "           NVL(creator.username, '') AS created_by_username, " +
-                "           NVL(updater.username, '') AS updated_by_username, " +
-                "           (SELECT COUNT(*) FROM role_permissions rp WHERE rp.role_id = r.role_id) AS permission_count " +  // <-- fixed space
-                "    FROM roles r " +
-                "    LEFT JOIN app_users creator ON r.created_by_id = creator.user_id " +
-                "    LEFT JOIN app_users updater ON r.updated_by_id = updater.user_id " +
-                "    WHERE (? IS NULL OR r.role_id = ?) " +
-                "      AND (? IS NULL OR LOWER(r.role_name) LIKE '%' || LOWER(?) || '%') " +
-                "      AND ( " +
-                "            ? IS NULL OR ( " +
-                "              creator.username IS NOT NULL AND LOWER(creator.username) LIKE '%' || LOWER(?) || '%' " +
-                "            ) " +
-                "          ) " +
-                "      AND ( " +
-                "            ? IS NULL OR ( " +
-                "              updater.username IS NOT NULL AND LOWER(updater.username) LIKE '%' || LOWER(?) || '%' " +
-                "            ) " +
-                "          ) " +
-                "      AND ((? IS NULL AND ? IS NULL) OR (r.created_at BETWEEN ? AND ?)) " +
-                "      AND ((? IS NULL AND ? IS NULL) OR (r.updated_at BETWEEN ? AND ?)) " +
-                "    ORDER BY " + (sanitizedSortField.equals("permission_count")
-                ? "permission_count"  // use alias, not subquery again
-                : "r." + sanitizedSortField) + " " + sanitizedSortDir + " " +
-                "  ) main_query WHERE ROWNUM <= ?" +
-                ") WHERE rn > ?";
-
-
-        try {
-            Query query = entityManager.createNativeQuery(sql)
-                    .setParameter(1, id)
-                    .setParameter(2, id)
-                    .setParameter(3, name)
-                    .setParameter(4, name)
-                    .setParameter(5, createdByUsername)
-                    .setParameter(6, createdByUsername)
-                    .setParameter(7, updatedByUsername)
-                    .setParameter(8, updatedByUsername)
-                    .setParameter(9, startCreatedAt)
-                    .setParameter(10, endCreatedAt)
-                    .setParameter(11, startCreatedAt)
-                    .setParameter(12, endCreatedAt)
-                    .setParameter(13, startUpdatedAt)
-                    .setParameter(14, endUpdatedAt)
-                    .setParameter(15, startUpdatedAt)
-                    .setParameter(16, endUpdatedAt)
-                    .setParameter(17, endRow)
-                    .setParameter(18, startRow);
-
-            List<Object[]> rows = query.getResultList();
-
-            List<RoleResponse> roleResponses = new ArrayList<>();
-            for (Object[] row : rows) {
-                RoleResponse dto = new RoleResponse();
-                dto.setRoleId(((Number) row[0]).longValue());
-                dto.setName((String) row[1]);
-                dto.setCreatedAt(((Timestamp) row[2]).toLocalDateTime());
-                dto.setUpdatedAt(((Timestamp) row[3]).toLocalDateTime());
-                dto.setCreatedBy((String) row[6]);
-                dto.setUpdatedBy((String) row[7]);
-                dto.setPermissionCount(((Number) row[8]).intValue());
-                List<String> permissions = entityManager.createNativeQuery(
-                                "SELECT p.permission_name " +
-                                        "FROM role_permissions rp " +
-                                        "JOIN permissions p ON rp.permission_id = p.permission_id " +
-                                        "WHERE rp.role_id = :roleId")
-                        .setParameter("roleId", dto.getRoleId())
-                        .getResultList();
-
-                dto.setPermissions(new HashSet<>(permissions));
-
-                roleResponses.add(dto);;
-            }
-            // Count query
-            String countSql = "SELECT COUNT(r.role_id) " +
-                    "FROM roles r " +
-                    "LEFT JOIN app_users creator ON r.created_by_id = creator.user_id " +
-                    "LEFT JOIN app_users updater ON r.updated_by_id = updater.user_id " +
-                    "WHERE (? IS NULL OR r.role_id = ?) " +
-                    "  AND (? IS NULL OR LOWER(r.role_name) LIKE '%' || LOWER(?) || '%') " +
-                    "  AND ( " +
-                    "        ? IS NULL OR ( " +
-                    "          creator.username IS NOT NULL AND LOWER(creator.username) LIKE '%' || LOWER(?) || '%' " +
-                    "        ) " +
-                    "      ) " +
-                    "  AND ( " +
-                    "        ? IS NULL OR ( " +
-                    "          updater.username IS NOT NULL AND LOWER(updater.username) LIKE '%' || LOWER(?) || '%' " +
-                    "        ) " +
-                    "      ) " +
-                    "  AND ((? IS NULL AND ? IS NULL) OR (r.created_at BETWEEN ? AND ?)) " +
-                    "  AND ((? IS NULL AND ? IS NULL) OR (r.updated_at BETWEEN ? AND ?))";
-
-            Query countQuery = entityManager.createNativeQuery(countSql)
-                    .setParameter(1, id)
-                    .setParameter(2, id)
-                    .setParameter(3, name)
-                    .setParameter(4, name)
-                    .setParameter(5, createdByUsername)
-                    .setParameter(6, createdByUsername)
-                    .setParameter(7, updatedByUsername)
-                    .setParameter(8, updatedByUsername)
-                    .setParameter(9, startCreatedAt)
-                    .setParameter(10, endCreatedAt)
-                    .setParameter(11, startCreatedAt)
-                    .setParameter(12, endCreatedAt)
-                    .setParameter(13, startUpdatedAt)
-                    .setParameter(14, endUpdatedAt)
-                    .setParameter(15, startUpdatedAt)
-                    .setParameter(16, endUpdatedAt);
-
-            long total = ((Number) countQuery.getSingleResult()).longValue();
-            return new PageImpl<>(roleResponses, pageable, total);
-
-
-        } catch (Exception e) {
-            log.error("Error fetching filtered roles", e);
-            throw new RuntimeException("Error fetching roles with filters", e);
-        }
     }
-
 
 
 
@@ -417,9 +267,5 @@ public class RoleServiceImpl implements RoleService {
     }
 
 
-    private int[] getRowBounds(Pageable pageable) {
-        int startRow = (int) pageable.getOffset(); // page * size
-        int endRow = startRow + pageable.getPageSize();
-        return new int[]{startRow, endRow};
-    }
+
 }

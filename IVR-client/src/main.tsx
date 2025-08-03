@@ -7,7 +7,6 @@ import UsersPage from "./pages/UsersPage.tsx";
 import RolesPage from "./pages/RolesPage.tsx";
 import PermissionsPage from "./pages/PermissionsPage.tsx";
 import MsisdnPage from "./pages/MsisdnPage.tsx";
-import AdminDashboard from "./pages/AdminDashboard.tsx";
 import UserForm from "./components/forms/UserForm.tsx";
 import HomePage from "./pages/HomePage.tsx";
 import ResetPasswordPage from "./auth/ResetPasswordPage.tsx";
@@ -18,6 +17,8 @@ import RoleForm from "./components/forms/RoleForm.tsx";
 import AdminOverview from "./pages/AdminOverview.tsx";
 import PermissionForm from "./components/forms/PermissionForm.tsx";
 import AuditsPage from "./pages/AuditsPage.tsx";
+import App from "./App.tsx";
+import ProfilePage from "./pages/ProfilePage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <AdminDashboard />, // Admin layout/dashboard wrapper
+        element: <App />, // Admin layout/dashboard wrapper
         children: [
           {
             path: "users",
@@ -66,11 +67,25 @@ const router = createBrowserRouter([
               },
               {
                 path: "create",
-                element: <RoleForm title={"Créer un nouveau role"} description={"Complétez les informations ci-dessous pour créer un nouveau role."} />,
+                element: (
+                  <RoleForm
+                    title={"Créer un nouveau role"}
+                    description={
+                      "Complétez les informations ci-dessous pour créer un nouveau role."
+                    }
+                  />
+                ),
               },
               {
                 path: "update/:id",
-                element: <RoleForm title={"Modifier un role"} description={"Mettez à jour les détails du role ci-dessous."} />,
+                element: (
+                  <RoleForm
+                    title={"Modifier un role"}
+                    description={
+                      "Mettez à jour les détails du role ci-dessous."
+                    }
+                  />
+                ),
               },
             ],
           },
@@ -78,15 +93,21 @@ const router = createBrowserRouter([
             path: "permissions",
             element: <PermissionsPage />,
             children: [
-            {
+              {
                 path: "create",
-                element: <PermissionForm title={"Créer une nouvelle permission"} description={"Complétez les informations ci-dessous pour créer une nouvelle permission"}/>,
+                element: (
+                  <PermissionForm
+                    title={"Créer une nouvelle permission"}
+                    description={
+                      "Complétez les informations ci-dessous pour créer une nouvelle permission"
+                    }
+                  />
+                ),
               },
               {
                 path: "delete/:id",
                 element: <DeleteEntityModal />,
               },
-              
             ],
           },
           {
@@ -95,13 +116,15 @@ const router = createBrowserRouter([
           },
           {
             path: "auditLogs",
-            element: (<AuditsPage/>
-              
-            ),
+            element: <AuditsPage />,
+          },
+          {
+            path: "profile",
+            element: <ProfilePage />,
           },
           {
             index: true,
-            element: <AdminOverview/>
+            element: <AdminOverview />,
           },
         ],
       },
@@ -131,6 +154,6 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   // <StrictMode>
-    <RouterProvider router={router} />
+  <RouterProvider router={router} />
   // </StrictMode>
 );

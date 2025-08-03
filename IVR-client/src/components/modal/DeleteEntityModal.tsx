@@ -5,6 +5,7 @@ import Modal from "./Modal";
 import { deleteUser, getUserById } from "../../service/UserService";
 import { deleteRole, getRoleById } from "../../service/RoleService";
 import { deletePermission, getPermissionById } from "../../service/PermissionService";
+import { toastError, toastInfo } from "../../service/ToastService";
 
 
 interface DeleteEntityModalContext {
@@ -30,8 +31,7 @@ const DeleteEntityModal = () => {
 
   const entityType = getEntityType();
 
-  useEffect(() => {
-    const fetchEntityName = async () => {
+  const fetchEntityName = async () => {
       if (!id || !entityType) return;
 
       const numericId = parseInt(id);
@@ -56,6 +56,9 @@ const DeleteEntityModal = () => {
       }
     };
 
+  useEffect(() => {
+    
+
     fetchEntityName();
   }, [id, entityType]);
 
@@ -72,12 +75,15 @@ const DeleteEntityModal = () => {
       switch (entityType) {
         case "user":
           await deleteUser(numericId);
+          
           break;
         case "role":
           await deleteRole(numericId);
+          toastInfo(`Role ${entityName} supprimé`)
           break;
         case "permission":
           await deletePermission(numericId);
+          toastInfo(`Permission ${entityName} supprimé`)
           break;
       }
       triggerRefresh();
@@ -85,6 +91,7 @@ const DeleteEntityModal = () => {
       navigate(`/admin/${entityType}s`);
     } catch (error) {
       console.error(`Erreur lors de la suppression du ${entityType} :`, error);
+      toastError(`Erreur lors de la suppression du ${entityType} ${entityName}`)
     }
   };
 

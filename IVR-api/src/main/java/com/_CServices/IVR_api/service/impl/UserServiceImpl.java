@@ -1,39 +1,36 @@
 package com._CServices.IVR_api.service.impl;
 
-import com._CServices.IVR_api.dao.RoleRepository;
-import com._CServices.IVR_api.dao.UserRepository;
+import com._CServices.IVR_api.dto.response.PermissionsResponse;
+import com._CServices.IVR_api.entity.Permissions;
+import com._CServices.IVR_api.repository.roles.RoleRepository;
+
+
 import com._CServices.IVR_api.dto.request.CreateUserRequest;
 import com._CServices.IVR_api.dto.request.UpdateUserRequest;
+import com._CServices.IVR_api.dto.response.PagedResponse;
 import com._CServices.IVR_api.dto.response.UserResponse;
 import com._CServices.IVR_api.entity.Role;
 import com._CServices.IVR_api.enumeration.ActionType;
 import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceAlreadyExistsException;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;
+import com._CServices.IVR_api.filter.UserFilter;
 import com._CServices.IVR_api.mapper.UserMapper;
 import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.audit.AuditLoggingService;
+import com._CServices.IVR_api.repository.users.UserRepository;
 import com._CServices.IVR_api.service.UserService;
-import jakarta.persistence.EntityManager;
 import com._CServices.IVR_api.utils.SortUtils;
-import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
+
+import static com._CServices.IVR_api.constant.Constants.DEFAULT_ROLE_NAME;
 
 
 @Service
@@ -46,185 +43,33 @@ public class UserServiceImpl implements UserService {
     private final AuditLoggingService auditLoggingService;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final EntityManager entityManager;
-
-
-
 
 
     @Override
-    public Page<UserResponse> getUsersWithFilters(
-            Long id,
-            String firstName,
-            String lastName,
-            String username,
-            String email,
-            Boolean active,
-            String roleName,
-            String createdByUsername,
-            String updatedByUsername,
-            LocalDate createdAt,
-            LocalDate updatedAt,
-            String sortBy,
-            String sortDir,
-            Pageable pageable) {
+    public PagedResponse<UserResponse> getUsers(UserFilter filter, int page, int size, String sortBy, String sortDir) {
+        int offset = page * size;
 
-        log.info("Fetching users with filters");
-
-        // Sanitize sorting
-        String sanitizedSortField = SortUtils.sanitizeSortField(
-                sortBy != null ? sortBy.toLowerCase() : "",
+        String sanitizedSortBy = SortUtils.sanitizeSortField(
+                sortBy,
                 SortUtils.getAllowedUserFields(),
                 "user_id"
         );
         String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
 
-        // Calculate pagination bounds
-        int[] bounds = getRowBounds(pageable);
-        int startRow = bounds[0];
-        int endRow = bounds[1];
+        List<UserResponse> users = userRepository.findUsersWithFilters(filter, sanitizedSortBy, sanitizedSortDir, offset, size);
+        long totalElements = userRepository.countUsersWithFilters(filter);
 
-        // Date-time filtering ranges
-        LocalDateTime startCreatedAt = null;
-        LocalDateTime endCreatedAt = null;
-        if (createdAt != null) {
-            startCreatedAt = createdAt.atStartOfDay();
-            endCreatedAt = createdAt.atTime(LocalTime.MAX);
-        }
 
-        LocalDateTime startUpdatedAt = null;
-        LocalDateTime endUpdatedAt = null;
-        if (updatedAt != null) {
-            startUpdatedAt = updatedAt.atStartOfDay();
-            endUpdatedAt = updatedAt.atTime(LocalTime.MAX);
-        }
 
-        // CORRECTED SQL query with proper createdByUsername and updatedByUsername filtering
-        String sql = "SELECT * FROM (" +
-                "  SELECT main_query.*, ROWNUM rn FROM (" +
-                "    SELECT u.user_id, u.first_name, u.last_name, u.username, u.password, u.email, " +
-                "           u.created_at, u.created_by_id, u.updated_at, u.updated_by_id, u.is_active, " +
-                "           u.role_id, " +
-                "           NVL(r.role_name, '') AS role_name, " +
-                "           NVL(creator.username, '') AS created_by_username, " +
-                "           NVL(updater.username, '') AS updated_by_username " +
-                "    FROM app_users u " +
-                "    LEFT JOIN roles r ON u.role_id = r.role_id " +
-                "    LEFT JOIN app_users creator ON u.created_by_id = creator.user_id " +
-                "    LEFT JOIN app_users updater ON u.updated_by_id = updater.user_id " +
-                "    WHERE (? IS NULL OR u.user_id = ?) " +
-                "      AND (? IS NULL OR LOWER(u.first_name) LIKE '%' || LOWER(?) || '%') " +
-                "      AND (? IS NULL OR LOWER(u.last_name) LIKE '%' || LOWER(?) || '%') " +
-                "      AND (? IS NULL OR LOWER(u.username) LIKE '%' || LOWER(?) || '%') " +
-                "      AND (? IS NULL OR LOWER(u.email) LIKE '%' || LOWER(?) || '%') " +
-                "      AND (? IS NULL OR u.is_active = ?) " +
-                "      AND (? IS NULL OR LOWER(NVL(r.role_name, '')) LIKE '%' || LOWER(?) || '%') " +
-                // FIXED: Corrected createdByUsername filtering logic
-                "      AND (? IS NULL OR LOWER(NVL(creator.username, '')) LIKE '%' || LOWER(?) || '%') " +
-                // FIXED: Corrected updatedByUsername filtering logic
-                "      AND (? IS NULL OR LOWER(NVL(updater.username, '')) LIKE '%' || LOWER(?) || '%') " +
-                "      AND ((? IS NULL AND ? IS NULL) OR (u.created_at BETWEEN ? AND ?)) " +
-                "      AND ((? IS NULL AND ? IS NULL) OR (u.updated_at BETWEEN ? AND ?)) " +
-                "    ORDER BY u." + sanitizedSortField + " " + sanitizedSortDir +
-                "  ) main_query WHERE ROWNUM <= ?" +
-                ") WHERE rn > ?";
 
-        try {
-            Query query = entityManager.createNativeQuery(sql, User.class)
-                    .setParameter(1, id)
-                    .setParameter(2, id)
-                    .setParameter(3, firstName)
-                    .setParameter(4, firstName)
-                    .setParameter(5, lastName)
-                    .setParameter(6, lastName)
-                    .setParameter(7, username)
-                    .setParameter(8, username)
-                    .setParameter(9, email)
-                    .setParameter(10, email)
-                    .setParameter(11, active)
-                    .setParameter(12, active)
-                    .setParameter(13, roleName)
-                    .setParameter(14, roleName)
-                    .setParameter(15, createdByUsername)
-                    .setParameter(16, createdByUsername)
-                    .setParameter(17, updatedByUsername)
-                    .setParameter(18, updatedByUsername)
-                    .setParameter(19, startCreatedAt)
-                    .setParameter(20, endCreatedAt)
-                    .setParameter(21, startCreatedAt)
-                    .setParameter(22, endCreatedAt)
-                    .setParameter(23, startUpdatedAt)
-                    .setParameter(24, endUpdatedAt)
-                    .setParameter(25, startUpdatedAt)
-                    .setParameter(26, endUpdatedAt)
-                    .setParameter(27, endRow)
-                    .setParameter(28, startRow);
-
-            List<User> users = query.getResultList();
-
-            // CORRECTED Count query with same fix
-            String countSql = "SELECT COUNT(u.user_id) " +
-                    "FROM app_users u " +
-                    "LEFT JOIN roles r ON u.role_id = r.role_id " +
-                    "LEFT JOIN app_users creator ON u.created_by_id = creator.user_id " +
-                    "LEFT JOIN app_users updater ON u.updated_by_id = updater.user_id " +
-                    "WHERE (? IS NULL OR u.user_id = ?) " +
-                    "  AND (? IS NULL OR LOWER(u.first_name) LIKE '%' || LOWER(?) || '%') " +
-                    "  AND (? IS NULL OR LOWER(u.last_name) LIKE '%' || LOWER(?) || '%') " +
-                    "  AND (? IS NULL OR LOWER(u.username) LIKE '%' || LOWER(?) || '%') " +
-                    "  AND (? IS NULL OR LOWER(u.email) LIKE '%' || LOWER(?) || '%') " +
-                    "  AND (? IS NULL OR u.is_active = ?) " +
-                    "  AND (? IS NULL OR LOWER(NVL(r.role_name, '')) LIKE '%' || LOWER(?) || '%') " +
-                    // FIXED: Corrected createdByUsername filtering logic
-                    "  AND (? IS NULL OR LOWER(NVL(creator.username, '')) LIKE '%' || LOWER(?) || '%') " +
-                    // FIXED: Corrected updatedByUsername filtering logic
-                    "  AND (? IS NULL OR LOWER(NVL(updater.username, '')) LIKE '%' || LOWER(?) || '%') " +
-                    "  AND ((? IS NULL AND ? IS NULL) OR (u.created_at BETWEEN ? AND ?)) " +
-                    "  AND ((? IS NULL AND ? IS NULL) OR (u.updated_at BETWEEN ? AND ?))";
-
-            Query countQuery = entityManager.createNativeQuery(countSql)
-                    .setParameter(1, id)
-                    .setParameter(2, id)
-                    .setParameter(3, firstName)
-                    .setParameter(4, firstName)
-                    .setParameter(5, lastName)
-                    .setParameter(6, lastName)
-                    .setParameter(7, username)
-                    .setParameter(8, username)
-                    .setParameter(9, email)
-                    .setParameter(10, email)
-                    .setParameter(11, active)
-                    .setParameter(12, active)
-                    .setParameter(13, roleName)
-                    .setParameter(14, roleName)
-                    .setParameter(15, createdByUsername)
-                    .setParameter(16, createdByUsername)
-                    .setParameter(17, updatedByUsername)
-                    .setParameter(18, updatedByUsername)
-                    .setParameter(19, startCreatedAt)
-                    .setParameter(20, endCreatedAt)
-                    .setParameter(21, startCreatedAt)
-                    .setParameter(22, endCreatedAt)
-                    .setParameter(23, startUpdatedAt)
-                    .setParameter(24, endUpdatedAt)
-                    .setParameter(25, startUpdatedAt)
-                    .setParameter(26, endUpdatedAt);
-
-            long total = ((Number) countQuery.getSingleResult()).longValue();
-
-            return new PageImpl<>(
-                    users.stream().map(userMapper::toDto).collect(Collectors.toList()),
-                    pageable,
-                    total
-            );
-
-        } catch (Exception e) {
-            log.error("Error fetching filtered users", e);
-            throw new RuntimeException("Error fetching users with filters", e);
-        }
+        return PagedResponse.<UserResponse>builder()
+                .content(users)
+                .page(page)
+                .size(size)
+                .totalElements(totalElements)
+                .totalPages((int) Math.ceil((double) totalElements / size))
+                .build();
     }
-
-
 
     @Override
     public UserResponse getUserById(Long id) {
@@ -238,9 +83,9 @@ public class UserServiceImpl implements UserService {
         @Transactional
         public UserResponse createUser(CreateUserRequest request) {
             if(null == request.getRoleName()){
-                request.setRoleName("DEFAULT_ROLE");
+                request.setRoleName(DEFAULT_ROLE_NAME);
             }
-            if(Objects.equals(request.getRoleName(), "DEFAULT_ROLE") &&
+            if(Objects.equals(request.getRoleName(), DEFAULT_ROLE_NAME) &&
                     null == roleRepository.findByName(request.getRoleName())){
                 Role role = Role.builder()
                         .name(request.getRoleName())
@@ -351,55 +196,77 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public List<String> getUserPermissions(String username) {
+        if(userRepository.findByUsername(username) == null) {
+            throw new ResourceNotFoundException("User with Username : "+username+" Not Found");
+        }
+        List<Permissions> permissions = userRepository.getUserPermissions(username);
+        List<String> userPermissions = permissions.stream().map(perm-> perm.getName()).toList();
+        return userPermissions;
+
+    }
 
 
     @Override
     public UserResponse updateUser(UpdateUserRequest request, Long id) {
-        User userToUpdate = userRepository.findById(id).map(user -> {
-            if (request.getFirstName() != null) {
-                user.setFirstName(request.getFirstName());
+        User userToUpdate = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        if (request.getEmail() != null && !request.getEmail().equals(userToUpdate.getEmail())) {
+            if (null != userRepository.findByEmail(request.getEmail())){
+                throw new ResourceAlreadyExistsException("L'email '" + request.getEmail() + "' est déjà utilisé.");
             }
-            if (request.getLastName() != null) {
-                user.setLastName(request.getLastName());
+            userToUpdate.setEmail(request.getEmail());
+        }
+
+        if (request.getUsername() != null && !request.getUsername().equals(userToUpdate.getUsername())) {
+            if (null != userRepository.findByEmail(request.getEmail())){
+                throw new ResourceAlreadyExistsException("Le nom d'utilisateur '" + request.getUsername() + "' est déjà utilisé.");
             }
-            if (request.getEmail() != null) {
-                user.setEmail(request.getEmail());
-            }
-            if (request.getUsername() != null) {
-                user.setUsername(request.getUsername());
-            }
-            if (request.getPassword() != null && !request.getPassword().isBlank()) {
-                user.setPassword(passwordEncoder.encode(request.getPassword()));
-            }
-            if (request.getActive() != null) {
-                user.setActive(request.getActive());
-            }
-            if (request.getRoleName() != null) {
-                Role updatedRole = roleRepository.findByName(request.getRoleName());
-                if (updatedRole != null) {
-                    user.setRole(updatedRole);
-                }
-            }
-            return userRepository.save(user);
-        }).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+            userToUpdate.setUsername(request.getUsername());
+        }
+
+        if (request.getFirstName() != null) {
+            userToUpdate.setFirstName(request.getFirstName());
+        }
+        if (request.getLastName() != null) {
+            userToUpdate.setLastName(request.getLastName());
+        }
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            userToUpdate.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+        if (request.getActive() != null) {
+            userToUpdate.setActive(request.getActive());
+        }
+        if (request.getRoleName() != null) {
+            Role updatedRole = Optional.ofNullable(
+                    roleRepository.findByName(request.getRoleName())
+            ).orElseThrow(() ->
+                    new ResourceNotFoundException("Le rôle '" + request.getRoleName() + "' n'existe pas.")
+            );
+            userToUpdate.setRole(updatedRole);
+        }
+
+        User savedUser = userRepository.save(userToUpdate);
 
         auditLoggingService.logAction(
                 ActionType.UPDATE_USER.toString(),
                 EntityType.USER.toString(),
-                userToUpdate.getId(),
+                savedUser.getId(),
                 null
         );
 
-        return userMapper.toDto(userToUpdate);
+        return userMapper.toDto(savedUser);
+    }
+
+    @Override
+    public long getUsersByActive(int active) {
+        return userRepository.countByActive(active);
     }
 
 
 
-    private int[] getRowBounds(Pageable pageable) {
-        int startRow = (int) pageable.getOffset(); // page * size
-        int endRow = startRow + pageable.getPageSize();
-        return new int[]{startRow, endRow};
-    }
 
 
 }

@@ -1,7 +1,7 @@
 package com._CServices.IVR_api.service;
 
 import com._CServices.IVR_api.audit.AuditLoggingService;
-import com._CServices.IVR_api.dao.BdrRepository;
+import com._CServices.IVR_api.repository.msisdn.BdrRepository;
 import com._CServices.IVR_api.enumeration.ActionType;
 import com._CServices.IVR_api.enumeration.EntityType;
 import com._CServices.IVR_api.exception.ResourceNotFoundException;

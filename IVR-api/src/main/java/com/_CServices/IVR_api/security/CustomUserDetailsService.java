@@ -1,7 +1,8 @@
 package com._CServices.IVR_api.security;
 
-import com._CServices.IVR_api.dao.UserRepository;
+
 import com._CServices.IVR_api.entity.User;
+import com._CServices.IVR_api.repository.users.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

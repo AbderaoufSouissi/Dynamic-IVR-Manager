@@ -1,7 +1,7 @@
 package com._CServices.IVR_api.audit;
 
-import com._CServices.IVR_api.dao.AuditRepository;
-import com._CServices.IVR_api.dao.UserRepository;
+import com._CServices.IVR_api.repository.audits.AuditRepository;
+import com._CServices.IVR_api.repository.users.UserRepository;
 import com._CServices.IVR_api.entity.Audit;
 import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.enumeration.ActionType;
@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import static com._CServices.IVR_api.constant.Constants.SYSTEM_ID;
+import static com._CServices.IVR_api.constant.Constants.SYSTEM_USERNAME;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +35,8 @@ public class AuditLoggingService {
         if (Objects.equals(actionType, ActionType.FORGET_PASSWORD.toString()) ||
                 Objects.equals(actionType, ActionType.RESET_PASSWORD.toString())) {
 
-            user = userRepository.findById(SYSTEM_ID)
-                    .orElseThrow(() -> new ResourceNotFoundException("SYSTEM USER NOT FOUND"));
+            user = Optional.ofNullable(userRepository.findByUsername(SYSTEM_USERNAME))
+                    .orElseThrow(() -> new ResourceNotFoundException("User : " +SYSTEM_USERNAME + " not found"));
         } else {
             user = currentUserProvider.getCurrentLoggedInUser();
         }

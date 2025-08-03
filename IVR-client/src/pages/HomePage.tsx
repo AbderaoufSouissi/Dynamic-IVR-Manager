@@ -4,8 +4,7 @@ import HeroSection from "../components/sections/HeroSection";
 
 const HomePage = () => {
   return (
-    <div className="bg-gray-50 text-gray-800 min-h-screen flex flex-col scroll-smooth">
-  
+    <div className="bg-gray-50 text-gray-800 h-screen flex flex-col scroll-smooth overflow-hidden">
       <Header/>
       <HeroSection />
       <Footer />

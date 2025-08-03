@@ -2,6 +2,8 @@ package com._CServices.IVR_api.constant;
 
 public class Constants {
     public static final Long SYSTEM_ID = 0L;
+    public static final String SYSTEM_USERNAME = "system";
+    public static final String DEFAULT_ROLE_NAME= "default";
 
     public static final String CREATE_USER_DESCRIPTION="Creér un utilisateur";
     public static final String UPDATE_USER_DESCRIPTION="Mettre à jour un utilisateur";

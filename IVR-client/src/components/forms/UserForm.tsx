@@ -3,6 +3,7 @@ import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { createUser, getUserById, updateUser } from "../../service/UserService";
 import { HiEye, HiEyeSlash } from "react-icons/hi2";
 import FormButtons from "../buttons/FormButtons";
+import { toastError, toastSuccess } from "../../service/ToastService";
 
 interface UserFormProps {
   title: Title;
@@ -28,7 +29,7 @@ const UserForm = ({ title, description }: UserFormProps) => {
     username: "",
     password: "",
     roleName: "",
-    active: null as boolean | null, // allow null initially
+    active: null as boolean | null,
   });
 
   const [formError, setFormError] = useState<string | null>(null);
@@ -48,14 +49,14 @@ const UserForm = ({ title, description }: UserFormProps) => {
         const { password, ...rest } = user; // remove hashed password
         setFormData({
           ...rest,
-          password: "", // clear the password field intentionally
+          password: "",
         });
       });
     }
   }, [id]);
 
   const handleCancel = () => {
-    navigate("/admin/users"); // Go back to users page
+    navigate("/admin/users"); 
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -65,14 +66,18 @@ const UserForm = ({ title, description }: UserFormProps) => {
     !formData.lastName.trim() ||
     !formData.email.trim() ||
     !formData.username.trim() ||
-    (!id && !formData.password.trim()) || // password required only on creation
-    formData.active === null // must explicitly choose Actif or Inactif
+    (!id && !formData.password.trim()) || 
+    formData.active === null 
   ) {
     setFormError("Veuillez remplir tous les champs requis et sélectionner un statut.");
     return;
+    }
+    if (id && (!formData.roleName || formData.roleName.trim() === "")) {
+    setFormError("Veuillez sélectionner un rôle pour l'utilisateur.");
+    return;
   }
 
-    // common data
+
     const basePayload: any = {
   firstName: formData.firstName,
   lastName: formData.lastName,
@@ -82,7 +87,6 @@ const UserForm = ({ title, description }: UserFormProps) => {
   
 };
 
-// Only add active if it's boolean (true or false), ignore if null
 if (formData.active !== null) {
   basePayload.active = formData.active;
     }
@@ -91,7 +95,7 @@ if (formData.active !== null) {
 
     try {
       if (id) {
-        // Update: password nullable or omitted if empty
+  
         const updatePayload = {
           ...basePayload,
           password: formData.password.trim() === "" ? null : formData.password,
@@ -100,8 +104,8 @@ if (formData.active !== null) {
         
 
         await updateUser(parseInt(id), updatePayload);
+        toastSuccess(`L'utilisateur ${updatePayload.username} a été modifié avec succés`)
       } else {
-        // Create: password required and must be string (not null)
         if (formData.password.trim() === "") {
           throw new Error("Password is required to create a new user.");
         }
@@ -111,22 +115,24 @@ if (formData.active !== null) {
         };
 
         await createUser(createPayload);
+         toastSuccess(`L'utilisateur ${createPayload.username} a été créé avec succés`)
       }
        triggerRefresh()
 
       navigate("/admin/users");
     } catch (error: any) {
+      toastError("Erreur lors de la soumission du formulaire" )
   console.error("Erreur lors de la soumission du formulaire :", error);
   
-  // Try to extract error message from response
+
   const message =
-    error?.response?.data?.error || // e.g. from Spring Boot's ResponseEntity
-    error?.message ||                 // fallback: JS error message
-    "Une erreur est survenue.";      // ultimate fallback
+    error?.response?.data?.error || 
+    error?.message ||                
+    "Une erreur est survenue.";     
 
   setFormError(message);
 
-      // show toast or error message
+
     }
   };
 

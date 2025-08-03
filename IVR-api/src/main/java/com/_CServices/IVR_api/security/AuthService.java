@@ -1,6 +1,6 @@
 package com._CServices.IVR_api.security;
 
-import com._CServices.IVR_api.dao.UserRepository;
+import com._CServices.IVR_api.repository.users.UserRepository;
 import com._CServices.IVR_api.entity.User;
 import com._CServices.IVR_api.enumeration.ActionType;
 import com._CServices.IVR_api.enumeration.EntityType;

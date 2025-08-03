@@ -3,6 +3,7 @@ import type { PermissionRequest } from '../../types/types';
 import { createPermission, getPermissionById } from '../../service/PermissionService';
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import FormButtons from '../buttons/FormButtons';
+import { toastError, toastSuccess } from '../../service/ToastService';
 
 type Title = "Créer une nouvelle permission";
 type Description ="Complétez les informations ci-dessous pour créer une nouvelle permission"
@@ -61,9 +62,10 @@ const fetchPermission = async () => {
     try {
       await createPermission(formData);
       triggerRefresh()
-      navigate("/admin/permissions");
+      toastSuccess(`La permission ${formData.name} a été créé avec succés`)
     } catch (error: any) {
-  console.error("Erreur lors de la soumission du formulaire :", error);
+      console.error("Erreur lors de la soumission du formulaire :", error);
+      
   
   // Try to extract error message from response
   const message =
@@ -71,8 +73,10 @@ const fetchPermission = async () => {
     error?.message ||                 // fallback: JS error message
     "Une erreur est survenue.";      // ultimate fallback
 
-  setFormError(message);
+      setFormError(message);
+      toastError(message)
     }
+     navigate("/admin/permissions");
   };
 
   const handleCancel = () => navigate("/admin/permissions");

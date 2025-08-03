@@ -34,21 +34,22 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
   const navigate = useNavigate()
  
 
- 
+
+
   
 
   const handleSort = (column: string) => {
-      onSortChange(column)
-    };
+    onSortChange(column)
+  };
   
-    const renderSortIcon = (column: string) => {
-      if (sortBy !== column) return null;
-      return sortDir === "asc" ? (
-        <MdArrowDropUp className="text-blue-600" size={20} />
-      ) : (
-        <MdArrowDropDown className="text-blue-600" size={20} />
-      );
-    };
+  const renderSortIcon = (column: string) => {
+    if (sortBy !== column) return null;
+    return sortDir === "asc" ? (
+      <MdArrowDropUp className="text-blue-600" size={20} />
+    ) : (
+      <MdArrowDropDown className="text-blue-600" size={20} />
+    );
+  };
 
 
 
@@ -69,7 +70,7 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
     return pages;
   };
 
-   const handlePageChange = (page: number) => {
+  const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) onPageChange(page);
   };
 
@@ -94,46 +95,47 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
   return (
     <div className="overflow-x-auto rounded-xl shadow border border-gray-200 bg-white">
       <table className="w-full text-sm">
-         <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+        <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
           <tr>
             {roleTableHeads.map(({ key, label }) => (
               <th
-          key={key}
-          onClick={() => handleSort(key)}
-          className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary-color)] uppercase tracking-wider cursor-pointer group"
-        >
-          <div className="flex items-center w-fit">
-            {label}
-            <span className={`ml-2 transition-colors duration-200 text-base ${
-              sortBy === key ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
-            }`}>
-              {renderSortIcon(key) || <MdArrowDropDown />} {/* Show faint icon for visual consistency */}
-            </span>
-          </div>
-        </th>
+                key={key}
+                onClick={() => handleSort(key)}
+                className="px-4 py-3 text-left text-xs font-medium text-[var(--text-secondary-color)] uppercase tracking-wider cursor-pointer group"
+              >
+                <div className="flex items-center w-fit">
+                  {label}
+                  <span className={`ml-2 transition-colors duration-200 text-base ${sortBy === key ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
+                    }`}>
+                    {renderSortIcon(key) || <MdArrowDropDown />} {/* Show faint icon for visual consistency */}
+                  </span>
+                </div>
+              </th>
             ))}
-            <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600">Actions</th>
           </tr>
         </thead>
         <tbody>
           {roles.map((role) => (
             <tr key={role.roleId} className="border-t border-gray-200 hover:bg-gray-50 transition">
-              <td className="px-4 py-2 font-medium text-slate-800">{role.roleId}</td>
-              <td className="px-4 py-2 font-medium text-slate-800">{role.name}</td>
-              <td className="px-4 py-2 text-slate-800">
-                {role.permissions.length>0 ?role.permissions.map((perm: string, id: number) => (
+              <td className="px-4 py-3 font-medium text-slate-800">{role.roleId}</td>
+              <td className="px-4 py-3 font-medium text-slate-800">{role.name}</td>
+              <td className="px-4 py-3 text-slate-800">
+                {role.permissions.length > 0 ? role.permissions.map((perm: string, id: number) => (
                   <div key={id}>{perm}</div>
-                )): "__" }
-                
+                )) : "__"}
               </td>
-              <td className="px-4 py-2 text-slate-800">{formatTimestamp(role.createdAt)}</td>
-              <td className="px-4 py-2 text-slate-800">{role.createdBy}</td>
-              <td className="px-4 py-2 text-slate-800">{formatTimestamp(role.updatedAt)}</td>
-              <td className="px-4 py-2 text-slate-800">{role.updatedBy}</td>
-              <td className="p-4 font-medium text-blue-600">
+              <td className="px-4 py-3 text-slate-800">{formatTimestamp(role.createdAt)}</td>
+              <td className="px-4 py-3 text-slate-800">{role.createdBy}</td>
+              <td className="px-4 py-3 text-slate-800">{formatTimestamp(role.updatedAt)}</td>
+              <td className="px-4 py-3 text-slate-800">{role.updatedBy}</td>
+              <td className="px-4 py-3 font-medium text-blue-600">
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => navigate(`update/${role.roleId}`)}
+                    onClick={() => navigate({
+                      pathname: `/admin/roles/update/${role.roleId}`,
+                      search: "", // remove search params
+                    })}
                     className="text-blue-600 hover:underline cursor-pointer"
                   >
                     <MdEdit />
@@ -141,7 +143,12 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
                   </button>
                   <span className="text-slate-300">|</span>
                   <button
-                    onClick={() => navigate(`/admin/roles/delete/${role.roleId}`)}
+                    onClick={() =>
+                      navigate({
+                        pathname: `/admin/roles/delete/${role.roleId}`,
+                        search: "", // clears query params like ?page=...&sort=...
+                      })
+                    }
                     className="text-red-600 hover:underline cursor-pointer"
                   >
                     <MdDelete />
@@ -158,7 +165,7 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-4 p-4 border-t border-gray-200 gap-4">
         {/* Rows per page */}
         <div className="flex items-center gap-2">
-          <p className="text-sm text-gray-700">Rows per page:</p>
+          <p className="text-sm font-semibold text-gray-700">Lignes par page :</p>
           <div className="relative">
             <select
               value={rowsPerPage}
@@ -178,9 +185,8 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
           <button
             onClick={handlePrevious}
             disabled={currentPage === 1}
-            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
-              currentPage === 1 ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100"
-            }`}
+            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100"
+              }`}
           >
             <MdKeyboardArrowLeft />
           </button>
@@ -188,9 +194,8 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
             <button
               key={page}
               onClick={() => handlePageChange(page)}
-              className={`text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${
-                page === currentPage ? "text-white bg-blue-600" : "cursor-pointer text-slate-600 hover:bg-slate-100"
-              }`}
+              className={`text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${page === currentPage ? "text-white bg-blue-600" : "cursor-pointer text-slate-600 hover:bg-slate-100"
+                }`}
             >
               {page}
             </button>
@@ -198,22 +203,20 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
           <button
             onClick={handleNext}
             disabled={currentPage === totalPages}
-            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
-              currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100"
-            }`}
+            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100"
+              }`}
           >
             <MdKeyboardArrowRight />
           </button>
         </div>
 
         {/* Range summary */}
-        <p className="text-sm text-slate-500">
+        <p className="text-sm font-semibold text-slate-500">
           Affichage de {toRecord} sur {totalCount}{" "}
           roles
         </p>
       </div>
     </div>
   );
-};
-
+}
 export default RolesTable;

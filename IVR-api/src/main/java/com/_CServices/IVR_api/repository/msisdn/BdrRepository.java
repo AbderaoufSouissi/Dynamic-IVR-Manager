@@ -1,4 +1,4 @@
-package com._CServices.IVR_api.dao;
+package com._CServices.IVR_api.repository.msisdn;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;

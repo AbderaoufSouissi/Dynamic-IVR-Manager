@@ -6,6 +6,7 @@ import { HiOutlineUserAdd, HiUserRemove } from "react-icons/hi";
 import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
 import { getUsers } from "../service/UserService";
 import type { User } from "../types/types";
+import { getCurrentUser } from "../service/AuthService";
 
 const UsersPage = () => {
   const [filters, setFilters] = useState({
@@ -39,6 +40,10 @@ const UsersPage = () => {
   const [totalElements, setTotalElements] = useState(0);
 
   const [users, setUsers] = useState<User[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+
+  
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
@@ -83,13 +88,40 @@ const UsersPage = () => {
     };
 
     try {
-      const data = await getUsers(params);
-      setUsers(data.content);
-      setTotalElements(data.totalElements);
+  const data = await getUsers(params);
+  console.log("Users fetched:", data);
+
+  const filteredUsers = currentUser
+    ? data.content.filter((user: User) => user.userId !== currentUser.userId)
+    : data.content;
+
+  setUsers(filteredUsers);
+  setTotalElements(currentUser ? data.totalElements - 1 : data.totalElements);
+} catch (err) {
+  console.error("Erreur lors de la récupération des utilisateurs", err);
+}
+  };
+
+  const handleUserStatusChange = (userId: number, newStatus: boolean) => {
+  setUsers((prevUsers) =>
+    prevUsers.map((user) =>
+      user.userId === userId ? { ...user, active: newStatus } : user
+    )
+  );
+};
+
+  useEffect(() => {
+  const fetchCurrentUser = async () => {
+    try {
+      const user = await getCurrentUser();
+      setCurrentUser(user);
     } catch (err) {
-      console.error("Erreur lors de la récupération des utilisateurs", err);
+      console.error("Erreur lors de la récupération de l'utilisateur connecté", err);
     }
   };
+
+  fetchCurrentUser();
+}, []);
 
   // Run fetchUsers on mount and on filters change with debounce
   useEffect(() => {
@@ -178,6 +210,7 @@ const UsersPage = () => {
         {users.length != 0 ? (
           <UsersTable
             users={users}
+            onUserStatusChange={handleUserStatusChange}
             sortBy={sortBy}
             sortDir={sortDir}
             onSortChange={handleSortChange}

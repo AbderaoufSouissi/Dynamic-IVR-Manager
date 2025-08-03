@@ -1,23 +1,16 @@
 package com._CServices.IVR_api.service;
 
 import com._CServices.IVR_api.dto.request.RoleRequest;
+import com._CServices.IVR_api.dto.response.PagedResponse;
 import com._CServices.IVR_api.dto.response.RoleResponse;
+import com._CServices.IVR_api.filter.RoleFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 
 public interface RoleService {
-    Page<RoleResponse> getRolesWithFilters(
-            Long id,
-            String name,
-            String createdByUsername,
-            String updatedByUsername,
-            LocalDate createdAt,
-            LocalDate updatedAt,
-            String sortBy,
-            String sortDir,
-            Pageable pageable);
+    PagedResponse<RoleResponse> getRolesWithFilters(RoleFilter filter, int page, int size, String sortBy, String sortDir);
 
     RoleResponse getRoleById(Long id);
     RoleResponse createRole(RoleRequest roleRequest);

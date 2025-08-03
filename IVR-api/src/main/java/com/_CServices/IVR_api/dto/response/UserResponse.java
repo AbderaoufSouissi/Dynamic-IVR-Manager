@@ -1,6 +1,7 @@
 package com._CServices.IVR_api.dto.response;
 
 import com._CServices.IVR_api.dto.BaseDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -28,6 +29,7 @@ public class UserResponse extends BaseDto {
     @Email(message = "Email should be valid")
     private String email;
 
+    @JsonIgnore
     @NotBlank(message = "Password is required")
     private String password;
 

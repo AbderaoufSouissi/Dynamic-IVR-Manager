@@ -1,5 +1,6 @@
-package com._CServices.IVR_api.dao;
+package com._CServices.IVR_api.repository.users;
 
+import com._CServices.IVR_api.entity.Permissions;
 import com._CServices.IVR_api.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,15 +13,17 @@ import java.util.List;
 
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, CustomUserRepository {
 
     User findByEmail(String email);
     User findByUsername(String username);;
-
-    // Alternative if the above doesn't work due to entity relationship
     @Query("SELECT u FROM User u JOIN u.role r WHERE r.id = :roleId")
     List<User> findUsersWithRole(@Param("roleId") Long roleId);
 
+    @Query(value = "SELECT COUNT(*) FROM APP_USERS WHERE IS_ACTIVE = :active", nativeQuery = true)
+    long countByActive(@Param("active") int active);
 
+    @Query("SELECT p FROM User u JOIN u.role r JOIN r.permissions p WHERE u.username = :username")
+    List<Permissions> getUserPermissions(@Param("username") String username);
 }
 

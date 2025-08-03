@@ -13,6 +13,16 @@ export const getUsers = async (params = {}) => {
   return response.data;
 };
 
+
+export const getUsersByActive = async (params = {}) => {
+  const response = await axiosInstance.get(`${API_BASE_URL}/users/status`, {
+    params, 
+  });
+
+  return response.data;
+  
+}
+
 export const createUser = async (userData: CreateUserRequest) => {
   const response = await axiosInstance.post(`${API_BASE_URL}/users`,userData);
   return response.data
