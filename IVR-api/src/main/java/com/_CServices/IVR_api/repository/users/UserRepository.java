@@ -1,5 +1,6 @@
 package com._CServices.IVR_api.repository.users;
 
+import com._CServices.IVR_api.entity.Permissions;
 import com._CServices.IVR_api.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -21,6 +22,8 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
 
     @Query(value = "SELECT COUNT(*) FROM APP_USERS WHERE IS_ACTIVE = :active", nativeQuery = true)
     long countByActive(@Param("active") int active);
-    
+
+    @Query("SELECT p FROM User u JOIN u.role r JOIN r.permissions p WHERE u.username = :username")
+    List<Permissions> getUserPermissions(@Param("username") String username);
 }
 

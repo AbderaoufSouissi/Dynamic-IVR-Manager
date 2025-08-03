@@ -1,5 +1,7 @@
 package com._CServices.IVR_api.service.impl;
 
+import com._CServices.IVR_api.dto.response.PermissionsResponse;
+import com._CServices.IVR_api.entity.Permissions;
 import com._CServices.IVR_api.repository.roles.RoleRepository;
 
 
@@ -26,10 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static com._CServices.IVR_api.constant.Constants.DEFAULT_ROLE_NAME;
 
@@ -197,6 +196,16 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public List<String> getUserPermissions(String username) {
+        if(userRepository.findByUsername(username) == null) {
+            throw new ResourceNotFoundException("User with Username : "+username+" Not Found");
+        }
+        List<Permissions> permissions = userRepository.getUserPermissions(username);
+        List<String> userPermissions = permissions.stream().map(perm-> perm.getName()).toList();
+        return userPermissions;
+
+    }
 
 
     @Override

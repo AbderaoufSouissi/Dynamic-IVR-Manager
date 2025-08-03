@@ -6,6 +6,8 @@ import com._CServices.IVR_api.dto.response.PagedResponse;
 import com._CServices.IVR_api.dto.response.UserResponse;
 import com._CServices.IVR_api.filter.UserFilter;
 
+import java.util.List;
+
 public interface UserService {
 
 
@@ -18,4 +20,5 @@ public interface UserService {
     void deleteUserById(Long id);
     void deleteUserByEmail(String email);
     void deleteUserByUsername(String username);
+    List<String> getUserPermissions(String username);
 }
