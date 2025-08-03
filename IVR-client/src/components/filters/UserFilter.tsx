@@ -39,12 +39,12 @@ const UserFilter = ({ filters, onFilterChange, onResetFilters }: UserFiltersProp
         </div>
         <div>
           <label htmlFor="username-filter" className={labelClass}>
-            Username
+            Nom d'utilisateur
           </label>
           <input
             id="username-filter"
             type="text"
-            placeholder="Filtrer par username"
+            placeholder="Filtrer par nom d'utilisateur"
             value={filters.username}
             onChange={(e) => onFilterChange("username", e.target.value)}
             className={inputClass}

@@ -96,16 +96,13 @@ const AdminOverview = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
-            Tableau de Bord
+            Vue d'ensemble de votre système
           </h2>
-          <p className="text-slate-600">
-            Vue d'ensemble de votre système d'administration
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Users Card */}
-          <div onClick={() => navigate("/admin/users")} className="rounded-xl cursor-pointer shadow border border-gray-200 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:bg-white/80">
+          <div onClick={() => navigate("/admin/users")} className="rounded-xl bg-white/70  hover:bg-white/80 backdrop-blur-sm cursor-pointer shadow border border-gray-200 p-4 sm:p-6 hover:shadow-xl transition-all duration-300">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
               <div className="p-4 mt-4 rounded-2xl">
                 <FaUser className="text-blue-600" size={32} />
@@ -139,7 +136,7 @@ const AdminOverview = () => {
           </div>
 
           {/* Roles Card */}
-          <div onClick={() => navigate("/admin/roles")} className="rounded-xl cursor-pointer shadow border border-gray-200 p-4 sm:p-6 hover:shadow-xl transition-all duration-300 hover:bg-white/80">
+          <div onClick={() => navigate("/admin/roles")} className="bg-white/70  hover:bg-white/80 rounded-xl cursor-pointer shadow border border-gray-200 p-4 sm:p-6 hover:shadow-xl transition-all duration-300">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
               <div className="p-4 mt-4 ">
                 <SiSpringsecurity className="text-blue-600" size={32} />

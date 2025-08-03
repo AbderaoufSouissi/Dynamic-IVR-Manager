@@ -28,7 +28,7 @@ interface UsersTableProps {
 const userTableHeads = [
   { key: "user_id", label: "ID" },
   { key: "email", label: "Nom complet" },
-  { key: "username", label: "Username" },
+  { key: "Nom d'utilisateur", label: "Username" },
   { key: "role_id", label: "Role" },
   { key: "created_at", label: "Date de création" },
   { key: "created_by_id", label: "Créé par" },
