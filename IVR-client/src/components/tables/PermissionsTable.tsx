@@ -141,7 +141,7 @@ const PermissionsTable = ({ permissions, sortBy, sortDir, onSortChange, currentP
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-4 p-4 border-t border-gray-200 gap-4">
         {/* Rows per page selector */}
         <div className="flex items-center gap-2">
-          <p className="text-sm text-gray-700">Rows per page:</p>
+          <p className="text-sm font-semibold text-gray-700">Lignes par page :</p>
           <div className="relative">
             <select
               value={rowsPerPage}
@@ -187,7 +187,7 @@ const PermissionsTable = ({ permissions, sortBy, sortDir, onSortChange, currentP
         </div>
 
         {/* Summary text */}
-        <p className="text-sm text-slate-500">
+        <p className="text-sm font-semibold text-slate-500">
           Affichage de {toRecord} sur {totalCount}{" "}
           permissions
         </p>
