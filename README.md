@@ -2,8 +2,7 @@
 
 ## 🧾 Description
 
-Cette application a été développée dans le cadre du projet **"Développement d'une application pour la gestion des actions sur l'IVR"**.  
-Elle permet de gérer les utilisateurs, les rôles, les permissions ainsi que les actions liées aux **MSISDN**.
+Cette application permet de gérer les *utilisateurs*, les *rôles*, les *permissions* ainsi que les actions liées aux **MSISDN*.
 
 ---
 
@@ -18,7 +17,7 @@ Elle permet de gérer les utilisateurs, les rôles, les permissions ainsi que le
 - Attribution de rôles
 
 ### **Gestion des rôles et permissions**
-- Création et modification des rôles
+- Création ,modification et suppression des rôles
 - Un rôle regroupe plusieurs permissions
 - Attribution de permissions aux rôles
 
@@ -35,21 +34,43 @@ Elle permet de gérer les utilisateurs, les rôles, les permissions ainsi que le
 ## 🛠️ Technologies utilisées
 
 ### **Frontend**
-- React (Vite)
-- React Router DOM
-- TailwindCSS
+- React + TypeScript
 
 ### **Backend**
 - Spring Boot (Java/J2EE)
-- Spring Web
-- Spring Security
-- Spring Data JPA
-- Spring Boot Validation
-- Java Mail Sender
-- Lombok
-- Oracle JDBC Driver
 
 ### **Base de données**
 - Oracle
 
 ---
+
+## 📦 Dépendances utilisées
+
+### **Frontend**
+| Librairie            | Description                                               |
+|----------------------|-----------------------------------------------------------|
+| `react`              | Bibliothèque pour construire l'interface utilisateur      |
+| `react-router-dom`   | Gestion du routage côté client                            |
+| `tailwindcss`        | Framework CSS utilitaire pour le design                   |
+| `react-icons`        | Pack d'icônes SVG pour React                              |
+| `axios`              | Client HTTP pour appeler le backend                       |
+| `react-toastify`     | Affichage de notifications toast                          |
+
+### **Backend**
+| Dépendance Spring Boot         | Description                                       |
+|--------------------------------|---------------------------------------------------|
+| `spring-boot-starter-web`      | Création des endpoints REST                      |
+| `spring-boot-starter-security` | Sécurité de l'application (authentification)     |
+| `spring-boot-starter-data-jpa` | Persistance des données avec JPA                 |
+| `spring-boot-starter-validation` | Validation des entrées utilisateur              |
+| `spring-boot-starter-mail`     | Envoi de mails                                   |
+| `lombok`                       | Réduction du code répétitif                      |
+| `ojdbc8` / `oracle.jdbc.OracleDriver` | Connexion à la base Oracle                |
+
+### **Base de données**
+| Élément       | Description                                |
+|---------------|--------------------------------------------|
+| Oracle XE 11g | Système de gestion de base de données utilisé |
+
+---
+
