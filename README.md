@@ -2,7 +2,7 @@
 
 ## 🧾 Description
 
-Cette application permet de gérer les *utilisateurs*, les *rôles*, les *permissions* ainsi que les actions liées aux **MSISDN*.
+Cette application permet de gérer *les utilisateurs*, *les rôles*, *les permissions* ainsi que les actions liées aux *MSISDN*.
 
 ---
 
