@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import ProfileInput from "../components/ProfileInput";
+import ProfileInput from "../components/inputs/ProfileInput";
 import { formatTimestamp } from "../api/Api";
 import type { User } from "../types/types";
 import { HiOutlineUser, HiOutlineClock, HiOutlineShieldCheck } from "react-icons/hi";
