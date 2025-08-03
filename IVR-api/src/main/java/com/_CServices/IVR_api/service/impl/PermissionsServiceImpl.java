@@ -180,11 +180,7 @@ public class PermissionsServiceImpl implements PermissionsService {
     }
 
 
-    private int[] getRowBounds(Pageable pageable) {
-        int startRow = (int) pageable.getOffset(); // page * size
-        int endRow = startRow + pageable.getPageSize();
-        return new int[]{startRow, endRow};
-    }
+
 
 
 }

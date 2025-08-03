@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com._CServices.IVR_api.constant.Constants.DEFAULT_ROLE_NAME;
 
 
 @Service
@@ -83,9 +84,9 @@ public class UserServiceImpl implements UserService {
         @Transactional
         public UserResponse createUser(CreateUserRequest request) {
             if(null == request.getRoleName()){
-                request.setRoleName("DEFAULT_ROLE");
+                request.setRoleName(DEFAULT_ROLE_NAME);
             }
-            if(Objects.equals(request.getRoleName(), "DEFAULT_ROLE") &&
+            if(Objects.equals(request.getRoleName(), DEFAULT_ROLE_NAME) &&
                     null == roleRepository.findByName(request.getRoleName())){
                 Role role = Role.builder()
                         .name(request.getRoleName())
@@ -256,11 +257,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    private int[] getRowBounds(Pageable pageable) {
-        int startRow = (int) pageable.getOffset(); // page * size
-        int endRow = startRow + pageable.getPageSize();
-        return new int[]{startRow, endRow};
-    }
+
 
 
 }
