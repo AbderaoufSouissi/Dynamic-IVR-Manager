@@ -2,11 +2,11 @@
 
 import { TbLayoutDashboard } from "react-icons/tb";
 import { NavLink, useNavigate,  } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { getCurrentUser } from "../../service/AuthService";
 import { toastError, toastSuccess } from "../../service/ToastService";
 import type { User } from "../../types/types";
+import { BsPersonCircle } from "react-icons/bs";
 
 
 
@@ -58,7 +58,7 @@ const DashboardHeader = () => {
             >
               {/* User Avatar */}
               <div className="rounded-full overflow-hidden shadow-sm">
-                <FaUserCircle className="text-blue-700" size={40}/>
+                <BsPersonCircle className="text-blue-700" size={40}/>
               </div>
               
               {/* User Info */}
