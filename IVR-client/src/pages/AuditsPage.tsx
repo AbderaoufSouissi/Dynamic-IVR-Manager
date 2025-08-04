@@ -21,7 +21,6 @@ const AuditsPage = () => {
 
   const [audits, setAudits] = useState<Audit[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
   const isNumeric = (value: string) => /^[0-9]+$/.test(value);
 
