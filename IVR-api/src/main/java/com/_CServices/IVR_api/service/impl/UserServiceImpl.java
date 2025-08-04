@@ -237,7 +237,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (request.getUsername() != null && !request.getUsername().equals(userToUpdate.getUsername())) {
-            if (null != userRepository.findByEmail(request.getEmail())){
+            if (null != userRepository.findByEmail(request.getUsername())){
                 throw new ResourceAlreadyExistsException("Le nom d'utilisateur '" + request.getUsername() + "' est déjà utilisé.");
             }
             userToUpdate.setUsername(request.getUsername());
