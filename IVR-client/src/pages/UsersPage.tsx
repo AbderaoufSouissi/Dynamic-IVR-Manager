@@ -6,7 +6,6 @@ import { HiOutlineUserAdd, HiUserRemove } from "react-icons/hi";
 import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
 import { getUsers } from "../service/UserService";
 import type { User } from "../types/types";
-import { getCurrentUser } from "../service/AuthService";
 
 const UsersPage = () => {
   const [filters, setFilters] = useState({
@@ -40,7 +39,7 @@ const UsersPage = () => {
   const [totalElements, setTotalElements] = useState(0);
 
   const [users, setUsers] = useState<User[]>([]);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  // const [currentUser, setCurrentUser] = useState<User | null>(null);
 
 
   
@@ -89,14 +88,9 @@ const UsersPage = () => {
 
     try {
   const data = await getUsers(params);
-  console.log("Users fetched:", data);
 
-  const filteredUsers = currentUser
-    ? data.content.filter((user: User) => user.userId !== currentUser.userId)
-    : data.content;
-
-  setUsers(filteredUsers);
-  setTotalElements(currentUser ? data.totalElements - 1 : data.totalElements);
+setUsers(data.content);
+  setTotalElements(data.totalElements);
 } catch (err) {
   console.error("Erreur lors de la récupération des utilisateurs", err);
 }
@@ -110,18 +104,17 @@ const UsersPage = () => {
   );
 };
 
-  useEffect(() => {
-  const fetchCurrentUser = async () => {
-    try {
-      const user = await getCurrentUser();
-      setCurrentUser(user);
-    } catch (err) {
-      console.error("Erreur lors de la récupération de l'utilisateur connecté", err);
-    }
-  };
+//   useEffect(() => {
+//   const fetchCurrentUser = async () => {
+//     try {
+//       const user = await getCurrentUser();
+//     } catch (err) {
+//       console.error("Erreur lors de la récupération de l'utilisateur connecté", err);
+//     }
+//   };
 
-  fetchCurrentUser();
-}, []);
+//   fetchCurrentUser();
+// }, []);
 
   // Run fetchUsers on mount and on filters change with debounce
   useEffect(() => {
