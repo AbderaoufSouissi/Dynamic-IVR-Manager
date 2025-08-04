@@ -70,7 +70,8 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.type: TRACE
 
-
+cors:
+  allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:5173}
 
 server:
   port: ${SERVER_PORT:8080}
