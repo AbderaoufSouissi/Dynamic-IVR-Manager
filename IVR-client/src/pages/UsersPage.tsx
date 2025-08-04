@@ -18,7 +18,7 @@ const UsersPage = () => {
     updatedBy: "",
     createdAt: "",
     updatedAt: "",
-    role: "",
+    roleName: "",
   });
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -175,7 +175,7 @@ setUsers(data.content);
       updatedBy: "",
       createdAt: "",
       updatedAt: "",
-      role: "",
+      roleName: "",
     });
   };
 

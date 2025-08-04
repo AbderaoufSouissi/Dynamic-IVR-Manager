@@ -11,7 +11,7 @@ interface UserFiltersProps {
     updatedBy: string,
     createdAt: string,
     updatedAt: string,
-    role: string,
+    roleName: string,
   };
   onFilterChange: (name: string, value: string) => void;
   onResetFilters:()=>void
@@ -71,8 +71,8 @@ const UserFilter = ({ filters, onFilterChange, onResetFilters }: UserFiltersProp
             id="role-filter"
             type="text"
             placeholder="Filtrer par role"
-            value={filters.role}
-            onChange={(e) => onFilterChange("role", e.target.value)}
+            value={filters.roleName}
+            onChange={(e) => onFilterChange("roleName", e.target.value)}
             className={inputClass}
           />
         </div>
