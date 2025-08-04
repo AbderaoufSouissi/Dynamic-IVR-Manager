@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static com._CServices.IVR_api.constant.Constants.DEFAULT_ROLE_NAME;
+
 
 @Service
 @RequiredArgsConstructor
@@ -200,18 +202,18 @@ public class RoleServiceImpl implements RoleService {
     public void deleteRoleById(Long id) {
         log.info("Starting deletion of role with id: {}", id);
 
-        // 1. Find the role to delete
+
         Role roleToDelete = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " not found"));
 
-        // 2. Find the default role (must exist)
-        Role defaultRole = Optional.ofNullable(roleRepository.findByName("DEFAULT_ROLE"))
+
+        Role defaultRole = Optional.ofNullable(roleRepository.findByName(DEFAULT_ROLE_NAME))
                 .orElseThrow(() -> new IllegalStateException("DEFAULT_ROLE must exist in the system"));
 
-        // 3. Reassign users to DEFAULT_ROLE
+
         List<User> usersWithRole = userRepository.findUsersWithRole(id);
         if (!usersWithRole.isEmpty()) {
-            log.info("Reassigning {} users from role {} to DEFAULT_ROLE",
+            log.info("Reassigning {} users from role {} to default",
                     usersWithRole.size(), roleToDelete.getName());
 
             usersWithRole.forEach(user -> {
