@@ -2,6 +2,7 @@ package com._CServices.IVR_api.service.impl;
 
 import com._CServices.IVR_api.dto.response.PermissionsResponse;
 import com._CServices.IVR_api.entity.Permissions;
+import com._CServices.IVR_api.exception.ActionNotAllowedException;
 import com._CServices.IVR_api.repository.roles.RoleRepository;
 
 
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 import static com._CServices.IVR_api.constant.Constants.DEFAULT_ROLE_NAME;
+import static com._CServices.IVR_api.constant.Constants.SYSTEM_USERNAME;
 
 
 @Service
@@ -145,6 +147,10 @@ public class UserServiceImpl implements UserService {
         User userToDelete = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID " + id + " not found"));
 
+        if(isSystemUser(userToDelete.getUsername())){
+            throw new ActionNotAllowedException("Cette action est strictement interdite");
+        }
+
         Long userToDeleteId = userToDelete.getId();
         userRepository.delete(userToDelete);
 
@@ -165,6 +171,10 @@ public class UserServiceImpl implements UserService {
         User userToDelete = Optional.ofNullable(userRepository.findByEmail(email))
                 .orElseThrow(() -> new ResourceNotFoundException("User with Email : "+email+" Not Found"));
 
+        if(isSystemUser(userToDelete.getUsername())){
+            throw new ActionNotAllowedException("Cette action est strictement interdite");
+        }
+
         Long userToDeleteId = userToDelete.getId();
 
         userRepository.delete(userToDelete);
@@ -183,6 +193,9 @@ public class UserServiceImpl implements UserService {
         log.info("inside deleteUserByUsername()");
         User userToDelete = Optional.ofNullable(userRepository.findByUsername(username))
                 .orElseThrow(() -> new ResourceNotFoundException("User with Username : "+username+" Not Found"));
+        if(isSystemUser(username)){
+            throw new ActionNotAllowedException("Cette action est strictement interdite");
+        }
 
         Long userToDeleteId = userToDelete.getId();
         userRepository.delete(userToDelete);
@@ -212,6 +225,9 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUser(UpdateUserRequest request, Long id) {
         User userToUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        if(isSystemUser(userToUpdate.getUsername())){
+            throw new ActionNotAllowedException("Cette action est strictement interdite");
+        }
 
         if (request.getEmail() != null && !request.getEmail().equals(userToUpdate.getEmail())) {
             if (null != userRepository.findByEmail(request.getEmail())){
@@ -264,6 +280,14 @@ public class UserServiceImpl implements UserService {
     public long getUsersByActive(int active) {
         return userRepository.countByActive(active);
     }
+
+
+
+    private boolean isSystemUser(String username) {
+        return username.equals(SYSTEM_USERNAME);
+
+    }
+
 
 
 

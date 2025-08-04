@@ -121,14 +121,15 @@ if (formData.active !== null) {
 
       navigate("/admin/users");
     } catch (error: any) {
-      toastError("Erreur lors de la soumission du formulaire" )
+      const message =
+    error?.response?.data?.error || 
+    error?.message ||                
+    "Une erreur est survenue.";  
+      toastError(message )
   console.error("Erreur lors de la soumission du formulaire :", error);
   
 
-  const message =
-    error?.response?.data?.error || 
-    error?.message ||                
-    "Une erreur est survenue.";     
+     
 
   setFormError(message);
 

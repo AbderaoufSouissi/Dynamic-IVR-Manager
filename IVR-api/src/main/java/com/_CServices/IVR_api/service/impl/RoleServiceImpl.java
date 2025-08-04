@@ -1,5 +1,6 @@
 package com._CServices.IVR_api.service.impl;
 
+import com._CServices.IVR_api.exception.ActionNotAllowedException;
 import com._CServices.IVR_api.repository.permissions.PermissionsRepository;
 import com._CServices.IVR_api.dto.response.PagedResponse;
 import com._CServices.IVR_api.filter.RoleFilter;
@@ -21,7 +22,7 @@ import com._CServices.IVR_api.service.RoleService;
 import com._CServices.IVR_api.utils.SortUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 import static com._CServices.IVR_api.constant.Constants.DEFAULT_ROLE_NAME;
+import static com._CServices.IVR_api.constant.Constants.SYSTEM_ROLE_NAME;
 
 
 @Service
@@ -52,7 +54,7 @@ public class RoleServiceImpl implements RoleService {
                 SortUtils.getAllowedRoleFields(),
                 "role_id"
         );
-        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);;
+        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
 
         List<RoleResponse> roles = roleRepository.findRolesWithFilters(filter, offset, size, sanitizedSortBy, sanitizedSortDir);
         int totalElements = roleRepository.countRolesWithFilters(filter);
@@ -169,6 +171,9 @@ public class RoleServiceImpl implements RoleService {
 
         Role roleToUpdate = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " not found"));
+        if(isSystemRole(roleToUpdate.getName()) || isDefaultRole(roleToUpdate.getName())){
+            throw new ActionNotAllowedException("Cette Action est Strictement Interdite");
+        }
 
         roleToUpdate.setName(roleDto.getName());
 
@@ -205,7 +210,9 @@ public class RoleServiceImpl implements RoleService {
 
         Role roleToDelete = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " not found"));
-
+    if(isDefaultRole(roleToDelete.getName()) || isSystemRole(roleToDelete.getName())){
+        throw new ActionNotAllowedException("Cette Action est strictement Interdite");
+    }
 
         Role defaultRole = Optional.ofNullable(roleRepository.findByName(DEFAULT_ROLE_NAME))
                 .orElseThrow(() -> new IllegalStateException("DEFAULT_ROLE must exist in the system"));
@@ -250,6 +257,9 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public void deleteRoleByName(String roleName) {
         log.info("inside deleteRoleByName()");
+        if(isSystemRole(roleName)){
+            throw new ActionNotAllowedException("Le role system ne peut pas etre supprimé");
+        }
 
         Role roleToDelete = Optional.ofNullable(roleRepository.findByName(roleName))
                         .orElseThrow(()-> new ResourceNotFoundException("Role with name : "+roleName+" not found"));
@@ -266,6 +276,14 @@ public class RoleServiceImpl implements RoleService {
         );
 
 
+    }
+
+    private boolean isSystemRole(String name) {
+        return name.equals(SYSTEM_ROLE_NAME);
+    }
+
+    private boolean isDefaultRole(String name) {
+        return name.equals(DEFAULT_ROLE_NAME);
     }
 
 

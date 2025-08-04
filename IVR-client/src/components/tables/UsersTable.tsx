@@ -7,7 +7,7 @@ import { formatTimestamp } from "../../api/Api";
 import { HiChevronDown } from "react-icons/hi";
 import ToggleSwitch from "../buttons/ToggleSwitch";
 import { updateUser } from "../../service/UserService";
-import { toastSuccess } from "../../service/ToastService";
+import { toastError, toastSuccess } from "../../service/ToastService";
 
 interface UsersTableProps {
   itemsPerPage?: number;
@@ -110,7 +110,12 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
     // Optimistically update UI
     onUserStatusChange(userId, newStatus);
     newStatus == true ? toastSuccess(`L'utilisateur ${updatedUser.username} est maintenant Activé`) : toastSuccess(`L'utilisateur ${updatedUser.username} est maintenant Désactivé`);
-  } catch (error) {
+  } catch (error:any) {
+    const message =
+    error?.response?.data?.error || 
+    error?.message ||                
+      "Une erreur est survenue.";
+    toastError(message)
     console.error("Failed to update user status", error);
   }
 };

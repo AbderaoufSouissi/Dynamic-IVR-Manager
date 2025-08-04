@@ -87,14 +87,16 @@ if (id) {
       triggerRefresh()
       navigate("/admin/roles");
     } catch (error: any) {
+      const message =
+    error?.response?.data?.error || 
+    error?.message ||                
+    "Une erreur est survenue.";  
+    
       console.error("Erreur lors de la soumission du formulaire :", error);
-      toastError("Erreur lors de la soumission du formulaire")
+      toastError(message )
   
   // Try to extract error message from response
-  const message =
-    error?.response?.data?.error || // e.g. from Spring Boot's ResponseEntity
-    error?.message ||                 // fallback: JS error message
-    "Une erreur est survenue.";      // ultimate fallback
+   
 
   setFormError(message);
     }
