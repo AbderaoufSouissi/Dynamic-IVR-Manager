@@ -24,7 +24,7 @@ IVR-client/.vite/
 
 # Local environment variables
 IVR-client/.env
-IVR-client/.env.*
+
 
 # npm debug logs
 IVR-client/npm-debug.log*
