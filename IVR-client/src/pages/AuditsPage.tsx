@@ -12,8 +12,8 @@ const AuditsPage = () => {
   const [filters, setFilters] = useState({
     id: "",
     userId: "",
-    action: "",
-    entity: "",
+    actionType: "",
+    entityType: "",
     entityId: "",
     msisdn: "",
     date: "",
@@ -142,8 +142,8 @@ const AuditsPage = () => {
     setFilters({
       id: "",
       userId: "",
-      action: "",
-      entity: "",
+      actionType: "",
+      entityType: "",
       entityId: "",
       msisdn: "",
       date: "",

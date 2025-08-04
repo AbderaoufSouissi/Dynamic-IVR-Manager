@@ -4,8 +4,8 @@ interface AuditFilterProps {
   filters: {
     id: string;
     userId: string;
-    action: string;
-    entity: string;
+    actionType: string;
+    entityType: string;
     entityId: string;
     msisdn: string
     date: string;
@@ -54,15 +54,15 @@ const AuditFilter = ({ filters, onFilterChange, onResetFilters }: AuditFilterPro
 
         {/* Action Type */}
         <div>
-          <label htmlFor="action-filter" className={labelClass}>
+          <label htmlFor="actionType-filter" className={labelClass}>
             Type d'action
           </label>
           <input
-            id="action-filter"
+            id="actionType-filter"
             type="text"
             placeholder="Filtrer par type d'action"
-            value={filters.action}
-            onChange={(e) => onFilterChange("action", e.target.value)}
+            value={filters.actionType}
+            onChange={(e) => onFilterChange("actionType", e.target.value)}
             className={inputClass}
           />
         </div>
@@ -89,8 +89,8 @@ const AuditFilter = ({ filters, onFilterChange, onResetFilters }: AuditFilterPro
             id="entity-filter"
             type="text"
             placeholder="Filtrer par type d'entité"
-            value={filters.entity}
-            onChange={(e) => onFilterChange("entity", e.target.value)}
+            value={filters.entityType}
+            onChange={(e) => onFilterChange("entityType", e.target.value)}
             className={inputClass}
           />
         </div>
