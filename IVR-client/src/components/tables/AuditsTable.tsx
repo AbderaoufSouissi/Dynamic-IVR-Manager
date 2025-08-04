@@ -2,6 +2,7 @@ import type { Audit } from "../../types/types";
 import { MdArrowDropDown, MdArrowDropUp, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { formatTimestamp } from "../../api/Api";
 import { HiChevronDown } from "react-icons/hi";
+import { PiEmpty } from "react-icons/pi";
 
 interface AuditsTableProps {
   itemsPerPage?: number;
@@ -113,16 +114,16 @@ const AuditsTable = ({ audits, sortBy, sortDir, onSortChange, currentPage, onPag
               <td className={`px-4 py-3 font-medium ${audit.actionType == null ? "text-black" : "text-slate-800"}`}>
                 {audit.actionType ?? "—"}
               </td>
-              <td className={`px-4 py-3 ${audit.userId == null ? "text-black" : "text-slate-800"}`}>
+              <td className={`px-9 py-3 ${audit.userId == null ? "text-black" : "text-slate-800"}`}>
                 {audit.userId ?? "—"}
               </td>
-              <td className={`px-4 py-3 ${audit.msisdn == null ? "text-black" : "text-slate-800"}`}>
-                {audit.msisdn ?? "—"}
+              <td className="px-4 py-3 text-slate-800">
+                {audit.msisdn ?? <PiEmpty size={30}/>}
               </td>
               <td className={`px-4 py-3 ${audit.actionTimestamp == null ? "text-black" : "text-slate-800"}`}>
                 {audit.actionTimestamp ? formatTimestamp(audit.actionTimestamp) : "—"}
               </td>
-              <td className={`px-4 py-3 ${audit.entityId == null ? "text-black" : "text-slate-800"}`}>
+              <td className={`px-12 py-3 ${audit.entityId == null ? "text-black" : "text-slate-800"}`}>
                 {audit.entityId ?? "—"}
               </td>
             </tr>

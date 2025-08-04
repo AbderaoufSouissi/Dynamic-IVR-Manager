@@ -1,8 +1,10 @@
 import type { Role } from "../../types/types";
-import { MdArrowDropDown, MdArrowDropUp, MdDelete, MdEdit, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { MdArrowDropDown, MdArrowDropUp, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { HiChevronDown } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
+import { FaPencil } from "react-icons/fa6";
+import { BsTrash3 } from "react-icons/bs";
 
 interface RolesTableProps {
   roles: Role[];
@@ -136,10 +138,10 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
                       pathname: `/admin/roles/update/${role.roleId}`,
                       search: "", // remove search params
                     })}
-                    className="text-blue-600 hover:underline cursor-pointer"
+                    className="text-blue-600 cursor-pointer"
                   >
-                    <MdEdit />
-                    Éditer
+                    <FaPencil size={30}/>
+                   
                   </button>
                   <span className="text-slate-300">|</span>
                   <button
@@ -149,10 +151,10 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
                         search: "", // clears query params like ?page=...&sort=...
                       })
                     }
-                    className="text-red-600 hover:underline cursor-pointer"
+                    className="text-red-600 cursor-pointer"
                   >
-                    <MdDelete />
-                    Supprimer
+                    <BsTrash3 size={30}/>
+
                   </button>
                 </div>
               </td>

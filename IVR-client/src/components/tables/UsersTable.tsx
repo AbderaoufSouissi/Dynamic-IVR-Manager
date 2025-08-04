@@ -1,5 +1,5 @@
 import type { User } from "../../types/types";
-import { MdEdit, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { MdArrowDropUp, MdArrowDropDown } from "react-icons/md";
 
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import { HiChevronDown } from "react-icons/hi";
 import ToggleSwitch from "../buttons/ToggleSwitch";
 import { updateUser } from "../../service/UserService";
 import { toastError, toastSuccess } from "../../service/ToastService";
+import { FaPencil } from "react-icons/fa6";
 
 interface UsersTableProps {
   itemsPerPage?: number;
@@ -185,14 +186,14 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
               <td className="px-4 py-3 whitespace-nowrap text-slate-800">
                 <ToggleSwitch checked={user.active} onToggle={() => handleToggleStatus(user.userId, !user.active)}/>
               </td>
-              <td className="px-4 py-3 font-medium text-blue-600">
-                <div className="flex items-center gap-2">
+              <td className="px-4 py-3 font-medium">
+                <div className="flex items-center ">
                   <button
                     onClick={() => navigate(`update/${user.userId}`, { replace: true })}
-                    className="flex items-center gap-1 text-blue-600 hover:underline cursor-pointer"
+                    className="flex items-center text-blue-600 cursor-pointer"
                   >
-                    <MdEdit />
-                    Éditer
+                    <FaPencil size={30}/>
+                
                   </button>
 
                   {/* <span className="text-slate-300">|</span>

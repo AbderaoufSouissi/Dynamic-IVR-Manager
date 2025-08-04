@@ -1,8 +1,9 @@
 import type { Permission } from "../../types/types";
-import { MdArrowDropDown, MdArrowDropUp, MdDelete, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { MdArrowDropDown, MdArrowDropUp, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
 import { HiChevronDown } from "react-icons/hi";
+import { BsTrash3 } from "react-icons/bs";
 
 interface PermissionsTableProps {
   permissions: Permission[];
@@ -119,18 +120,17 @@ const PermissionsTable = ({ permissions, sortBy, sortDir, onSortChange, currentP
               <td className="px-4 py-3 text-slate-800">{permission.createdBy}</td>
               <td className="px-4 py-3 text-slate-800">{formatTimestamp(permission.updatedAt)}</td>
               <td className="px-4 py-3 text-slate-800">{permission.updatedBy}</td>
-              <td className="px-4 py-3 font-medium text-blue-600">
-                <div className="flex items-center gap-2">
+              <td className="px-4 py-3 font-medium">
+                {/* <div className="flex"> */}
                   <button
-                    onClick={() =>
+                    onClick={() =>  
                       navigate(`/admin/permissions/delete/${permission.permissionId}`, { replace: true })
                     }
                     className="text-red-600 hover:underline cursor-pointer"
                   >
-                    <MdDelete />
-                    Supprimer
+                    <BsTrash3 size={30} />
                   </button>
-                </div>
+                {/* </div> */}
               </td>
             </tr>
           ))}
