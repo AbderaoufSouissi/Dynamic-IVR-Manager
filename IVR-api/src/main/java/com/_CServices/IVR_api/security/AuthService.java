@@ -33,7 +33,7 @@ public class AuthService {
     public void sendPasswordResetEmail(String email) {
         // Check if user exists
         User user = Optional.ofNullable(userRepository.findByEmail(email))
-                .orElseThrow(() -> new ApiException("User with this email does not exist"));
+                .orElseThrow(() -> new ApiException("Aucun utilisateur n’est associé à cette adresse e-mail."));
 
         // Generate token
         String token = tokenService.generateResetToken(email);
