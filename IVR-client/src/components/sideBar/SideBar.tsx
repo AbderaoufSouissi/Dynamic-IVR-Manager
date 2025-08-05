@@ -44,7 +44,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
 
   return (
     <>
-    <aside className="flex flex-col w-64 bg-white border-r border-gray-200 min-h-screen shadow-lg">
+    <aside className="flex flex-col w-50 bg-white border-r border-gray-200 min-h-screen shadow-lg">
   
 
       {/* Navigation */}
