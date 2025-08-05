@@ -20,7 +20,7 @@ const AuditsPage = () => {
   });
 
   const [audits, setAudits] = useState<Audit[]>([]);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  // const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const isNumeric = (value: string) => /^[0-9]+$/.test(value);
 
@@ -98,7 +98,7 @@ const AuditsPage = () => {
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [filters, refreshTrigger, searchParams, page, pageSize, sortBy, sortDir]);
+  }, [filters, searchParams, page, pageSize, sortBy, sortDir]);
 
   const handleFilterChange = (name: string, value: string) => {
     setFilters((prevFilters) => ({
