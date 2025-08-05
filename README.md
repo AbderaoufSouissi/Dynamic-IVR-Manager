@@ -115,7 +115,7 @@ SERVER_PORT=8080
 - **SPRING_DATASOURCE_*** : Informations de connexion à la base de données Oracle
 - **SPRING_EMAIL_USERNAME** : Adresse email utilisée pour envoyer les emails de réinitialisation de mot de passe
 - **SPRING_EMAIL_PASSWORD** : Mot de passe d’application généré via Google (⚠️ ne pas utiliser le mot de passe Gmail classique)
-- **SPRING_MAIL_VERIFY_HOST** : Lien complet vers le frontend pour la vérification des emails (ex. `http://localhost:8080/reset-password`)
+- **SPRING_MAIL_VERIFY_HOST** : Lien complet du hote pour la vérification des emails (ex. `http://localhost:8080/reset-password`)
 - **CORS_ALLOWED_ORIGIN** : Origine autorisée pour les requêtes CORS depuis le frontend (ex. `http://localhost:5173`)
 - **SERVER_PORT** : Port utilisé par le backend (par défaut `8080`)
 
