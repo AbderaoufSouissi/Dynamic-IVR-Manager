@@ -30,14 +30,6 @@ public class WebSecurityConfig {
     private final UserDetailsService userDetailsService;
     private final CorsConfigurationSource corsConfigurationSource;
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .csrf(csrf -> csrf.disable())// Define this bean separately
-//                .authorizeHttpRequests(auth -> auth
-//                        .anyRequest().permitAll() // <-- Allow everything
-//                ).build();
-//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -46,6 +38,11 @@ public class WebSecurityConfig {
                 .cors(cors-> cors.configurationSource(corsConfigurationSource))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/",
+                                "/index.html",           // main HTML
+                                "/static/**",            // static resources
+                                "/assets/**",            // Vite assets folder
+                                "/api/public/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/v2/api-docs/**",
