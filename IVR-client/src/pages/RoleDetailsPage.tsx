@@ -1,18 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaLock } from "react-icons/fa6";
+import { getAllPermissions } from '../service/PermissionService';
+import type { Permission } from '../types/types';
 
 const RoleDetailsPage = () => {
   const [roleId] = useState('admin-001'); // Read-only
   const [roleName, setRoleName] = useState('Administrator');
+  const [loading, setLoading] = useState(true)
 
-  const [permissions, setPermissions] = useState({
-    createContent: true,
-    editContent: true,
-    deleteContent: true,
-    publishContent: false,
-    manageUsers: false,
-    accessSettings: false
-  });
+  useEffect(() => {
+      getAllPermissions()
+        .then(res => {
+          setPermissions(res);
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error("Erreur lors du chargement des permissions :", error);
+          setLoading(false);
+        });
+    }, []);
+
+  const [permissions, setPermissions] = useState<Permission[]>([]);
 
   const permissionsList = [
     { key: 'createContent', title: 'Create Content', description: 'Allows users to create new content.' },
@@ -104,10 +112,10 @@ const RoleDetailsPage = () => {
                 </p>
                 <div className="mt-6 border border-gray-300 rounded-lg">
                   <ul className="divide-y divide-gray-300">
-                    {permissionsList.map((permission) => (
-                      <li key={permission.key} className="p-4 flex justify-between items-center">
+                    {permissions.map((permission) => (
+                      <li key={permission.permissionId} className="p-4 flex justify-between items-center">
                         <div>
-                          <h3 className="font-medium text-gray-900">{permission.title}</h3>
+                          <h3 className="font-medium text-gray-900">{permission.name}</h3>
                           <p className="text-sm text-gray-600">{permission.description}</p>
                         </div>
                         {/* Toggle */}
