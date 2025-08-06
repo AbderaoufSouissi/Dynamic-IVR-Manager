@@ -29,7 +29,7 @@ interface UsersTableProps {
 const userTableHeads = [
   { key: "user_id", label: "ID" },
   { key: "email", label: "Nom complet" },
-  { key: "Nom d'utilisateur", label: "Username" },
+  { key: "username", label: "Username" },
   { key: "role_id", label: "Role" },
   { key: "created_at", label: "Date de création" },
   { key: "created_by_id", label: "Créé par" },
@@ -124,7 +124,13 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
 
  
   return (
+    <>
+     <p className="text-sm text-left font-semibold text-gray-700">
+          Affichage de {toRecord} sur {totalCount}{" "}
+          utilsateurs
+      </p>
     <div className="overflow-x-auto max-w-[100vw] rounded-xl shadow border border-gray-200 bg-white">
+     
       <table className="w-full text-sm">
         <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
           <tr>
@@ -132,7 +138,7 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
               <th
                 key={key}
                 onClick={() => handleSort(key)}
-                className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer group"
+                className="px-1 py-1 text-left text-xs font-medium uppercase tracking-wider cursor-pointer group"
               >
                 <div className="flex items-center w-fit">
                   {label}
@@ -143,7 +149,7 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
                 </div>
               </th>
             ))}
-            <th className="px-4 py-3 text-left font-semibold text-gray-600">Actions</th>
+            <th className="px-1 py-3 text-left font-semibold text-gray-600">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -152,10 +158,10 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
               key={user.userId}
               className="border-t border-gray-200 hover:bg-gray-50 transition"
             >
-              <td className="px-4 py-3 font-medium whitespace-nowrap text-slate-800">
+              <td className="px-1 py-1 font-medium whitespace-nowrap text-slate-800">
                 {user.userId}
               </td>
-              <td className="px-4 py-3 whitespace-nowrap">
+              <td className="px-1 py-1 whitespace-nowrap">
                 <div className="flex items-center">
                   <div>
                     <div className="text-sm font-medium text-gray-900">
@@ -165,55 +171,45 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
                   </div>
                 </div>
               </td>
-              <td className="px-4 py-3 font-medium whitespace-nowrap text-slate-800">
+              <td className="px-1 py-1 font-medium whitespace-nowrap text-slate-800">
                 {user.username}
               </td>
-              <td className="px-4 py-3 font-medium whitespace-nowrap text-slate-800">
+              <td className="px-1 py-1 font-medium whitespace-nowrap text-slate-800">
                 {user.roleName}
               </td>
-              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
+              <td className="px-1 py-1 whitespace-nowrap text-slate-800">
                 {formatTimestamp(user.createdAt)}
               </td>
-              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
+              <td className="px-1 py-1 whitespace-nowrap text-slate-800">
                 {user.createdBy}
               </td>
-              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
+              <td className="px-1 py-1 whitespace-nowrap text-slate-800">
                 {formatTimestamp(user.updatedAt)}
               </td>
-              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
+              <td className="px-1 py-1 whitespace-nowrap text-slate-800">
                 {user.updatedBy}
               </td>
-              <td className="px-4 py-3 whitespace-nowrap text-slate-800">
+              <td className="px-1 py-1 whitespace-nowrap text-slate-800">
                 <ToggleSwitch checked={user.active} onToggle={() => handleToggleStatus(user.userId, !user.active)}/>
               </td>
-              <td className="px-4 py-3 font-medium">
-                <div className="flex items-center ">
-                  <button
-                    onClick={() => navigate(`update/${user.userId}`, { replace: true })}
-                    className="flex items-center text-blue-600 cursor-pointer"
-                  >
-                    <FaPencil size={30}/>
-                
-                  </button>
+              <td className="px-1 py-1 font-medium text-center">
+  <div className="flex items-center justify-center h-full">
+    <button
+      onClick={() => navigate(`update/${user.userId}`, { replace: true })}
+      className="text-blue-600 hover:text-blue-800 transition cursor-pointer"
+    >
+      <FaPencil size={20} />
+    </button>
+  </div>
+</td>
 
-                  {/* <span className="text-slate-300">|</span>
-
-                  <button
-                    onClick={() => navigate(`/admin/users/delete/${user.userId}, { replace: true }`)}
-                    className="flex items-center gap-1 text-red-600 hover:underline cursor-pointer"
-                  >
-                    <MdDelete />
-                    Supprimer
-                  </button> */}
-                </div>
-              </td>
             </tr>
           ))}
         </tbody>
       </table>
 
       {/* Pagination + Rows per page */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-4 p-4 border-t border-gray-200 gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-2 p-2 border-t border-gray-200 gap-4">
         {/* Rows per page selector */}
         <div className="flex items-center gap-2">
           <p className="text-sm font-semibold text-gray-700">Lignes par page :</p>
@@ -270,13 +266,11 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
         </div>
 
         {/* Displayed range */}
-        <p className="text-sm font-semibold text-slate-500">
-          Affichage de {toRecord} sur {totalCount}{" "}
-          utilsateurs
-        </p>
+        
       </div>
 
-    </div>
+      </div>
+      </>
   );
 };
 

@@ -6,9 +6,25 @@ import { HiOutlineUserAdd, HiUserRemove } from "react-icons/hi";
 import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
 import { getUsers } from "../service/UserService";
 import type { User } from "../types/types";
+import AddButton from "../components/buttons/AddButton";
+import PageHeader from "../components/header/PageHeader";
 
 const UsersPage = () => {
   const [filters, setFilters] = useState({
+    username: "",
+    email: "",
+    id: "",
+    firstName: "",
+    lastName: "",
+    createdBy: "",
+    updatedBy: "",
+    createdAt: "",
+    updatedAt: "",
+    roleName: "",
+  });
+
+
+  const [appliedFilters, setAppliedFilters] = useState({
     username: "",
     email: "",
     id: "",
@@ -39,7 +55,8 @@ const UsersPage = () => {
   const [totalElements, setTotalElements] = useState(0);
 
   const [users, setUsers] = useState<User[]>([]);
-  // const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+ 
 
 
   
@@ -75,7 +92,7 @@ const UsersPage = () => {
   );
 
   const fetchUsers = async () => {
-    const validatedFilters = validateFilters(filters);
+    const validatedFilters = validateFilters(appliedFilters);
     if (validatedFilters === null) return;
 
     const params = {
@@ -104,26 +121,14 @@ setUsers(data.content);
   );
 };
 
-//   useEffect(() => {
-//   const fetchCurrentUser = async () => {
-//     try {
-//       const user = await getCurrentUser();
-//     } catch (err) {
-//       console.error("Erreur lors de la récupération de l'utilisateur connecté", err);
-//     }
-//   };
 
-//   fetchCurrentUser();
-// }, []);
-
-  // Run fetchUsers on mount and on filters change with debounce
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       fetchUsers();
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [filters, refreshTrigger, searchParams, page, pageSize, sortBy, sortDir]);
+  }, [appliedFilters, refreshTrigger, searchParams, page, pageSize, sortBy, sortDir]);
 
   const handleSortChange = (field: string) => {
     const isSameField = field === sortBy;
@@ -164,8 +169,13 @@ setUsers(data.content);
 
   const navigate = useNavigate();
 
-  const resetFilters = () => {
-    setFilters({
+  const handleApplyFilters = () => {
+    setAppliedFilters({ ...filters });
+    setPage(0); // Reset to first page when applying new filters
+  };
+
+ const resetFilters = () => {
+    const emptyFilters = {
       id: "",
       username: "",
       email: "",
@@ -176,43 +186,50 @@ setUsers(data.content);
       createdAt: "",
       updatedAt: "",
       roleName: "",
-    });
+    };
+    setFilters(emptyFilters);
+    setAppliedFilters(emptyFilters);
+    setPage(0); // Reset to first page when resetting filters
   };
 
   return (
     <>
       <div>
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-3xl font-bold text-slate-900">
-            Gestion des utilisateurs
-          </p>
-          <button
-            onClick={() => navigate("/admin/users/create")}
-            className="cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl min-h-[50px] flex items-center justify-center"
-          >
-            <HiOutlineUserAdd size={20} className="mr-2" />
-            Ajouter un utilisateur
-          </button>
-        </div>
+        
+        <PageHeader title={"Gestion des utilisateurs"}/>
 
-        <UserFilter
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onResetFilters={resetFilters}
-        />
-        {users.length != 0 ? (
+        <div className="flex justify-between items-center mb-2 gap-2">
+  <button
+    onClick={() => setShowFilters((prev) => !prev)}
+    className=" cursor-pointer px-2 py-1 text-sm font-semibold rounded-lg border transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg bg-gray-100 text-gray-800 hover:scale-[1.01] active:scale-[0.98] border-gray-300 hover:bg-gray-200"
+  >
+    {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
+  </button>
+
+
+          <AddButton onClick={() => navigate("/admin/users/create")} icon={HiOutlineUserAdd} label={"Créer Nouveau"}/>
+</div>
+
+        {showFilters && (
+          <UserFilter
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onResetFilters={resetFilters} onApplyFilters={handleApplyFilters}          />
+        )}
+
+        {users.length !== 0 ? (
           <UsersTable
             users={users}
             onUserStatusChange={handleUserStatusChange}
             sortBy={sortBy}
             sortDir={sortDir}
             onSortChange={handleSortChange}
-            currentPage={page + 1} // backend is 0-based, UI 1-based
+            currentPage={page + 1}
             onPageChange={(newPage) => setPage(newPage - 1)}
             totalCount={totalElements}
             onRowsPerPageChange={(size) => {
               setPageSize(size);
-              setPage(0); // reset page when page size changes
+              setPage(0);
             }}
             rowsPerPage={pageSize}
           />
@@ -225,7 +242,6 @@ setUsers(data.content);
       </div>
 
       <Outlet context={{ triggerRefresh }} />
-    </>
-  );
+    </>  );
 };
 export default UsersPage;
