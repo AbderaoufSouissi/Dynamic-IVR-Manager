@@ -8,7 +8,7 @@ import { HiChevronDown } from "react-icons/hi";
 import ToggleSwitch from "../buttons/ToggleSwitch";
 import { updateUser } from "../../service/UserService";
 import { toastError, toastSuccess } from "../../service/ToastService";
-import { FaPencil } from "react-icons/fa6";
+import { FaEye, FaPencil } from "react-icons/fa6";
 
 interface UsersTableProps {
   itemsPerPage?: number;
@@ -149,7 +149,9 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
                 </div>
               </th>
             ))}
-            <th className="px-1 py-3 text-left font-semibold text-gray-600">Actions</th>
+            <th className="px-4 py-3 text-center font-semibold text-gray-600">
+  Actions
+</th>
           </tr>
         </thead>
         <tbody>
@@ -193,7 +195,19 @@ const UsersTable = ({users, onUserStatusChange, sortBy, sortDir, onSortChange, c
                 <ToggleSwitch checked={user.active} onToggle={() => handleToggleStatus(user.userId, !user.active)}/>
               </td>
               <td className="px-1 py-1 font-medium text-center">
-  <div className="flex items-center justify-center h-full">
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                        onClick={() =>
+                          navigate({
+                            pathname: `/admin/users/edit/${user.userId}`,
+                            search: "",
+                          })
+                        }
+                        className="text-slate-700 hover:text-slate-900 transition"
+                        title="Voir"
+                      >
+                        <FaEye size={20} />
+                      </button>
     <button
       onClick={() => navigate(`update/${user.userId}`, { replace: true })}
       className="text-blue-600 hover:text-blue-800 transition cursor-pointer"
