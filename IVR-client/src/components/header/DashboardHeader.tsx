@@ -37,7 +37,7 @@ const DashboardHeader = () => {
 
   return (
     <header className="flex-shrink-0 bg-white/80 backdrop-blur-lg shadow-sm border-b border-gray-200">
-      <div className="px-6 py-4">
+      <div className="px-4">
         <div className="flex items-center justify-between">
           {/* Left: Dashboard Icon + Title */}
           <div className="flex items-center gap-3">
