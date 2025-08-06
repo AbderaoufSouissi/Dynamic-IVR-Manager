@@ -38,7 +38,7 @@ const UserFilter = ({
           <input
             id="id-filter"
             type="text"
-            placeholder="ID"
+            placeholder="Filtrer par ID"
             value={filters.id}
             onChange={(e) => onFilterChange("id", e.target.value)}
             className={inputClass}
@@ -52,7 +52,7 @@ const UserFilter = ({
           <input
             id="username-filter"
             type="text"
-            placeholder="Username"
+            placeholder="Filtrer par username"
             value={filters.username}
             onChange={(e) => onFilterChange("username", e.target.value)}
             className={inputClass}
@@ -66,7 +66,7 @@ const UserFilter = ({
           <input
             id="email-filter"
             type="email"
-            placeholder="Email"
+            placeholder="Filtrer par email"
             value={filters.email}
             onChange={(e) => onFilterChange("email", e.target.value)}
             className={inputClass}
@@ -80,7 +80,7 @@ const UserFilter = ({
           <input
             id="role-filter"
             type="text"
-            placeholder="Role"
+            placeholder="Filtrer par role"
             value={filters.roleName}
             onChange={(e) => onFilterChange("roleName", e.target.value)}
             className={inputClass}
@@ -94,7 +94,7 @@ const UserFilter = ({
           <input
             id="firstname-filter"
             type="text"
-            placeholder="Prénom"
+            placeholder="Filtrer par prénom"
             value={filters.firstName}
             onChange={(e) => onFilterChange("firstName", e.target.value)}
             className={inputClass}
@@ -108,7 +108,7 @@ const UserFilter = ({
           <input
             id="lastname-filter"
             type="text"
-            placeholder="Nom"
+            placeholder="Filtrer par nom"
             value={filters.lastName}
             onChange={(e) => onFilterChange("lastName", e.target.value)}
             className={inputClass}
@@ -123,7 +123,7 @@ const UserFilter = ({
           <input
             id="createdBy-filter"
             type="text"
-            placeholder="Créé par"
+            placeholder="Filtrer par créateur"
             value={filters.createdBy}
             onChange={(e) => onFilterChange("createdBy", e.target.value)}
             className={inputClass}
@@ -137,7 +137,7 @@ const UserFilter = ({
           <input
             id="updatedBy-filter"
             type="text"
-            placeholder="Modifié par"
+            placeholder="Filtrer par modificateur"
             value={filters.updatedBy}
             onChange={(e) => onFilterChange("updatedBy", e.target.value)}
             className={inputClass}
@@ -151,7 +151,7 @@ const UserFilter = ({
           <input
             id="createdAt-filter"
             type="text"
-            placeholder="2020-07-28"
+            placeholder="ex: 2020-07-28"
             value={filters.createdAt}
             onChange={(e) => onFilterChange("createdAt", e.target.value)}
             className={inputClass}
@@ -160,12 +160,12 @@ const UserFilter = ({
 
         <div className="md:col-span-2">
           <label htmlFor="updatedAt-filter" className={labelClass}>
-            Date modif.
+            Date modification
           </label>
           <input
             id="updatedAt-filter"
             type="text"
-            placeholder="2020-07-28"
+            placeholder="ex: 2020-07-28"
             value={filters.updatedAt}
             onChange={(e) => onFilterChange("updatedAt", e.target.value)}
             className={inputClass}
