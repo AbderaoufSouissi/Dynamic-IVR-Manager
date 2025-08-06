@@ -37,16 +37,16 @@ const DashboardHeader = () => {
 
   return (
     <header className="flex-shrink-0 bg-white/80 backdrop-blur-lg shadow-sm border-b border-gray-200">
-      <div className="px-4">
+      <div className="px-2">
         <div className="flex items-center justify-between">
-          {/* Left: Dashboard Icon + Title */}
-          <div className="flex items-center gap-3">
-            <TbLayoutDashboard size={36} className="text-blue-700" />
+      
+          <div className="flex items-center gap-1">
+            <TbLayoutDashboard size={40} className="text-blue-700" />
             <NavLink
               to="/admin"
-              className="text-xl font-bold text-gray-900 hover:text-blue-700 transition"
+              className="text-3xl font-medium text-gray-900 hover:text-blue-700 transition"
             >
-              Tableau de Bord
+              Dynamic IVR Manager
             </NavLink>
           </div>
 

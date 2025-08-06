@@ -9,7 +9,7 @@ const Header = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <TbLayoutDashboard size={40} className="text-blue-700" />
-            <h2 className="text-xl font-bold text-gray-900">Tableau de Bord</h2>
+            <h2 className="text-xl font-bold text-gray-900">Dynamic IVR Manager</h2>
           </div>
 
           <nav className="absolute left-1/2 transform -translate-x-1/2">
