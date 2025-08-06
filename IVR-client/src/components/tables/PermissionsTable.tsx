@@ -1,5 +1,10 @@
 import type { Permission } from "../../types/types";
-import { MdArrowDropDown, MdArrowDropUp, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import {
+  MdArrowDropDown,
+  MdArrowDropUp,
+  MdKeyboardArrowLeft,
+  MdKeyboardArrowRight,
+} from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
 import { HiChevronDown } from "react-icons/hi";
@@ -10,38 +15,44 @@ interface PermissionsTableProps {
   sortBy: string;
   itemsPerPage?: number;
   sortDir: "asc" | "desc";
-  onSortChange: (field: string) => void
-  currentPage: number;       // 1-based page index for UI
+  onSortChange: (field: string) => void;
+  currentPage: number; // 1-based page index for UI
   onPageChange: (page: number) => void;
 
-  totalCount: number;        // totalElements
+  totalCount: number; // totalElements
   onRowsPerPageChange: (size: number) => void;
   rowsPerPage: number;
 }
 
-
 const permissionTableHeads = [
-      { key: "permission_id", label: "ID" },
-      { key: "permission_name", label: "Nom complet" },
-      { key: "description", label: "Description" },
-      { key: "created_at", label: "Date de création" },
-      { key: "created_by_id", label: "Créé par" },
-      { key: "updated_at", label: "Date de modification" },
-      { key: "updated_by_id", label: "Modifié par" },
-    ]
+  { key: "permission_id", label: "ID" },
+  { key: "permission_name", label: "Nom" },
+  { key: "description", label: "Description" },
+  { key: "created_at", label: "Date de création" },
+  { key: "created_by_id", label: "Créé par" },
+  { key: "updated_at", label: "Date de modification" },
+  { key: "updated_by_id", label: "Modifié par" },
+];
 
+const PermissionsTable = ({
+  permissions,
+  sortBy,
+  sortDir,
+  onSortChange,
+  currentPage,
+  onPageChange,
+  totalCount,
+  onRowsPerPageChange,
+  rowsPerPage,
+}: PermissionsTableProps) => {
+  const navigate = useNavigate();
 
-
-const PermissionsTable = ({ permissions, sortBy, sortDir, onSortChange, currentPage, onPageChange, totalCount, onRowsPerPageChange, rowsPerPage }: PermissionsTableProps) => {
-  const navigate = useNavigate()
- 
   const totalPages = Math.ceil(totalCount / rowsPerPage);
 
-
   const handleSort = (column: string) => {
-    onSortChange(column)
+    onSortChange(column);
   };
-  
+
   const renderSortIcon = (column: string) => {
     if (sortBy !== column) return null;
     return sortDir === "asc" ? (
@@ -50,7 +61,6 @@ const PermissionsTable = ({ permissions, sortBy, sortDir, onSortChange, currentP
       <MdArrowDropDown className="text-blue-600" size={20} />
     );
   };
-  
 
   const getPageNumbers = () => {
     const pages = [];
@@ -73,7 +83,6 @@ const PermissionsTable = ({ permissions, sortBy, sortDir, onSortChange, currentP
     if (page >= 1 && page <= totalPages) onPageChange(page);
   };
 
-
   const handlePrevious = () => handlePageChange(currentPage - 1);
   const handleNext = () => handlePageChange(currentPage + 1);
 
@@ -85,114 +94,156 @@ const PermissionsTable = ({ permissions, sortBy, sortDir, onSortChange, currentP
   const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
 
   return (
-    <div className="overflow-x-auto rounded-xl shadow border border-gray-200 bg-white">
-      <table className="w-full text-sm">
-        <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
-          <tr>
-            {permissionTableHeads.map(({ key, label }) => (
-              <th
-                key={key}
-                onClick={() => handleSort(key)}
-                className="px-4 py-3 text-left text-xs font-medium text-[var(--text-secondary-color)] uppercase tracking-wider cursor-pointer group"
-              >
-                <div className="flex items-center w-fit">
-                  {label}
-                  <span className={`ml-2 transition-colors duration-200 text-base ${sortBy === key ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
-                    }`}>
-                    {renderSortIcon(key) || <MdArrowDropDown />} {/* Show faint icon for visual consistency */}
-                  </span>
-                </div>
-              </th>
-            ))}
-            <th className="px-4 py-3 text-left font-semibold text-gray-600">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {permissions.map((permission) => (
-            <tr
-              key={permission.permissionId}
-              className="border-t border-gray-200 hover:bg-gray-50 transition"
-            >
-              <td className="px-4 py-3 font-medium text-slate-800">{permission.permissionId}</td>
-              <td className="px-4 py-3 font-medium text-slate-800">{permission.name}</td>
-              <td className="px-4 py-3 text-slate-800">{permission.description}</td>
-              <td className="px-4 py-3 text-slate-800">{formatTimestamp(permission.createdAt)}</td>
-              <td className="px-4 py-3 text-slate-800">{permission.createdBy}</td>
-              <td className="px-4 py-3 text-slate-800">{formatTimestamp(permission.updatedAt)}</td>
-              <td className="px-4 py-3 text-slate-800">{permission.updatedBy}</td>
-              <td className="px-4 py-3 font-medium">
-                {/* <div className="flex"> */}
-                  <button
-                    onClick={() =>  
-                      navigate(`/admin/permissions/delete/${permission.permissionId}`, { replace: true })
-                    }
-                    className="text-red-600 hover:underline cursor-pointer"
-                  >
-                    <BsTrash3 size={30} />
-                  </button>
-                {/* </div> */}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Pagination controls */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-4 p-4 border-t border-gray-200 gap-4">
-        {/* Rows per page selector */}
-        <div className="flex items-center gap-2">
-          <p className="text-sm font-semibold text-gray-700">Lignes par page :</p>
-          <div className="relative">
-            <select
-              value={rowsPerPage}
-              onChange={handleRowsPerPageChange}
-              className="appearance-none cursor-pointer rounded-md border border-gray-300 bg-white py-1.5 pl-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            >
-              {[5, 10, 15, 20].map((size) => (
-                <option key={size} value={size}>{size}</option>
+    <>
+      <p className="text-sm text-left font-semibold text-gray-700">
+        Affichage de {toRecord} sur {totalCount} utilsateurs
+      </p>
+      <div className="overflow-x-auto max-w-[100vw] rounded-xl shadow border border-gray-200 bg-white">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+            <tr>
+              {permissionTableHeads.map(({ key, label }) => (
+                <th
+                  key={key}
+                  onClick={() => handleSort(key)}
+                  className="px-1 py-1 text-left text-xs font-medium uppercase tracking-wider cursor-pointer group"
+                >
+                  <div className="flex items-center w-fit">
+                    {label}
+                    <span
+                      className={`ml-2 transition-colors duration-200 text-base ${
+                        sortBy === key
+                          ? "text-blue-600"
+                          : "text-gray-400 group-hover:text-gray-600"
+                      }`}
+                    >
+                      {renderSortIcon(key) || <MdArrowDropDown />}{" "}
+                      {/* Show faint icon for visual consistency */}
+                    </span>
+                  </div>
+                </th>
               ))}
-            </select>
-            <HiChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <th className="px-4 py-3 text-center font-semibold text-gray-600">
+                {" "}
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {permissions.map((permission) => (
+              <tr
+                key={permission.permissionId}
+                className="border-t border-gray-200 hover:bg-gray-50 transition"
+              >
+                <td className="px-1 py-1 font-medium whitespace-nowrap text-slate-800">
+                  {permission.permissionId}
+                </td>
+
+                <td className="px-1 py-1 font-medium whitespace-nowrap text-slate-800">
+                  {permission.name}
+                </td>
+                <td className="px-1 py-1 font-medium whitespace-nowrap text-slate-800">
+                  {permission.description}
+                </td>
+                <td className="px-1 py-1 whitespace-nowrap text-slate-800">
+                  {formatTimestamp(permission.createdAt)}
+                </td>
+                <td className="px-1 py-1 whitespace-nowrap text-slate-800">
+                  {permission.createdBy}
+                </td>
+                <td className="px-1 py-1 whitespace-nowrap text-slate-800">
+                  {formatTimestamp(permission.updatedAt)}
+                </td>
+                <td className="px-1 py-1 whitespace-nowrap text-slate-800">
+                  {permission.updatedBy}
+                </td>
+
+                <td className="px-4 py-3 font-medium text-center">
+                  <div className="flex items-center justify-center h-full">
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/admin/permissions/delete/${permission.permissionId}`,
+                          { replace: true }
+                        )
+                      }
+                      className="text-red-600 cursor-pointer"
+                    >
+                      <BsTrash3 size={20} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Pagination + Rows per page */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-2 p-2 border-t border-gray-200 gap-4">
+          {/* Rows per page selector */}
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-semibold text-gray-700">
+              Lignes par page :
+            </p>
+            <div className="relative">
+              <select
+                value={rowsPerPage}
+                onChange={handleRowsPerPageChange}
+                className="cursor-pointer appearance-none rounded-md border border-gray-300 bg-white py-1.5 pl-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                {[5, 10, 15, 20].map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+              <HiChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            </div>
           </div>
-        </div>
 
-        {/* Page number controls */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handlePrevious}
-            disabled={currentPage === 1}
-            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-100'
-              }`}
-          >
-            <MdKeyboardArrowLeft />
-          </button>
-          {getPageNumbers().map((page) => (
+          {/* Pagination controls */}
+          <div className="flex items-center gap-2">
             <button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              className={`text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${page === currentPage ? 'text-white bg-blue-600' : 'cursor-pointer text-slate-600 hover:bg-slate-100'
-                }`}
-            >
-              {page}
-            </button>
-          ))}
-          <button
-            onClick={handleNext}
-            disabled={currentPage === totalPages}
-            className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-slate-100'
+              onClick={handlePrevious}
+              disabled={currentPage === 1}
+              className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
+                currentPage === 1
+                  ? "opacity-50 cursor-not-allowed"
+                  : "cursor-pointer hover:bg-slate-100"
               }`}
-          >
-            <MdKeyboardArrowRight />
-          </button>
-        </div>
+            >
+              <MdKeyboardArrowLeft />
+            </button>
+            {getPageNumbers().map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`text-sm font-medium flex size-8 items-center justify-center rounded-md transition-colors ${
+                  page === currentPage
+                    ? "text-white bg-blue-600"
+                    : "cursor-pointer text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              onClick={handleNext}
+              disabled={currentPage === totalPages}
+              className={`flex size-8 items-center justify-center rounded-md border border-slate-300 transition-colors ${
+                currentPage === totalPages
+                  ? "opacity-50 cursor-not-allowed"
+                  : "cursor-pointer hover:bg-slate-100"
+              }`}
+            >
+              <MdKeyboardArrowRight />
+            </button>
+          </div>
 
-        {/* Summary text */}
-        <p className="text-sm font-semibold text-slate-500">
-          Affichage de {toRecord} sur {totalCount}{" "}
-          permissions
-        </p>
+          {/* Displayed range */}
+        </div>
       </div>
-    </div>
+    </>
   );
-}
+};
 export default PermissionsTable;
