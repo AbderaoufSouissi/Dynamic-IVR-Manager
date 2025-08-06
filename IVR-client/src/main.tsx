@@ -19,6 +19,8 @@ import PermissionForm from "./components/forms/PermissionForm.tsx";
 import AuditsPage from "./pages/AuditsPage.tsx";
 import App from "./App.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
+import RoleDetailsPage from "./pages/RoleDetailsPage.tsx";
+import UserDetailsPage from "./pages/UserDetailsPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -130,9 +132,18 @@ const router = createBrowserRouter([
       },
     ],
   },
+
   {
     path: "/",
     element: <HomePage />,
+  },
+  {
+    path: "admin/roles/edit/:id",
+    element: <RoleDetailsPage />,
+  },
+  {
+    path: "admin/users/edit/:id",
+    element: <UserDetailsPage />,
   },
   {
     path: "/login",
