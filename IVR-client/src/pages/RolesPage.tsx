@@ -7,6 +7,8 @@ import { getRoles } from "../service/RoleService";
 import type { Role } from "../types/types";
 import { HiShieldCheck } from "react-icons/hi2";
 import { HiX } from "react-icons/hi";
+import PageHeader from "../components/header/PageHeader";
+import AddButton from "../components/buttons/AddButton";
 
 const RolesPage = () => {
   const [filters, setFilters] = useState({
@@ -17,6 +19,17 @@ const RolesPage = () => {
     createdBy: "",
     updatedBy: "",
   });
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    id: "",
+    name: "",
+    createdAt: "",
+    updatedAt: "",
+    createdBy: "",
+    updatedBy: "",
+  });
+
+
 
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -34,6 +47,8 @@ const RolesPage = () => {
   const [totalElements, setTotalElements] = useState(0);
 
   const [roles, setRoles] = useState<Role[]>([]);
+
+  const [showFilters, setShowFilters] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
   const isNumeric = (value: string) => /^[0-9]+$/.test(value);
@@ -85,7 +100,7 @@ const RolesPage = () => {
   );
 
   const fetchRoles = async () => {
-    const validatedFilters = validateFilters(filters);
+    const validatedFilters = validateFilters(appliedFilters);
     if (validatedFilters === null) {
       return;
     }
@@ -114,7 +129,7 @@ const RolesPage = () => {
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [filters, refreshTrigger, searchParams]);
+  }, [appliedFilters, refreshTrigger, searchParams]);
 
   useEffect(() => {
     
@@ -145,43 +160,53 @@ const RolesPage = () => {
   if (location.search) {
     navigate(location.pathname, { replace: true });
   }
-}, []);
+  }, []);
+  
+
+  const handleApplyFilters = () => {
+    setAppliedFilters({ ...filters });
+    setPage(0); // Reset to first page when applying new filters
+  };
 
   const resetFilters = () => {
-    setFilters({
+     const emptyFilters = {
       id: "",
       name: "",
       createdAt: "",
       updatedAt: "",
       createdBy: "",
       updatedBy: "",
-    });
+    };
+    setFilters(emptyFilters);
+    setAppliedFilters(emptyFilters);
+    setPage(0);
   };
+
+ 
 
   return (
     <>
       <div>
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-3xl font-bold text-slate-900">
-            Gestion des rôles ici.
-          </p>
-          <button
-            onClick={() => navigate({
-  pathname: "/admin/roles/create",
-  search: "", // Clear any ?size=5 etc
-})}
-            className="cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl min-h-[50px] flex items-center justify-center"
-          >
-            <MdAdminPanelSettings size={25} className="mr-2" />
-            Ajouter un rôle
-          </button>
-        </div>
+        <PageHeader title={"Gestion des roles"}/>
+          <div className="flex justify-between items-center mb-2 gap-2">
+  <button
+    onClick={() => setShowFilters((prev) => !prev)}
+    className=" cursor-pointer px-2 py-1 text-sm font-semibold rounded-lg border transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg bg-gray-100 text-gray-800 hover:scale-[1.01] active:scale-[0.98] border-gray-300 hover:bg-gray-200"
+  >
+    {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
+  </button>
 
-        <RoleFilter
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onResetFilters={resetFilters}
-        />
+
+          <AddButton onClick={() => navigate("/admin/roles/create")} icon={MdAdminPanelSettings} label={"Créer Nouveau"}/>
+</div>
+
+        {showFilters && (
+          <RoleFilter
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onResetFilters={resetFilters}
+            onApplyFilters={handleApplyFilters} />
+        )}
         {roles.length != 0 ? (
           <RolesTable
             roles={roles}
