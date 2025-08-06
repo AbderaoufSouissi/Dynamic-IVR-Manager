@@ -24,7 +24,7 @@ interface RolesTableProps {
 const roleTableHeads = [
       { key: "role_id", label: "ID" },
       { key: "role_name", label: "Nom complet" },
-      // { key: "permission_count", label: "permissions" },
+      { key: "permission_count", label: "Nb permissions" },
       { key: "created_at", label: "Date de création" },
       { key: "created_by_id", label: "Créé par" },
       { key: "updated_at", label: "Date de modification" },
@@ -137,6 +137,9 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
               </td>
               <td className="px-1 py-1 font-medium whitespace-nowrap text-slate-800">
                 {role.name}
+              </td>
+              <td className="px-1 py-1 font-medium whitespace-nowrap text-slate-800">
+                {role.permissionCount}
               </td>
 
               <td className="px-1 py-1 whitespace-nowrap text-slate-800">
