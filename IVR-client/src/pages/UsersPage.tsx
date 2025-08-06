@@ -23,7 +23,6 @@ const UsersPage = () => {
     roleName: "",
   });
 
-
   const [appliedFilters, setAppliedFilters] = useState({
     username: "",
     email: "",
@@ -56,10 +55,7 @@ const UsersPage = () => {
 
   const [users, setUsers] = useState<User[]>([]);
   const [showFilters, setShowFilters] = useState(false);
- 
 
-
-  
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
@@ -104,23 +100,22 @@ const UsersPage = () => {
     };
 
     try {
-  const data = await getUsers(params);
+      const data = await getUsers(params);
 
-setUsers(data.content);
-  setTotalElements(data.totalElements);
-} catch (err) {
-  console.error("Erreur lors de la récupération des utilisateurs", err);
-}
+      setUsers(data.content);
+      setTotalElements(data.totalElements);
+    } catch (err) {
+      console.error("Erreur lors de la récupération des utilisateurs", err);
+    }
   };
 
   const handleUserStatusChange = (userId: number, newStatus: boolean) => {
-  setUsers((prevUsers) =>
-    prevUsers.map((user) =>
-      user.userId === userId ? { ...user, active: newStatus } : user
-    )
-  );
-};
-
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.userId === userId ? { ...user, active: newStatus } : user
+      )
+    );
+  };
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -128,7 +123,15 @@ setUsers(data.content);
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [appliedFilters, refreshTrigger, searchParams, page, pageSize, sortBy, sortDir]);
+  }, [
+    appliedFilters,
+    refreshTrigger,
+    searchParams,
+    page,
+    pageSize,
+    sortBy,
+    sortDir,
+  ]);
 
   const handleSortChange = (field: string) => {
     const isSameField = field === sortBy;
@@ -174,7 +177,7 @@ setUsers(data.content);
     setPage(0); // Reset to first page when applying new filters
   };
 
- const resetFilters = () => {
+  const resetFilters = () => {
     const emptyFilters = {
       id: "",
       username: "",
@@ -195,26 +198,30 @@ setUsers(data.content);
   return (
     <>
       <div>
-        
-        <PageHeader title={"Gestion des utilisateurs"}/>
+        <PageHeader title={"Gestion des utilisateurs"} />
 
         <div className="flex justify-between items-center mb-2 gap-2">
-  <button
-    onClick={() => setShowFilters((prev) => !prev)}
-    className=" cursor-pointer px-2 py-1 text-sm font-semibold rounded-lg border transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg bg-gray-100 text-gray-800 hover:scale-[1.01] active:scale-[0.98] border-gray-300 hover:bg-gray-200"
-  >
-    {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
-  </button>
+          <button
+            onClick={() => setShowFilters((prev) => !prev)}
+            className=" cursor-pointer px-2 py-1 text-sm font-semibold rounded-lg border transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg bg-gray-100 text-gray-800 hover:scale-[1.01] active:scale-[0.98] border-gray-300 hover:bg-gray-200"
+          >
+            {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
+          </button>
 
-
-          <AddButton onClick={() => navigate("/admin/users/create")} icon={HiOutlineUserAdd} label={"Créer Nouveau"}/>
-</div>
+          <AddButton
+            onClick={() => navigate("/admin/users/create")}
+            icon={HiOutlineUserAdd}
+            label={"Créer Nouveau"}
+          />
+        </div>
 
         {showFilters && (
           <UserFilter
             filters={filters}
             onFilterChange={handleFilterChange}
-            onResetFilters={resetFilters} onApplyFilters={handleApplyFilters}          />
+            onResetFilters={resetFilters}
+            onApplyFilters={handleApplyFilters}
+          />
         )}
 
         {users.length !== 0 ? (
@@ -242,6 +249,7 @@ setUsers(data.content);
       </div>
 
       <Outlet context={{ triggerRefresh }} />
-    </>  );
+    </>
+  );
 };
 export default UsersPage;
