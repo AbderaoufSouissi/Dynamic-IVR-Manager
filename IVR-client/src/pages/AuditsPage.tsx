@@ -7,6 +7,7 @@ import type { Audit } from "../types/types";
 import { HiX } from "react-icons/hi";
 import { HiDocumentText } from "react-icons/hi2";
 import { useSearchParams } from "react-router-dom";
+import PageHeader from "../components/header/PageHeader";
 
 const AuditsPage = () => {
   const [filters, setFilters] = useState({
@@ -19,8 +20,20 @@ const AuditsPage = () => {
     date: "",
   });
 
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    id: "",
+    userId: "",
+    actionType: "",
+    entityType: "",
+    entityId: "",
+    msisdn: "",
+    date: "",
+  });
+
   const [audits, setAudits] = useState<Audit[]>([]);
-  // const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [showFilters, setShowFilters] = useState(false);
+
 
   const isNumeric = (value: string) => /^[0-9]+$/.test(value);
 
@@ -71,7 +84,7 @@ const AuditsPage = () => {
   );
 
   const fetchAudits = async () => {
-    const validatedFilters = validateFilters(filters);
+    const validatedFilters = validateFilters(appliedFilters);
     if (validatedFilters === null) {
       return;
     }
@@ -98,7 +111,7 @@ const AuditsPage = () => {
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [filters, searchParams, page, pageSize, sortBy, sortDir]);
+  }, [appliedFilters, searchParams, page, pageSize, sortBy, sortDir]);
 
   const handleFilterChange = (name: string, value: string) => {
     setFilters((prevFilters) => ({
@@ -137,8 +150,13 @@ const AuditsPage = () => {
     setSearchParams(newParams);
   }, [filters, sortBy, sortDir, page, pageSize, setSearchParams]);
 
+  const handleApplyFilters = () => {
+    setAppliedFilters({ ...filters });
+    setPage(0); // Reset to first page when applying new filters
+  };
+
   const resetFilters = () => {
-    setFilters({
+    const emptyFilters = {
       id: "",
       userId: "",
       actionType: "",
@@ -146,21 +164,35 @@ const AuditsPage = () => {
       entityId: "",
       msisdn: "",
       date: "",
-    });
+    };
+    setFilters(emptyFilters);
+    setAppliedFilters(emptyFilters);
+    setPage(0); // Reset to first page when resetting filters
   };
 
   return (
-    <>
-      <div className="mb-6 flex items-center justify-between">
-        <p className="text-3xl font-bold text-slate-900">Logs d’audit ici.</p>
+    <div> {/* <-- Missing wrapper added here */}
+      <PageHeader title={"Liste des logs"} />
+
+      <div className="flex justify-between items-center mb-2 gap-2">
+        <button
+          onClick={() => setShowFilters((prev) => !prev)}
+          className="cursor-pointer px-2 py-1 text-sm font-semibold rounded-lg border transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg bg-gray-100 text-gray-800 hover:scale-[1.01] active:scale-[0.98] border-gray-300 hover:bg-gray-200"
+        >
+          {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
+        </button>
       </div>
 
-      <AuditFilter
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onResetFilters={resetFilters}
-      />
-      {audits.length != 0 ? (
+      {showFilters && (
+        <AuditFilter
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onResetFilters={resetFilters}
+          onApplyFilters={handleApplyFilters}
+        />
+      )}
+
+      {audits.length !== 0 ? (
         <AuditTable
           audits={audits}
           sortBy={sortBy}
@@ -185,8 +217,10 @@ const AuditsPage = () => {
           <p className="text-lg font-medium">Aucun journal d’audit trouvé</p>
         </div>
       )}
-    </>
+    </div> // <-- Closing the wrapper
   );
-};
+}
+
+
 
 export default AuditsPage;
