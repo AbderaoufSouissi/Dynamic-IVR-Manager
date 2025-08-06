@@ -44,7 +44,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
 
   return (
     <>
-    <aside className="flex flex-col w-50 bg-white border-r border-gray-200 min-h-screen shadow-lg">
+    <aside className="flex flex-col w-[15%] bg-white border-r border-gray-200 min-h-screen shadow-lg">
   
 
       {/* Navigation */}
@@ -67,7 +67,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
               to={id === 'logout' ? '#' : route || '#'}
               onClick={onClick}
               className={`
-                group flex items-center w-full gap-3 px-4 py-3 rounded-xl transition-all duration-200 relative overflow-hidden
+                group flex items-center w-full gap-3 px-4 py-2 rounded-xl transition-all duration-200 relative overflow-hidden
                 ${id === 'logout' 
                   ? 'hover:bg-red-50 hover:text-red-600 text-gray-700'
                   : isActive
