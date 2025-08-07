@@ -25,15 +25,8 @@ const Header = () => {
           </div>
 
           <div className="flex items-center justify-between">
-            <a href="#" className="text-sm/6 font-semibold text-gray-900"></a>
-            <NavLink
-              className="hidden md:flex items-center justify-center rounded-lg h-10 px-5 text-blue-700 font-bold text-sm transition"
-              to={"/login"}
-            >
-              <p className="-mx-3 text-blue-700 rounded-lg px-3 py-2.5 text-base/7 font-semibold hover:bg-gray-50 flex items-center">
-                Log in <GoArrowRight className="ml-1 mt-1" />
-              </p>
-            </NavLink>
+    
+            
           </div>
         </div>
       </div>
