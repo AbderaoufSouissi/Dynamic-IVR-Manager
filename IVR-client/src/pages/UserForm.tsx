@@ -181,7 +181,7 @@ export const UserForm = ({
         <main className="flex-grow">
           <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
+              <h1 className="text-3xl font-semibold text-gray-900">{title}</h1>
               <p className="mt-1 text-sm text-gray-600">{description}</p>
               
             </div>
