@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
 import { HiChevronDown } from "react-icons/hi";
 import { BsTrash3 } from "react-icons/bs";
+import { FaEye } from "react-icons/fa";
 
 interface PermissionsTableProps {
   permissions: Permission[];
@@ -157,9 +158,25 @@ const PermissionsTable = ({
                 <td className="px-1 py-1 whitespace-nowrap text-slate-800">
                   {permission.updatedBy}
                 </td>
+                
 
                 <td className="px-4 py-3 font-medium text-center">
-                  <div className="flex items-center justify-center h-full">
+                  <div className="flex items-center justify-center gap-3">
+
+                    <button
+                                      onClick={() =>
+                                        navigate({
+                                          pathname: `/admin/permissions/view/${permission.permissionId}`,
+                                          search: "",
+                                          
+                                        })
+                                      }
+                                      className="cursor-pointer text-slate-700 hover:text-slate-900 transition"
+                                      title="Voir"
+                                    >
+                                      <FaEye size={20} />
+                                    </button>
+
                     <button
                       onClick={() =>
                         navigate(

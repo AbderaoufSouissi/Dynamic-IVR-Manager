@@ -2,7 +2,6 @@ import type { Audit } from "../../types/types";
 import { MdArrowDropDown, MdArrowDropUp, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { formatTimestamp } from "../../api/Api";
 import { HiChevronDown } from "react-icons/hi";
-import { PiEmpty } from "react-icons/pi";
 
 interface AuditsTableProps {
   itemsPerPage?: number;
@@ -81,7 +80,6 @@ const AuditsTable = ({ audits, sortBy, sortDir, onSortChange, currentPage, onPag
     onRowsPerPageChange(newSize);
   };
 
-  // Calculate current displayed range (e.g. showing 6-10 of 52)
   const toRecord = Math.min(currentPage * rowsPerPage, totalCount);
 
 

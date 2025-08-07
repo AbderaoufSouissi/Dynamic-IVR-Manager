@@ -217,7 +217,7 @@ const UsersTable = ({
                           
                         })
                       }
-                      className="text-slate-700 hover:text-slate-900 transition"
+                      className="cursor-pointer text-slate-700 hover:text-slate-900 transition"
                       title="Voir"
                     >
                       <FaEye size={20} />

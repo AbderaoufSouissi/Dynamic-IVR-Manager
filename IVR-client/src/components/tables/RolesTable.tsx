@@ -164,7 +164,7 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
           search: "",
         })
       }
-      className="text-slate-700 hover:text-slate-900 transition"
+      className="cursor-pointer text-slate-700 hover:text-slate-900 transition"
       title="Voir"
     >
       <FaEye size={20} />
@@ -177,7 +177,7 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
           search: "",
         })
       }
-      className="text-blue-600 hover:text-blue-800 transition"
+      className="cursor-pointer text-blue-600 hover:text-blue-800 transition"
       title="Modifier"
     >
       <FaPencil size={20} />
@@ -190,7 +190,7 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
           search: "",
         })
       }
-      className="text-red-600 hover:text-red-800 transition"
+      className="cursor-pointer text-red-600 hover:text-red-800 transition"
       title="Supprimer"
     >
       <BsTrash3 size={20} />
