@@ -160,7 +160,7 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
     <button
       onClick={() =>
         navigate({
-          pathname: `/admin/roles/edit/${role.roleId}`,
+          pathname: `/admin/roles/view/${role.roleId}`,
           search: "",
         })
       }
@@ -173,7 +173,7 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
     <button
       onClick={() =>
         navigate({
-          pathname: `/admin/roles/update/${role.roleId}`,
+          pathname: `/admin/roles/edit/${role.roleId}`,
           search: "",
         })
       }

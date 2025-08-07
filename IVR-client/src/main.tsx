@@ -12,15 +12,14 @@ import ResetPasswordPage from "./auth/ResetPasswordPage.tsx";
 import ProtectedRoute from "./route/ProtectedRoute.tsx";
 import NotFoundPage from "./pages/NotFound.tsx";
 import DeleteEntityModal from "./components/modal/DeleteEntityModal.tsx";
-import RoleForm from "./components/forms/RoleForm.tsx";
 import AdminOverview from "./pages/AdminOverview.tsx";
 import PermissionForm from "./components/forms/PermissionForm.tsx";
 import AuditsPage from "./pages/AuditsPage.tsx";
 import App from "./App.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
-import RoleDetailsPage from "./pages/RoleDetailsPage.tsx";
+import RoleDetailsPage from "./pages/RoleForm.tsx";
 import UserDetailsPage from "./pages/UserForm.tsx";
-import RoleInfoPage from "./pages/RoleInfoPage.tsx";
+import RoleInfoPage from "./pages/RoleDetailsPage.tsx";
 import UserInfoPage from "./pages/UserDetailsPage.tsx";
 import PermissionInfoPage from "./pages/PermissionInfoPage.tsx";
 
@@ -37,24 +36,6 @@ const router = createBrowserRouter([
             path: "users",
             element: <UsersPage />,
             children: [
-              // {
-              //   path: "create",
-              //   element: (
-              //     <UserForm
-              //       title="Créer un nouvel utilisateur"
-              //       description="Complétez les informations ci-dessous pour créer un nouvel utilisateur."
-              //     />
-              //   ),
-              // },
-              // {
-              //   path: "update/:id",
-              //   element: (
-              //     <UserForm
-              //       title="Modifier un utilisateur"
-              //       description="Modifiez les détails de l'utilisateur ci-dessous."
-              //     />
-              //   ),
-              // },
               {
                 path: "delete/:id",
                 element: <DeleteEntityModal />,
@@ -69,28 +50,7 @@ const router = createBrowserRouter([
                 path: "delete/:id",
                 element: <DeleteEntityModal />,
               },
-              {
-                path: "create",
-                element: (
-                  <RoleForm
-                    title={"Créer un nouveau role"}
-                    description={
-                      "Complétez les informations ci-dessous pour créer un nouveau role."
-                    }
-                  />
-                ),
-              },
-              {
-                path: "update/:id",
-                element: (
-                  <RoleForm
-                    title={"Modifier un role"}
-                    description={
-                      "Mettez à jour les détails du role ci-dessous."
-                    }
-                  />
-                ),
-              },
+            
             ],
           },
           {
@@ -140,8 +100,12 @@ const router = createBrowserRouter([
     element: <HomePage />,
   },
   {
+    path: "admin/roles/create",
+    element: <RoleDetailsPage title={"Créer un nouveau role"} description={"Complétez les informations ci-dessous pour créer un nouveau role."} />,
+  },
+  {
     path: "admin/roles/edit/:id",
-    element: <RoleDetailsPage />,
+    element: <RoleDetailsPage title={"Modifier un role"} description={"Modifiez les détails du role ci-dessous."} />,
   },
   {
     path: "admin/roles/view/:id",
