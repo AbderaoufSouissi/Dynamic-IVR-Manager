@@ -7,7 +7,6 @@ import UsersPage from "./pages/UsersPage.tsx";
 import RolesPage from "./pages/RolesPage.tsx";
 import PermissionsPage from "./pages/PermissionsPage.tsx";
 import MsisdnPage from "./pages/MsisdnPage.tsx";
-import UserForm from "./components/forms/UserForm.tsx";
 import HomePage from "./pages/HomePage.tsx";
 import ResetPasswordPage from "./auth/ResetPasswordPage.tsx";
 import ProtectedRoute from "./route/ProtectedRoute.tsx";
@@ -20,7 +19,10 @@ import AuditsPage from "./pages/AuditsPage.tsx";
 import App from "./App.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
 import RoleDetailsPage from "./pages/RoleDetailsPage.tsx";
-import UserDetailsPage from "./pages/UserDetailsPage.tsx";
+import UserDetailsPage from "./pages/UserForm.tsx";
+import RoleInfoPage from "./pages/RoleInfoPage.tsx";
+import UserInfoPage from "./pages/UserDetailsPage.tsx";
+import PermissionInfoPage from "./pages/PermissionInfoPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -35,24 +37,24 @@ const router = createBrowserRouter([
             path: "users",
             element: <UsersPage />,
             children: [
-              {
-                path: "create",
-                element: (
-                  <UserForm
-                    title="Créer un nouvel utilisateur"
-                    description="Complétez les informations ci-dessous pour créer un nouvel utilisateur."
-                  />
-                ),
-              },
-              {
-                path: "update/:id",
-                element: (
-                  <UserForm
-                    title="Modifier un utilisateur"
-                    description="Mettez à jour les détails de l'utilisateur ci-dessous."
-                  />
-                ),
-              },
+              // {
+              //   path: "create",
+              //   element: (
+              //     <UserForm
+              //       title="Créer un nouvel utilisateur"
+              //       description="Complétez les informations ci-dessous pour créer un nouvel utilisateur."
+              //     />
+              //   ),
+              // },
+              // {
+              //   path: "update/:id",
+              //   element: (
+              //     <UserForm
+              //       title="Modifier un utilisateur"
+              //       description="Modifiez les détails de l'utilisateur ci-dessous."
+              //     />
+              //   ),
+              // },
               {
                 path: "delete/:id",
                 element: <DeleteEntityModal />,
@@ -142,8 +144,24 @@ const router = createBrowserRouter([
     element: <RoleDetailsPage />,
   },
   {
+    path: "admin/roles/view/:id",
+    element: <RoleInfoPage />,
+  },
+  {
+    path: "admin/users/create",
+    element: <UserDetailsPage title={"Créer un nouvel utilisateur"} description={"Complétez les informations ci-dessous pour créer un nouvel utilisateur."} />,
+  },
+  {
     path: "admin/users/edit/:id",
-    element: <UserDetailsPage />,
+    element: <UserDetailsPage title={"Modifier un utilisateur"} description={"Modifiez les détails de l'utilisateur ci-dessous."} />,
+  },
+  {
+    path: "admin/users/view/:id",
+    element: <UserInfoPage />,
+  },
+  {
+    path: "admin/permissions/view/:id",
+    element: <PermissionInfoPage />,
   },
   {
     path: "/login",
