@@ -13,21 +13,54 @@ import ProtectedRoute from "./route/ProtectedRoute.tsx";
 import NotFoundPage from "./pages/NotFound.tsx";
 import DeleteEntityModal from "./components/modal/DeleteEntityModal.tsx";
 import AdminOverview from "./pages/AdminOverview.tsx";
-import PermissionForm from "./components/forms/PermissionForm.tsx";
 import AuditsPage from "./pages/AuditsPage.tsx";
 import App from "./App.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
-import RoleDetailsPage from "./pages/RoleForm.tsx";
-import UserDetailsPage from "./pages/UserForm.tsx";
-import RoleInfoPage from "./pages/RoleDetailsPage.tsx";
-import UserInfoPage from "./pages/UserDetailsPage.tsx";
-import PermissionInfoPage from "./pages/PermissionInfoPage.tsx";
+import RoleDetailsPage from "./pages/RoleDetailsPage.tsx";
+import UserDetailsPage from "./pages/UserDetailsPage.tsx";
+import RoleForm from "./pages/RoleForm.tsx";
+import UserForm from "./pages/UserForm.tsx";
+import PermissionForm from "./pages/PermissionForm.tsx";
+import PermissionDetailsPage from "./pages/PermissionDetailsPage.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/admin",
     element: <ProtectedRoute />, // Protect the admin section
     children: [
+    {
+    path: "roles/create",
+    element: <RoleForm title={"Créer un nouveau role"} description={"Complétez les informations ci-dessous pour créer un nouveau role."} />,
+  },
+  {
+    path: "roles/edit/:id",
+    element: <RoleForm title={"Modifier un role"} description={"Modifiez les détails du role ci-dessous."} />,
+  },
+  {
+    path: "admin/roles/view/:id",
+    element: <RoleDetailsPage />,
+  },
+  {
+    path: "admin/users/create",
+    element: <UserForm title={"Créer un nouvel utilisateur"} description={"Complétez les informations ci-dessous pour créer un nouvel utilisateur."} />,
+  },
+  {
+    path: "admin/users/edit/:id",
+    element: <UserForm title={"Modifier un utilisateur"} description={"Modifiez les détails de l'utilisateur ci-dessous."} />,
+  },
+  {
+    path: "admin/users/view/:id",
+    element: <UserDetailsPage />,
+  },
+  {
+    path: "permissions/create",
+    element: <PermissionForm  />,
+  },
+  {
+    path: "permissions/view/:id",
+    element: <PermissionDetailsPage />,
+  },
+      
       {
         path: "",
         element: <App />, // Admin layout/dashboard wrapper
@@ -57,17 +90,7 @@ const router = createBrowserRouter([
             path: "permissions",
             element: <PermissionsPage />,
             children: [
-              {
-                path: "create",
-                element: (
-                  <PermissionForm
-                    title={"Créer une nouvelle permission"}
-                    description={
-                      "Complétez les informations ci-dessous pour créer une nouvelle permission"
-                    }
-                  />
-                ),
-              },
+
               {
                 path: "delete/:id",
                 element: <DeleteEntityModal />,
@@ -99,34 +122,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <HomePage />,
   },
-  {
-    path: "admin/roles/create",
-    element: <RoleDetailsPage title={"Créer un nouveau role"} description={"Complétez les informations ci-dessous pour créer un nouveau role."} />,
-  },
-  {
-    path: "admin/roles/edit/:id",
-    element: <RoleDetailsPage title={"Modifier un role"} description={"Modifiez les détails du role ci-dessous."} />,
-  },
-  {
-    path: "admin/roles/view/:id",
-    element: <RoleInfoPage />,
-  },
-  {
-    path: "admin/users/create",
-    element: <UserDetailsPage title={"Créer un nouvel utilisateur"} description={"Complétez les informations ci-dessous pour créer un nouvel utilisateur."} />,
-  },
-  {
-    path: "admin/users/edit/:id",
-    element: <UserDetailsPage title={"Modifier un utilisateur"} description={"Modifiez les détails de l'utilisateur ci-dessous."} />,
-  },
-  {
-    path: "admin/users/view/:id",
-    element: <UserInfoPage />,
-  },
-  {
-    path: "admin/permissions/view/:id",
-    element: <PermissionInfoPage />,
-  },
+
   {
     path: "/login",
     element: <LoginPage />,
