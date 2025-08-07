@@ -18,15 +18,15 @@ import App from "./App.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
 import RoleDetailsPage from "./pages/RoleDetailsPage.tsx";
 import UserDetailsPage from "./pages/UserDetailsPage.tsx";
-import RoleForm from "./pages/RoleForm.tsx";
-import UserForm from "./pages/UserForm.tsx";
-import PermissionForm from "./pages/PermissionForm.tsx";
+import RoleForm from "./components/forms/RoleForm.tsx";
+import UserForm from "./components/forms/UserForm.tsx";
+import PermissionForm from "./components/forms/PermissionForm.tsx";
 import PermissionDetailsPage from "./pages/PermissionDetailsPage.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/admin",
-    element: <ProtectedRoute />, // Protect the admin section
+    element: <ProtectedRoute />,
     children: [
       {
         path: "roles/create",

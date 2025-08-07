@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { createPermission } from "../service/PermissionService";
-import type { PermissionRequest } from "../types/types";
+import { createPermission } from "../../service/PermissionService";
+import type { PermissionRequest } from "../../types/types";
 import { useNavigate } from "react-router-dom";
-import { toastSuccess } from "../service/ToastService";
+import { toastSuccess } from "../../service/ToastService";
 
 const PermissionForm = () => {
   const [formData, setFormData] = useState<PermissionRequest>({

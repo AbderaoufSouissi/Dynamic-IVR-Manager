@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { createUser, getUserById, updateUser } from "../service/UserService";
-import type { Role, User } from "../types/types";
-import {  toastSuccess } from "../service/ToastService";
+import { createUser, getUserById, updateUser } from "../../service/UserService";
+import type { Role, User } from "../../types/types";
+import {  toastSuccess } from "../../service/ToastService";
 import { HiEye, HiEyeSlash } from "react-icons/hi2";
-import ReadOnlyInput from "../components/inputs/ReadOnlyInput";
-import { getRoles } from "../service/RoleService";
+import ReadOnlyInput from "../inputs/ReadOnlyInput";
+import { getRoles } from "../../service/RoleService";
 
 type Title = "Créer un nouvel utilisateur" | "Modifier un utilisateur";
 type Description =
@@ -181,7 +181,7 @@ export const UserForm = ({
         <main className="flex-grow">
           <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="mb-8">
-              <h1 className="text-3xl font-semibold text-gray-900">{title}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
               <p className="mt-1 text-sm text-gray-600">{description}</p>
               
             </div>

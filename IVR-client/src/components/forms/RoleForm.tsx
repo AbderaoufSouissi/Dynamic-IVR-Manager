@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { getAllPermissions } from "../service/PermissionService";
-import type { Permission, Role, RoleRequest } from "../types/types";
+import { getAllPermissions } from "../../service/PermissionService";
+import type { Permission, Role, RoleRequest } from "../../types/types";
 import { useNavigate, useParams } from "react-router-dom";
-import { createRole, getRoleById, updateRole } from "../service/RoleService";
-import { toastSuccess } from "../service/ToastService";
-import { formatTimestamp } from "../api/Api";
-import ReadOnlyInput from "../components/inputs/ReadOnlyInput";
+import { createRole, getRoleById, updateRole } from "../../service/RoleService";
+import { toastSuccess } from "../../service/ToastService";
+import { formatTimestamp } from "../../api/Api";
+import ReadOnlyInput from "../inputs/ReadOnlyInput";
 
 type Title = "Créer un nouveau role" | "Modifier un role";
 type Description =
