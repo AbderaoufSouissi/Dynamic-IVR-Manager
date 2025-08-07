@@ -50,32 +50,16 @@ const HomePage = () => {
     <div className="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
       {/* Enhanced Header */}
       <header className="flex items-center justify-between px-6 py-6 bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center justify-around">
           
           <span className="font-bold text-2xl bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
             Dynamic IVR Manager
           </span>
         </div>
 
-        <div className="absolute left-1/2 transform -translate-x-1/2">
-          <button 
-            onClick={scrollToFeatures}
-            className="text-gray-600 hover:text-blue-600 font-medium text-center transition-all duration-300 hover:scale-105 px-4 py-2 rounded-lg hover:bg-blue-50"
-          >
-            Fonctionnalités
-          </button>
-        </div>
+        
 
-        <div>
-          <NavLink
-              className="hidden md:flex items-center justify-center rounded-lg h-10 px-5 text-blue-700 font-bold text-sm transition"
-              to={"/login"}
-            >
-              <p className="-mx-3 text-blue-700 rounded-lg px-3 py-2.5 text-base/7 font-semibold hover:bg-gray-50 flex items-center">
-                Log in <GoArrowRight className="ml-1 mt-1" />
-              </p>
-            </NavLink>
-        </div>
+  
       </header>
 
       <main>
