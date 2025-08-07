@@ -175,6 +175,10 @@ public class RoleServiceImpl implements RoleService {
             throw new ActionNotAllowedException("Cette Action est Strictement Interdite");
         }
 
+        if(roleRepository.findByName(roleToUpdate.getName()) != null){
+            throw new ResourceAlreadyExistsException("Role : "+roleToUpdate.getName()+" existe déjà");
+        }
+
         roleToUpdate.setName(roleDto.getName());
 
         Set<Permissions> newPermissions = new HashSet<>();
