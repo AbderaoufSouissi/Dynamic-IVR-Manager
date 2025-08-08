@@ -136,11 +136,27 @@ public class RoleServiceImpl implements RoleService {
     public RoleResponse updateRoleById(Long id, RoleRequest roleDto) {
         log.info("inside updateRoleById()");
 
+
+
         Role roleToUpdate = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " not found"));
-        if (isSystemRole(roleToUpdate.getName()) || isDefaultRole(roleToUpdate.getName())) {
-            throw new ActionNotAllowedException("Cette Action est Strictement Interdite");
+        boolean isSystemRole = isSystemRole(roleToUpdate.getName());
+        boolean isDefaultRole = isDefaultRole(roleToUpdate.getName());
+
+
+        if(isDefaultRole){
+            throw new ActionNotAllowedException("La modification de ce role est strictement interdite");
+
         }
+        if (isSystemRole){
+            if(!Objects.equals(roleDto.getName(), roleToUpdate.getName())){
+                throw new ActionNotAllowedException("La modification du nom de ce role est strictement interdite");
+
+            }
+        }
+
+
+
 
         Role existingRole = roleRepository.findByName(roleDto.getName());
         if (existingRole != null && !existingRole.getId().equals(id)) {
@@ -182,8 +198,10 @@ public class RoleServiceImpl implements RoleService {
 
         Role roleToDelete = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " not found"));
+
+
     if(isDefaultRole(roleToDelete.getName()) || isSystemRole(roleToDelete.getName())){
-        throw new ActionNotAllowedException("Cette Action est strictement Interdite");
+        throw new ActionNotAllowedException("Suppression du role:" +roleToDelete.getName()+ " est strictement interdite");
     }
 
         Role defaultRole = Optional.ofNullable(roleRepository.findByName(DEFAULT_ROLE_NAME))
