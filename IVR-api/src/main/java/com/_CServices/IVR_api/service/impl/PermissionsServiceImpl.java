@@ -137,7 +137,7 @@ public class PermissionsServiceImpl implements PermissionsService {
                 null
         );
     }
-    
+
 
     @Override
     public List<PermissionsResponse> getAllPermissions() {
