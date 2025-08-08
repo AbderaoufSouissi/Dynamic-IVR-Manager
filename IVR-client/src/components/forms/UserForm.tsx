@@ -283,6 +283,7 @@ export const UserForm = ({
                               [field.name]: e.target.value,
                             }))
                           }
+                          placeholder={field.label}
                           className="mt-1 block w-full border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm rounded-lg border px-3 py-1 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2"
                         />
                       </div>

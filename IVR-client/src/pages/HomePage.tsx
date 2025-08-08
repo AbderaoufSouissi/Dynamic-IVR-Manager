@@ -50,7 +50,7 @@ const HomePage = () => {
     <div className="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
       {/* Enhanced Header */}
      {/* Enhanced Modern Header */}
-<header className="relative bg-gradient-to-r from-white via-blue-50/30 to-white backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-gray-100/50">
+<header className="bg-gradient-to-r from-white via-blue-50/30 to-white backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-gray-100/50">
   {/* Background decoration */}
   <div className="absolute inset-0 overflow-hidden">
     <div className="absolute top-0 left-1/4 w-32 h-32 bg-blue-200/10 rounded-full blur-2xl"></div>
