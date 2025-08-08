@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { getRoleById } from "../service/RoleService";
 import { formatTimestamp } from "../api/Api";
 import type { Role } from "../types/types";
 import { FaCheckCircle } from "react-icons/fa";
 import InfoInput from "../components/inputs/InfoInput";
+import { IoIosArrowRoundBack } from "react-icons/io";
 
 const RoleDetailsPage = () => {
   const { id } = useParams();
@@ -92,6 +93,15 @@ const RoleDetailsPage = () => {
               </div>
 
             </div>
+          </div>
+           <div className="flex justify-center mt-8">
+            <NavLink
+              to="/admin/roles"
+              className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors"
+            >
+              <IoIosArrowRoundBack size={20} />
+              <span>Retour à la page précédente</span>
+            </NavLink>
           </div>
         </div>
       </main>

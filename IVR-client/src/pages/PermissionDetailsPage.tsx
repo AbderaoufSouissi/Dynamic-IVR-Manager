@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { formatTimestamp } from "../api/Api";
 import type { Permission } from "../types/types";
 import { getPermissionById } from "../service/PermissionService";
 import InfoInput from "../components/inputs/InfoInput";
+import { IoIosArrowRoundBack } from "react-icons/io";
 
 const PermissionDetailsPage = () => {
   const { id } = useParams();
@@ -65,6 +66,15 @@ const PermissionDetailsPage = () => {
     
 
             </div>
+          </div>
+          <div className="flex justify-center mt-8">
+            <NavLink
+              to="/admin/permissions"
+              className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors"
+            >
+              <IoIosArrowRoundBack size={20} />
+              <span>Retour à la page précédente</span>
+            </NavLink>
           </div>
         </div>
       </main>

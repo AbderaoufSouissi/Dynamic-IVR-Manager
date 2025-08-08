@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { formatTimestamp } from "../api/Api";
 import type { User } from "../types/types";
 import { getUserById } from "../service/UserService";
 import InfoInput from "../components/inputs/InfoInput";
+import { IoIosArrowRoundBack } from "react-icons/io";
 
 const UserDetailsPage = () => {
   const { id } = useParams();
@@ -45,8 +46,6 @@ const UserDetailsPage = () => {
 
           <div className="bg-white shadow-sm rounded-lg">
             <div className="p-4 space-y-6">
-
-              
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-2">
                   Informations sur l'utilisateur
@@ -58,16 +57,33 @@ const UserDetailsPage = () => {
                   <InfoInput label="Username" value={user.username || "-"} />
                   <InfoInput label="Email" value={user.email || "-"} />
                   <InfoInput label="Créé par" value={user.createdBy || "-"} />
-                  <InfoInput label="Date de création" value={user.createdAt || "-"} />
-                  <InfoInput label="Modifié par" value={user.updatedBy || "-"} />
-                  <InfoInput label="Date dernière modification" value={user.updatedAt || "-"} />
+                  <InfoInput
+                    label="Date de création"
+                    value={user.createdAt || "-"}
+                  />
+                  <InfoInput
+                    label="Modifié par"
+                    value={user.updatedBy || "-"}
+                  />
+                  <InfoInput
+                    label="Date dernière modification"
+                    value={user.updatedAt || "-"}
+                  />
                   <InfoInput label="Role" value={user.roleName || "-"} />
                 </div>
               </div>
-
-             
-
             </div>
+          </div>
+
+          {/* Centered Back Link */}
+          <div className="flex justify-center mt-8">
+            <NavLink
+              to="/admin/users"
+              className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors"
+            >
+              <IoIosArrowRoundBack size={20} />
+              <span>Retour à la page précédente</span>
+            </NavLink>
           </div>
         </div>
       </main>
@@ -75,5 +91,4 @@ const UserDetailsPage = () => {
   );
 };
 
-export default UserDetailsPage
-
+export default UserDetailsPage;
