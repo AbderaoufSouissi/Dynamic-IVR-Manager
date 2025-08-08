@@ -245,29 +245,30 @@ const RoleForm = ({
                           </div>
 
                           {/* Toggle */}
-                          <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              className="sr-only peer"
-                              checked={isAssigned}
-                              onChange={() =>
-                                handlePermissionChange(permission)
-                              }
-                            />
-                            <div
-                              className={`w-11 h-6 rounded-full transition-colors duration-200 ease-in-out ${
-                                isAssigned ? "bg-blue-600" : "bg-gray-200"
-                              }`}
-                            >
-                              <div
-                                className={`absolute top-[2px] left-[2px] h-5 w-5 bg-white border rounded-full transition-transform duration-200 ease-in-out ${
-                                  isAssigned
-                                    ? "translate-x-5 border-blue-600"
-                                    : "translate-x-0 border-gray-300"
-                                }`}
-                              ></div>
-                            </div>
-                          </label>
+                        <label
+  className={`relative inline-flex items-center cursor-pointer rounded-full ring-2 ring-offset-2 transition-all duration-200 ease-in-out ${
+    isAssigned ? "ring-blue-500" : "ring-gray-400"
+  }`}
+>
+  <input
+    type="checkbox"
+    className="sr-only peer"
+    checked={isAssigned}
+    onChange={() => handlePermissionChange(permission)}
+  />
+  <div
+    className={`w-14 h-6 rounded-full transition-colors duration-200 ease-in-out ${
+      isAssigned ? "bg-blue-600" : "bg-gray-200"
+    }`}
+  >
+    <div
+      className={`absolute top-[2px] left-[2px] h-5 w-5 bg-white border rounded-full transition-transform duration-200 ease-in-out ${
+        isAssigned ? "translate-x-8 border-blue-600" : "translate-x-0 border-gray-300"
+      }`}
+    ></div>
+  </div>
+</label>
+
                         </li>
                       );
                     })}
@@ -293,7 +294,7 @@ const RoleForm = ({
             </button>
             <button
               type="submit"
-              className="cursor-pointer px-4 py-2 inline-flex justify-center text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"
+              className="cursor-pointer px-4 py-2 inline-flex justify-center text-sm font-medium text-white border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:ring-offset-2 transition bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:scale-[1.01] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform "
             >
               Sauvegarder
             </button>

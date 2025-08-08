@@ -131,7 +131,7 @@ const PermissionForm = () => {
               </button>
               <button
                 type="submit"
-                className="cursor-pointer px-4 py-2 inline-flex justify-center text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"
+              className="cursor-pointer px-4 py-2 inline-flex justify-center text-sm font-medium text-white border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:ring-offset-2 transition bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:scale-[1.01] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform "
               >
                 Sauvegarder
               </button>
