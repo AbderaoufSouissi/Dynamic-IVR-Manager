@@ -69,11 +69,6 @@ public class RoleController {
         return ResponseEntity.ok(roleService.updateRoleById(id, roleRequest));
     }
 
-    @PutMapping
-    public ResponseEntity<RoleResponse> updateRoleByName(@RequestParam String name, @RequestBody RoleRequest roleRequest) {
-        return ResponseEntity.ok(roleService.updateRoleByName(name, roleRequest));
-
-    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<RoleResponse> deleteRoleById(@PathVariable Long id) {
@@ -81,11 +76,7 @@ public class RoleController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/name")
-    public ResponseEntity<RoleResponse> deleteRoleByName(@RequestParam String name) {
-        roleService.deleteRoleByName(name);
-        return ResponseEntity.noContent().build();
-    }
+
 
 
 

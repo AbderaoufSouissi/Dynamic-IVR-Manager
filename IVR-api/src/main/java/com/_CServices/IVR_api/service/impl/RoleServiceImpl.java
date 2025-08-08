@@ -124,46 +124,6 @@ public class RoleServiceImpl implements RoleService {
 
 
 
-    @Override
-    public RoleResponse updateRoleByName(String roleName, RoleRequest roleRequest) {
-        log.info("inside updateRoleByName()");
-
-        Role roleToUpdate = Optional.ofNullable(roleRepository.findByName(roleName))
-                .orElseThrow(() -> new ResourceNotFoundException("Role with name: " + roleName + " not found"));
-
-
-        roleToUpdate.setName(roleRequest.getName());
-
-
-        Set<Permissions> newPermissions = new HashSet<>();
-
-        if (roleRequest.getPermissions() != null && !roleRequest.getPermissions().isEmpty()) {
-            roleRequest.getPermissions().forEach(permissionName -> {
-                Permissions permission = Optional.ofNullable(permissionsRepository.findByName(permissionName))
-                        .orElseThrow(() -> new ResourceNotFoundException("Permission with name: " + permissionName + " doesn't exist"));
-                newPermissions.add(permission);
-            });
-        }
-
-
-        roleToUpdate.clearPermissions();
-        roleToUpdate.setPermissions(newPermissions);
-
-
-        Role updatedRole = roleRepository.save(roleToUpdate);
-
-
-
-        auditLoggingService.logAction(
-                ActionType.UPDATE_ROLE.toString(),
-                EntityType.ROLE.toString(),
-                updatedRole.getId(),
-                null
-        );
-
-        return roleMapper.toDto(updatedRole);
-    }
-
 
     @Override
     public RoleResponse updateRoleById(Long id, RoleRequest roleDto) {
@@ -259,29 +219,6 @@ public class RoleServiceImpl implements RoleService {
         );
     }
 
-    @Override
-    public void deleteRoleByName(String roleName) {
-        log.info("inside deleteRoleByName()");
-        if(isSystemRole(roleName)){
-            throw new ActionNotAllowedException("Le role system ne peut pas etre supprimé");
-        }
-
-        Role roleToDelete = Optional.ofNullable(roleRepository.findByName(roleName))
-                        .orElseThrow(()-> new ResourceNotFoundException("Role with name : "+roleName+" not found"));
-
-        Long roleToDeleteId = roleToDelete.getId();
-
-        roleRepository.delete(roleToDelete);
-
-        auditLoggingService.logAction(
-                ActionType.DELETE_ROLE.toString(),
-                EntityType.ROLE.toString(),
-                roleToDeleteId,
-                null
-        );
-
-
-    }
 
     private boolean isSystemRole(String name) {
         return name.equals(SYSTEM_ROLE_NAME);
