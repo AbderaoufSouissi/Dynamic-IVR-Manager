@@ -1,6 +1,3 @@
-
-
-import { TbLayoutDashboard } from "react-icons/tb";
 import { NavLink, useNavigate,  } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getCurrentUser } from "../../service/AuthService";
@@ -41,10 +38,10 @@ const DashboardHeader = () => {
         <div className="flex items-center justify-between">
       
           <div className="flex items-center gap-1">
-            <TbLayoutDashboard size={40} className="text-blue-700" />
+            <img src="/logo.svg" alt="" />
             <NavLink
               to="/admin"
-              className="text-3xl font-medium text-gray-900 hover:text-blue-700 transition"
+              className="font-bold text-2xl md:text-3xl bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 bg-clip-text text-transparent tracking-tight"
             >
               Dynamic IVR Manager
             </NavLink>
