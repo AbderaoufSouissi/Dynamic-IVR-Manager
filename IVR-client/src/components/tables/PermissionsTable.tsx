@@ -101,99 +101,91 @@ const PermissionsTable = ({
       </p>
       <div className="overflow-x-auto max-w-[100vw] rounded-xl shadow border border-gray-200 bg-white">
         <table className="w-full text-sm">
-          <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
-            <tr>
-              {permissionTableHeads.map(({ key, label }) => (
-                <th
-                  key={key}
-                  onClick={() => handleSort(key)}
-                  className="px-1 py-1 text-left text-xs font-medium uppercase tracking-wider cursor-pointer group"
-                >
-                  <div className="flex items-center w-fit">
-                    {label}
-                    <span
-                      className={`ml-2 transition-colors duration-200 text-base ${
-                        sortBy === key
-                          ? "text-blue-600"
-                          : "text-gray-400 group-hover:text-gray-600"
-                      }`}
-                    >
-                      {renderSortIcon(key) || <MdArrowDropDown />}{" "}
-                      {/* Show faint icon for visual consistency */}
-                    </span>
-                  </div>
-                </th>
-              ))}
-              <th className="px-4 py-3 text-center font-semibold text-gray-600">
-                {" "}
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {permissions.map((permission) => (
-              <tr
-                key={permission.permissionId}
-                className="border-t border-gray-200 hover:bg-gray-50 transition"
-              >
-                <td className="px-1 py-1 font-medium whitespace-nowrap text-slate-800">
-                  {permission.permissionId}
-                </td>
-
-                <td className="px-1 py-1 font-medium whitespace-nowrap text-slate-800">
-                  {permission.name}
-                </td>
-                <td className="px-1 py-1 font-medium whitespace-nowrap text-slate-800">
-                  {permission.description}
-                </td>
-                <td className="px-1 py-1 whitespace-nowrap text-slate-800">
-                  {formatTimestamp(permission.createdAt)}
-                </td>
-                <td className="px-1 py-1 whitespace-nowrap text-slate-800">
-                  {permission.createdBy}
-                </td>
-                <td className="px-1 py-1 whitespace-nowrap text-slate-800">
-                  {formatTimestamp(permission.updatedAt)}
-                </td>
-                <td className="px-1 py-1 whitespace-nowrap text-slate-800">
-                  {permission.updatedBy}
-                </td>
-                
-
-                <td className="px-4 py-3 font-medium text-center">
-                  <div className="flex items-center justify-center gap-3">
-
-                    <button
-                                      onClick={() =>
-                                        navigate({
-                                          pathname: `/admin/permissions/view/${permission.permissionId}`,
-                                          search: "",
-                                          
-                                        })
-                                      }
-                                      className="cursor-pointer text-slate-700 hover:text-slate-900 transition"
-                                      title="Voir"
-                                    >
-                                      <FaEye size={20} />
-                                    </button>
-
-                    <button
-                      onClick={() =>
-                        navigate(
-                          `/admin/permissions/delete/${permission.permissionId}`,
-                          { replace: true }
-                        )
-                      }
-                      className="text-red-600 cursor-pointer"
-                    >
-                      <BsTrash3 size={20} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+  <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+  <tr>
+    {permissionTableHeads.map(({ key, label }) => (
+      <th
+        key={key}
+        onClick={() => handleSort(key)}
+        className="px-1 py-1 text-xs font-medium uppercase tracking-wider cursor-pointer align-middle"
+      >
+        <div className="flex flex-col items-center justify-center">
+          <span className="relative">
+            {label}
+            <span className={`absolute left-full ml-1 transition-all duration-200 ${
+              sortBy === key 
+                ? "text-blue-600 opacity-100" 
+                : "text-gray-400 opacity-0 group-hover:opacity-60"
+            }`}>
+              {sortBy === key ? renderSortIcon(key) : <MdArrowDropDown className="text-xs"/>}
+            </span>
+          </span>
+        </div>
+      </th>
+    ))}
+    <th className="px-4 py-1 text-center font-semibold text-gray-600 align-middle">
+      <span className="relative">Actions</span>
+    </th>
+  </tr>
+</thead>
+  <tbody>
+    {permissions.map((permission) => (
+      <tr
+        key={permission.permissionId}
+        className="border-t border-gray-200 hover:bg-gray-50 transition"
+      >
+        <td className="px-1 py-1 font-medium whitespace-nowrap text-slate-800 text-center">
+          {permission.permissionId}
+        </td>
+        <td className="px-1 py-1 font-medium whitespace-nowrap text-slate-800 text-center">
+          {permission.name}
+        </td>
+        <td className="px-1 py-1 font-medium whitespace-nowrap text-slate-800 text-center">
+          {permission.description}
+        </td>
+        <td className="px-1 py-1 whitespace-nowrap text-slate-800 text-center">
+          {formatTimestamp(permission.createdAt)}
+        </td>
+        <td className="px-1 py-1 whitespace-nowrap text-slate-800 text-center">
+          {permission.createdBy}
+        </td>
+        <td className="px-1 py-1 whitespace-nowrap text-slate-800 text-center">
+          {formatTimestamp(permission.updatedAt)}
+        </td>
+        <td className="px-1 py-1 whitespace-nowrap text-slate-800 text-center">
+          {permission.updatedBy}
+        </td>
+        <td className="px-4 py-2 text-center">
+          <div className="flex items-center justify-center gap-3">
+            <button
+              onClick={() =>
+                navigate({
+                  pathname: `/admin/permissions/view/${permission.permissionId}`,
+                  search: "",
+                })
+              }
+              className="cursor-pointer text-slate-700 hover:text-slate-900 transition"
+              title="Voir"
+            >
+              <FaEye size={20} />
+            </button>
+            <button
+              onClick={() =>
+                navigate(
+                  `/admin/permissions/delete/${permission.permissionId}`,
+                  { replace: true }
+                )
+              }
+              className="text-red-600 hover:text-red-800 transition cursor-pointer"
+            >
+              <BsTrash3 size={20} />
+            </button>
+          </div>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
 
         {/* Pagination + Rows per page */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-2 p-2 border-t border-gray-200 gap-4">
