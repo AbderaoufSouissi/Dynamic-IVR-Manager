@@ -160,78 +160,77 @@ const AdminOverview = () => {
         </section>
 
         {/* Recent Actions */}
-        <section className="rounded-xl shadow border border-gray-200 p-3 sm:p-4 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:bg-white flex-1 overflow-y-auto">
-          <div className="border-b border-slate-200/50 pb-2 sm:pb-3 mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-0 leading-tight">
-                Actions Récentes
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600">Dernières activités du système</p>
-            </div>
-            <button
-              onClick={() => navigate("/admin/auditLogs")}
-              className="text-blue-600 hover:text-blue-700 text-xs sm:text-sm font-semibold hover:bg-blue-50 px-2 py-1 rounded-lg transition-colors duration-200 self-start sm:self-auto whitespace-nowrap"
-              aria-label="Voir plus de détails sur les actions récentes"
-            >
-              Voir plus de détails →
-            </button>
-          </div>
+        <section className="rounded-xl shadow border border-gray-200 p-3 sm:p-4 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:bg-white flex-1 min-h-0 flex flex-col">
+  <div className="border-b border-slate-200/50 pb-2 sm:pb-3 mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+    <div>
+      <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-0 leading-tight">
+        Actions Récentes
+      </h3>
+      <p className="text-xs sm:text-sm text-slate-600">Dernières activités du système</p>
+    </div>
+    <button
+      onClick={() => navigate("/admin/auditLogs")}
+      className="text-blue-600 hover:text-blue-700 text-xs sm:text-sm font-semibold hover:bg-blue-50 px-2 py-1 rounded-lg transition-colors duration-200 self-start sm:self-auto whitespace-nowrap"
+      aria-label="Voir plus de détails sur les actions récentes"
+    >
+      Voir plus de détails →
+    </button>
+  </div>
 
-          <div className="divide-y divide-slate-200/50 max-h-[calc(100vh-260px)] overflow-y-auto">
-            {recentAudits.length > 0 ? (
-              recentAudits.map((audit, index) => (
-                <div
-                  key={audit.auditId || index}
-                  className="p-2 sm:p-3 hover:bg-slate-50/50 transition-colors duration-200 rounded-md"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
-                    <div className="flex items-start sm:items-center gap-2 sm:gap-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-1 sm:mt-0 shrink-0" />
-                      <p className="font-medium text-slate-900 leading-tight max-w-[70vw] sm:max-w-none break-words text-sm">
-                        {["RESET_PASSWORD", "FORGET_PASSWORD"].includes(audit.actionType) ? (
-                          <>
-                            <span className="font-semibold text-blue-600 mr-1">
-                              Utilisateur #{audit.entityId}
-                            </span>
-                            <span className="text-slate-700">{actionTypeLabels[audit.actionType]}</span>
-                          </>
-                        ) : ["BLACKLIST_MSISDN", "WHITELIST_MSISDN", "RESET_NB_CALLS"].includes(audit.actionType) ? (
-                          <>
-                            <span className="font-semibold text-blue-600 mr-1">
-                              Utilisateur #{audit.userId}
-                            </span>
-                            <span className="text-slate-700">
-                              {actionTypeLabels[audit.actionType]} {audit.msisdn}
-                            </span>
-                            <span className="ml-1 text-blue-700 font-semibold">{audit.entityId}</span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="font-semibold text-blue-600 mr-1">
-                              Utilisateur #{audit.userId}
-                            </span>
-                            <span className="text-slate-700">
-                              {actionTypeLabels[audit.actionType] || audit.actionType}
-                            </span>
-                            <span className="ml-2 italic text-xs text-slate-500">
-                              [{audit.entityType} #{audit.entityId}]
-                            </span>
-                          </>
-                        )}
-                      </p>
-                    </div>
-                    <p className="text-xs text-slate-500 font-medium whitespace-nowrap ml-3 sm:ml-0">
-                      {formatTimestamp(audit.actionTimestamp)}
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="p-4 text-center text-slate-500 text-sm">Aucune activité récente</p>
-            )}
+  <div className="divide-y divide-slate-200/50 flex-1 overflow-y-auto">
+    {recentAudits.length > 0 ? (
+      recentAudits.map((audit, index) => (
+        <div
+          key={audit.auditId || index}
+          className="p-2 sm:p-3 hover:bg-slate-50/50 transition-colors duration-200 rounded-md"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
+            <div className="flex items-start sm:items-center gap-2 sm:gap-3">
+              <div className="w-2 h-2 bg-blue-500 rounded-full mt-1 sm:mt-0 shrink-0" />
+              <p className="font-medium text-slate-900 leading-tight max-w-[70vw] sm:max-w-none break-words text-sm">
+                {["RESET_PASSWORD", "FORGET_PASSWORD"].includes(audit.actionType) ? (
+                  <>
+                    <span className="font-semibold text-blue-600 mr-1">
+                      Utilisateur #{audit.entityId}
+                    </span>
+                    <span className="text-slate-700">{actionTypeLabels[audit.actionType]}</span>
+                  </>
+                ) : ["BLACKLIST_MSISDN", "WHITELIST_MSISDN", "RESET_NB_CALLS"].includes(audit.actionType) ? (
+                  <>
+                    <span className="font-semibold text-blue-600 mr-1">
+                      Utilisateur #{audit.userId}
+                    </span>
+                    <span className="text-slate-700">
+                      {actionTypeLabels[audit.actionType]} {audit.msisdn}
+                    </span>
+                    <span className="ml-1 text-blue-700 font-semibold">{audit.entityId}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="font-semibold text-blue-600 mr-1">
+                      Utilisateur #{audit.userId}
+                    </span>
+                    <span className="text-slate-700">
+                      {actionTypeLabels[audit.actionType] || audit.actionType}
+                    </span>
+                    <span className="ml-2 italic text-xs text-slate-500">
+                      [{audit.entityType} #{audit.entityId}]
+                    </span>
+                  </>
+                )}
+              </p>
+            </div>
+            <p className="text-xs text-slate-500 font-medium whitespace-nowrap ml-3 sm:ml-0">
+              {formatTimestamp(audit.actionTimestamp)}
+            </p>
           </div>
-        </section>
-      </div>
+        </div>
+      ))
+    ) : (
+      <p className="p-4 text-center text-slate-500 text-sm">Aucune activité récente</p>
+    )}
+  </div>
+</section>      </div>
     </main>
 
     );
