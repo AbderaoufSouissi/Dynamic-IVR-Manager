@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com._CServices.IVR_api.constant.Constants.DEFAULT_ROLE_NAME;
 import static com._CServices.IVR_api.constant.Constants.SYSTEM_ROLE_NAME;
@@ -69,8 +70,14 @@ public class RoleServiceImpl implements RoleService {
 
     }
 
-
-
+    @Override
+    public List<String> getAllRolesNames() {
+        List<Role> roles = roleRepository.findAll();
+        List<String> rolesNames = roles.stream()
+                .map(role -> role.getName())
+                .collect(Collectors.toList());
+        return rolesNames;
+    }
 
 
     @Override

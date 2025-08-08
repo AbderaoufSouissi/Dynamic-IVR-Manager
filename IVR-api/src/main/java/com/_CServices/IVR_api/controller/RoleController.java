@@ -2,18 +2,17 @@ package com._CServices.IVR_api.controller;
 
 import com._CServices.IVR_api.dto.request.RoleRequest;
 import com._CServices.IVR_api.dto.response.PagedResponse;
+
 import com._CServices.IVR_api.dto.response.RoleResponse;
 import com._CServices.IVR_api.filter.RoleFilter;
 import com._CServices.IVR_api.service.RoleService;
-import com._CServices.IVR_api.utils.SortUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-
+import java.util.List;
 
 
 @RestController
@@ -49,6 +48,12 @@ public class RoleController {
 
         PagedResponse<RoleResponse> response = roleService.getRolesWithFilters(filter, page, size, sortBy, sortDir);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<String>> getAllRolesNames() {
+        List<String> rolesNames = roleService.getAllRolesNames();
+        return ResponseEntity.ok(rolesNames);
     }
 
 

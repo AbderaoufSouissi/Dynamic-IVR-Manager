@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createUser, getUserById, updateUser } from "../../service/UserService";
-import type { Role, User } from "../../types/types";
+import type { User } from "../../types/types";
 import {  toastSuccess } from "../../service/ToastService";
 import { HiEye, HiEyeSlash } from "react-icons/hi2";
 import ReadOnlyInput from "../inputs/ReadOnlyInput";
-import { getRoles } from "../../service/RoleService";
+import { getAllRolesNames} from "../../service/RoleService";
 
 type Title = "Créer un nouvel utilisateur" | "Modifier un utilisateur";
 type Description =
@@ -27,7 +27,7 @@ export const UserForm = ({
   const [formError, setFormError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const [roles, setRoles] = useState<Role[]>([])
+  const [rolesNames, setRolesNames] = useState<string[]>([])
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -41,26 +41,19 @@ export const UserForm = ({
 
 
 
-
-
-
-  
-    const fetchAllRoles = async () => {
-     
-      
-      try {
-        const data = await getRoles();
-        setRoles(data.content);
-        
-      } catch (err) {
-        console.error("Erreur lors de la récupération des utilisateurs", err);
-      }
-    };
+const fetchAllRolesNames = async () => {
+  try {
+    const data = await getAllRolesNames();
+    setRolesNames(data|| [DEFAULT_ROLE_NAME]);
+  } catch (err) {
+    console.error("Erreur lors de la récupération des rôles", err);
+  }
+};
     
   
     useEffect(() => {
       
-        fetchAllRoles();
+        fetchAllRolesNames();
       
   
      
@@ -341,9 +334,9 @@ export const UserForm = ({
     className="mt-1 block w-full border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm rounded-lg border px-3 py-1 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2"
   >
   
-    {roles.map((role) => (
-      <option key={role.roleId} value={role.name}>
-        {role.name}
+    {rolesNames?.map((roleName,index) => (
+      <option key={index} value={roleName}>
+        {roleName}
       </option>
     ))}
   </select>
