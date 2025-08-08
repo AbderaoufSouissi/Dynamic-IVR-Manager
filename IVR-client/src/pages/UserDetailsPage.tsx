@@ -49,7 +49,7 @@ const UserDetailsPage = () => {
               
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-2">
-                  Informations de l'utilisateur
+                  Informations sur l'utilisateur
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <InfoInput label="ID" value={user.userId.toString()} />
