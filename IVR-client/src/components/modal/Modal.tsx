@@ -48,7 +48,7 @@ const Modal = ({
               className={`cursor-pointer px-2 py-1 text-sm font-semibold rounded-lg border transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.98] border-gray-300 hover:bg-gray-200 ${
                 confirmType === "danger"
                   ? "text-white font-semibold  focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm cursor-pointer bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 transition-all duration-200 focus:ring-red-500/20 transform  disabled:transform-none disabled:cursor-not-allowed shadow-lg"
-                  : "text-white hover:scale-[1.02] px-5 py-2 font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 rounded-xl transition-all duration-200 focus:ring-blue-500/20 transform  active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg"
+                  : "text-white hover:scale-[1.02] font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 text-sm cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 transition-all duration-200 focus:ring-blue-500/20 transform  active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg"
               }`}
               onClick={onConfirm}
             >
