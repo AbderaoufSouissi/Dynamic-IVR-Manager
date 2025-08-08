@@ -149,9 +149,7 @@ const AdminOverview = () => {
 
             <div className="flex-1 w-full flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left mt-3 sm:mt-0">
               <div>
-                <p className="text-xs sm:text-sm font-semibold text-slate-600 uppercase tracking-wide">
-                  Rôles
-                </p>
+                
                 <p className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 leading-tight">
                   {roleCount.toLocaleString()}
                 </p>
