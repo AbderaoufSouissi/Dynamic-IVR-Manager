@@ -1,7 +1,8 @@
 package com._CServices.IVR_api.service.impl;
 
-import com._CServices.IVR_api.dto.response.PermissionsResponse;
+
 import com._CServices.IVR_api.entity.Permissions;
+import com._CServices.IVR_api.exception.ActionNotAllowedException;
 import com._CServices.IVR_api.repository.roles.RoleRepository;
 
 
@@ -23,7 +24,6 @@ import com._CServices.IVR_api.service.UserService;
 import com._CServices.IVR_api.utils.SortUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 import static com._CServices.IVR_api.constant.Constants.DEFAULT_ROLE_NAME;
+import static com._CServices.IVR_api.constant.Constants.SYSTEM_USERNAME;
 
 
 @Service
@@ -145,6 +146,10 @@ public class UserServiceImpl implements UserService {
         User userToDelete = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID " + id + " not found"));
 
+        if(isSystemUser(userToDelete.getUsername())){
+            throw new ActionNotAllowedException("Suppression du user: "+userToDelete.getUsername()+" est strictement interdite");
+        }
+
         Long userToDeleteId = userToDelete.getId();
         userRepository.delete(userToDelete);
 
@@ -157,44 +162,9 @@ public class UserServiceImpl implements UserService {
         );
     }
 
-    @Override
-    @Transactional
-    public void deleteUserByEmail(String email) {
-        log.info("inside deleteUserByEmail()");
 
-        User userToDelete = Optional.ofNullable(userRepository.findByEmail(email))
-                .orElseThrow(() -> new ResourceNotFoundException("User with Email : "+email+" Not Found"));
 
-        Long userToDeleteId = userToDelete.getId();
 
-        userRepository.delete(userToDelete);
-
-        auditLoggingService.logAction(
-                ActionType.DELETE_USER.toString(),
-                EntityType.USER.toString(),
-                userToDeleteId,
-                null
-        );
-    }
-
-    @Override
-    @Transactional
-    public void deleteUserByUsername(String username) {
-        log.info("inside deleteUserByUsername()");
-        User userToDelete = Optional.ofNullable(userRepository.findByUsername(username))
-                .orElseThrow(() -> new ResourceNotFoundException("User with Username : "+username+" Not Found"));
-
-        Long userToDeleteId = userToDelete.getId();
-        userRepository.delete(userToDelete);
-
-        auditLoggingService.logAction(
-                ActionType.DELETE_USER.toString(),
-                EntityType.USER.toString(),
-                userToDeleteId,
-                null
-        );
-
-    }
 
     @Override
     public List<String> getUserPermissions(String username) {
@@ -212,6 +182,17 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUser(UpdateUserRequest request, Long id) {
         User userToUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        if(isSystemUser(userToUpdate.getUsername())){
+            boolean roleChanged = !Objects.equals(request.getRoleName(), userToUpdate.getRole().getName());
+            boolean firstNameChanged = !Objects.equals(request.getFirstName(), userToUpdate.getFirstName());
+            boolean lastNameChanged = !Objects.equals(request.getLastName(), userToUpdate.getLastName());
+            boolean activeChanged = !Objects.equals(request.getActive(), userToUpdate.getActive());
+            boolean usernameChanged = !Objects.equals(request.getUsername(), userToUpdate.getUsername());
+            if(roleChanged || firstNameChanged || lastNameChanged || activeChanged || usernameChanged) {
+                throw new ResourceAlreadyExistsException("La modification du user : " + userToUpdate.getUsername() + " est strictement interdit");
+
+            }
+        }
 
         if (request.getEmail() != null && !request.getEmail().equals(userToUpdate.getEmail())) {
             if (null != userRepository.findByEmail(request.getEmail())){
@@ -221,7 +202,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (request.getUsername() != null && !request.getUsername().equals(userToUpdate.getUsername())) {
-            if (null != userRepository.findByEmail(request.getEmail())){
+            if (null != userRepository.findByUsername(request.getUsername())){
                 throw new ResourceAlreadyExistsException("Le nom d'utilisateur '" + request.getUsername() + "' est déjà utilisé.");
             }
             userToUpdate.setUsername(request.getUsername());
@@ -264,6 +245,16 @@ public class UserServiceImpl implements UserService {
     public long getUsersByActive(int active) {
         return userRepository.countByActive(active);
     }
+
+
+    
+
+
+
+    private boolean isSystemUser(String username) {
+        return username.equals(SYSTEM_USERNAME);
+    }
+
 
 
 

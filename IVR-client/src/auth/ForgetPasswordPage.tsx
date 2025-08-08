@@ -27,7 +27,7 @@ const ForgetPasswordPage = () => {
       if (err.response?.status === 404) {
         setError("Aucun compte associé à cette adresse email n'a été trouvé.");
       } else if (err.response?.data?.message) {
-        setError(err.response.data.message);
+        setError(err.response.data.error);
       } else {
         setError("Une erreur est survenue. Veuillez réessayer plus tard.");
       }

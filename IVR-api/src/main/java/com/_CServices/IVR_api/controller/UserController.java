@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -27,6 +28,7 @@ public class UserController {
 
 
     @GetMapping
+    @PreAuthorize("hasAuthority('read:users')")
     public ResponseEntity<PagedResponse<UserResponse>> getUsers(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String firstName,
@@ -88,29 +90,22 @@ public class UserController {
 
 
     @PostMapping
+    @PreAuthorize("hasAuthority('create:users')")
     public ResponseEntity<UserResponse> createUser(@RequestBody @Valid CreateUserRequest request) {
         return ResponseEntity.ok(userService.createUser(request));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('delete:users')")
     public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
         userService.deleteUserById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/email")
-    public ResponseEntity<Void> deleteUserByEmail(@RequestParam @NotBlank String email) {
-        userService.deleteUserByEmail(email);
-        return ResponseEntity.noContent().build();
-    }
 
-    @DeleteMapping("/username")
-    public ResponseEntity<Void> deleteUserByUsername(@RequestParam @NotBlank String username) {
-        userService.deleteUserByUsername(username);
-        return ResponseEntity.noContent().build();
-    }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('update:users')")
     public ResponseEntity<UserResponse> updateUserById(@PathVariable Long id, @RequestBody @Valid UpdateUserRequest userRequest) {
         return ResponseEntity.ok(userService.updateUser(userRequest, id));
     }

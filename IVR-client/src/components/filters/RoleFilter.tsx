@@ -1,4 +1,3 @@
-import ResetFiltersButton from "../buttons/ResetFiltersButton";
 
 interface RoleFiltersProps {
   filters: {
@@ -10,45 +9,48 @@ interface RoleFiltersProps {
     updatedBy: string;
   };
   onFilterChange: (name: string, value: string) => void;
-  onResetFilters:()=>void
+  onResetFilters: () => void
+  onApplyFilters: ()=> void
 }
 
-const labelClass = "block text-sm font-medium text-gray-700 mb-1";
-const inputClass = "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 sm:text-sm/6";
+const labelClass = "block text-xs font-semibold text-gray-700";
+const inputClass = "w-full block rounded-md bg-white px-2 py-1 text-xs text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600";
 
-const RoleFilter = ({ filters, onFilterChange, onResetFilters }: RoleFiltersProps) => {
+const RoleFilter = ({ filters, onFilterChange, onResetFilters, onApplyFilters }: RoleFiltersProps) => {
   return (
-    <div className="mb-6 p-4 bg-white rounded-xl shadow border border-gray-200">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
+    <div className="mb-2 p-2 bg-white rounded-xl shadow border border-gray-200">
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-1">
+        <div className="md:col-span-1">
           <label htmlFor="id-filter" className={labelClass}>
             ID
           </label>
           <input
             id="id-filter"
             type="text"
-            placeholder = "Filtrer par ID"
+            placeholder="Filtrer par ID"
             value={filters?.id || ''}
             onChange={(e) => onFilterChange("id", e.target.value)}
             className={inputClass}
           />
         </div>
-        <div>
+
+        <div className="md:col-span-1">
           <label htmlFor="name-filter" className={labelClass}>
             Nom
           </label>
           <input
             id="name-filter"
             type="text"
-            placeholder = "Filtrer par nom"
+            placeholder="Filtrer par nom"
             value={filters?.name || ''}
             onChange={(e) => onFilterChange("name", e.target.value)}
             className={inputClass}
           />
         </div>
-        <div>
+
+        <div className="md:col-span-1">
           <label htmlFor="createdAt-filter" className={labelClass}>
-            Date de création
+            Date création
           </label>
           <input
             id="createdAt-filter"
@@ -59,9 +61,10 @@ const RoleFilter = ({ filters, onFilterChange, onResetFilters }: RoleFiltersProp
             className={inputClass}
           />
         </div>
-        <div>
+
+        <div className="md:col-span-1">
           <label htmlFor="updatedAt-filter" className={labelClass}>
-            Date de modification
+            Date modif.
           </label>
           <input
             id="updatedAt-filter"
@@ -72,37 +75,54 @@ const RoleFilter = ({ filters, onFilterChange, onResetFilters }: RoleFiltersProp
             className={inputClass}
           />
         </div>
-        <div>
+
+        <div className="md:col-span-1">
           <label htmlFor="createdBy-filter" className={labelClass}>
             Créé par
           </label>
           <input
             id="createdBy-filter"
             type="text"
-            placeholder = "Filtrer par créateur"
+            placeholder="Filtrer par créateur"
             value={filters?.createdBy || ''}
             onChange={(e) => onFilterChange("createdBy", e.target.value)}
             className={inputClass}
           />
         </div>
-        <div>
+
+        <div className="md:col-span-1">
           <label htmlFor="updatedBy-filter" className={labelClass}>
             Modifié par
           </label>
           <input
             id="updatedBy-filter"
             type="text"
-            placeholder = "Filtrer par modificateur"
+            placeholder="Filtrer par modificateur"
             value={filters?.updatedBy || ''}
             onChange={(e) => onFilterChange("updatedBy", e.target.value)}
             className={inputClass}
           />
         </div>
-        
-      </div>
-      
- <ResetFiltersButton onClick={onResetFilters} />
 
+        {/* Buttons - span 2 columns each to match UserFilter style */}
+        <div className="md:col-span-1 flex flex-col justify-end">
+          <button
+            onClick={onResetFilters}
+            className={`${inputClass} cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium px-2 py-1 rounded-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.01] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-md hover:shadow-lg flex items-center justify-center text-sm`}
+          >
+            Réinitialiser
+          </button>
+        </div>
+
+        <div className="md:col-span-1 flex flex-col justify-end">
+          <button
+            onClick={onApplyFilters}
+            className={`${inputClass} cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium px-2 py-1 rounded-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.01] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-md hover:shadow-lg flex items-center justify-center text-sm`}
+          >
+            Appliquer
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

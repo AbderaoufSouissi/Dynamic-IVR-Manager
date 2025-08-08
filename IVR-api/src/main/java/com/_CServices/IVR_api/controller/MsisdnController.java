@@ -7,6 +7,7 @@ import com._CServices.IVR_api.service.ClientsCrmHistService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class MsisdnController {
 
 
     @PutMapping("/reset")
+    @PreAuthorize("hasAuthority('reset:msisdn')")
     public ResponseEntity<MessageResponse> resetNbCalls(@RequestBody @Valid MsisdnRequest msisdnRequest) {
         boolean areNbCallsZero = bdrService.areNbCallsZero(msisdnRequest.getMsisdn());
         MessageResponse messageResponse = new MessageResponse("");
@@ -34,6 +36,7 @@ public class MsisdnController {
 
     //Blacklist MSISDN
     @PutMapping("/blacklist")
+    @PreAuthorize("hasAuthority('blacklist:msisdn')")
     public ResponseEntity<MessageResponse> blacklistMsisdn(@RequestBody @Valid MsisdnRequest msisdnRequest) {
         boolean isBlacklisted = clientsCrmHistService.isMsisdnBlacklisted(msisdnRequest.getMsisdn());
         MessageResponse messageResponse = new MessageResponse("");
@@ -50,6 +53,7 @@ public class MsisdnController {
 
     //Whitelist MSISDN
     @PutMapping("/whitelist")
+    @PreAuthorize("hasAuthority('whitelist:msisdn')")
     public ResponseEntity<MessageResponse> whitelistMsisdn(@RequestBody MsisdnRequest msisdnRequest) {
         boolean isWhitelisted = clientsCrmHistService.isMsisdnWhiteListed(msisdnRequest.getMsisdn());
         MessageResponse messageResponse = new MessageResponse("");
@@ -65,6 +69,7 @@ public class MsisdnController {
 
     // Check if MSISDN is blacklisted
     @GetMapping("/is-blacklisted")
+    @PreAuthorize("hasAuthority('verify:msisdn')")
     public ResponseEntity<MessageResponse> isMsisdnBlacklisted(@RequestParam String msisdn) {
         boolean isBlacklisted = clientsCrmHistService.isMsisdnBlacklisted(msisdn);
         MessageResponse messageResponse = MessageResponse.builder()

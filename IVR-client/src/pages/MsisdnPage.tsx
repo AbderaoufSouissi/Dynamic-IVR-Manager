@@ -30,6 +30,7 @@ const blacklist = async () => {
   try {
     const data = await blacklistMsisdn(msisdn);
     setStatus(data.message);
+    toastInfo(data.message)
   } catch (error: unknown) {
     console.error(error);
     if (axios.isAxiosError(error)) {
@@ -65,6 +66,7 @@ const whitelist = async () => {
   try {
     const data = await WhitelistMsisdn(msisdn);
     setStatus(data.message);
+    toastInfo(data.message)
   } catch (error) {
     console.error(error);
     if (axios.isAxiosError(error)) {

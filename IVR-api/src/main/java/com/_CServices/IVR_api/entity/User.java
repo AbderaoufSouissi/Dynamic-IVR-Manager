@@ -59,17 +59,18 @@ public class User extends BaseEntity implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
 
-        if (role != null) {
+        if (role != null && role.getPermissions() != null) {
             role.getPermissions().forEach(permission -> {
-                if(permission != null && permission.getName() != null) {}
-                authorities.add(new SimpleGrantedAuthority(permission.getName().toUpperCase()));
-            });
+                if (permission != null && permission.getName() != null) {
+                    String permName = permission.getName();
+                    authorities.add(new SimpleGrantedAuthority(permName));
 
+                }
+            });
         }
 
         return authorities;
     }
-
 
     @Override
     public boolean isEnabled() {

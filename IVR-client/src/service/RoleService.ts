@@ -1,6 +1,15 @@
 import { API_BASE_URL, axiosInstance } from "../api/Api";
 import type { RoleRequest } from "../types/types";
 
+
+
+export const getAllRolesNames = async () => {
+  const response = await axiosInstance.get(`${API_BASE_URL}/roles/all`);
+  return response.data;
+  
+}
+
+
 export const getRoles = async (params = {}) => {
   const response = await axiosInstance.get(`${API_BASE_URL}/roles`, {
     params, 

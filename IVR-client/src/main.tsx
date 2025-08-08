@@ -7,24 +7,83 @@ import UsersPage from "./pages/UsersPage.tsx";
 import RolesPage from "./pages/RolesPage.tsx";
 import PermissionsPage from "./pages/PermissionsPage.tsx";
 import MsisdnPage from "./pages/MsisdnPage.tsx";
-import UserForm from "./components/forms/UserForm.tsx";
 import HomePage from "./pages/HomePage.tsx";
 import ResetPasswordPage from "./auth/ResetPasswordPage.tsx";
 import ProtectedRoute from "./route/ProtectedRoute.tsx";
 import NotFoundPage from "./pages/NotFound.tsx";
 import DeleteEntityModal from "./components/modal/DeleteEntityModal.tsx";
-import RoleForm from "./components/forms/RoleForm.tsx";
 import AdminOverview from "./pages/AdminOverview.tsx";
-import PermissionForm from "./components/forms/PermissionForm.tsx";
 import AuditsPage from "./pages/AuditsPage.tsx";
 import App from "./App.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
+import RoleDetailsPage from "./pages/RoleDetailsPage.tsx";
+import UserDetailsPage from "./pages/UserDetailsPage.tsx";
+import RoleForm from "./components/forms/RoleForm.tsx";
+import UserForm from "./components/forms/UserForm.tsx";
+import PermissionForm from "./components/forms/PermissionForm.tsx";
+import PermissionDetailsPage from "./pages/PermissionDetailsPage.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/admin",
-    element: <ProtectedRoute />, // Protect the admin section
+    element: <ProtectedRoute />,
     children: [
+      {
+        path: "roles/create",
+        element: (
+          <RoleForm
+            title={"Créer un nouveau role"}
+            description={
+              "Complétez les informations ci-dessous pour créer un nouveau role."
+            }
+          />
+        ),
+      },
+      {
+        path: "roles/edit/:id",
+        element: (
+          <RoleForm
+            title={"Modifier un role"}
+            description={"Modifiez les détails du role ci-dessous."}
+          />
+        ),
+      },
+      {
+        path: "roles/view/:id",
+        element: <RoleDetailsPage />,
+      },
+      {
+        path: "users/create",
+        element: (
+          <UserForm
+            title={"Créer un nouvel utilisateur"}
+            description={
+              "Complétez les informations ci-dessous pour créer un nouvel utilisateur."
+            }
+          />
+        ),
+      },
+      {
+        path: "users/edit/:id",
+        element: (
+          <UserForm title={"Modifier un utilisateur"}
+            description={"Modifiez les détails de l'utilisateur ci-dessous."}
+          />
+        ),
+      },
+      {
+        path: "users/view/:id",
+        element: <UserDetailsPage />,
+      },
+      {
+        path: "permissions/create",
+        element: <PermissionForm />,
+      },
+      {
+        path: "permissions/view/:id",
+        element: <PermissionDetailsPage />,
+      },
+
       {
         path: "",
         element: <App />, // Admin layout/dashboard wrapper
@@ -33,24 +92,6 @@ const router = createBrowserRouter([
             path: "users",
             element: <UsersPage />,
             children: [
-              {
-                path: "create",
-                element: (
-                  <UserForm
-                    title="Créer un nouvel utilisateur"
-                    description="Complétez les informations ci-dessous pour créer un nouvel utilisateur."
-                  />
-                ),
-              },
-              {
-                path: "update/:id",
-                element: (
-                  <UserForm
-                    title="Modifier un utilisateur"
-                    description="Mettez à jour les détails de l'utilisateur ci-dessous."
-                  />
-                ),
-              },
               {
                 path: "delete/:id",
                 element: <DeleteEntityModal />,
@@ -65,45 +106,12 @@ const router = createBrowserRouter([
                 path: "delete/:id",
                 element: <DeleteEntityModal />,
               },
-              {
-                path: "create",
-                element: (
-                  <RoleForm
-                    title={"Créer un nouveau role"}
-                    description={
-                      "Complétez les informations ci-dessous pour créer un nouveau role."
-                    }
-                  />
-                ),
-              },
-              {
-                path: "update/:id",
-                element: (
-                  <RoleForm
-                    title={"Modifier un role"}
-                    description={
-                      "Mettez à jour les détails du role ci-dessous."
-                    }
-                  />
-                ),
-              },
             ],
           },
           {
             path: "permissions",
             element: <PermissionsPage />,
             children: [
-              {
-                path: "create",
-                element: (
-                  <PermissionForm
-                    title={"Créer une nouvelle permission"}
-                    description={
-                      "Complétez les informations ci-dessous pour créer une nouvelle permission"
-                    }
-                  />
-                ),
-              },
               {
                 path: "delete/:id",
                 element: <DeleteEntityModal />,
@@ -130,10 +138,12 @@ const router = createBrowserRouter([
       },
     ],
   },
+
   {
     path: "/",
     element: <HomePage />,
   },
+
   {
     path: "/login",
     element: <LoginPage />,

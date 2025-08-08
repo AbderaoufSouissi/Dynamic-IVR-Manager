@@ -1,110 +1,134 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { createUser, getUserById, updateUser } from "../../service/UserService";
+import type { User } from "../../types/types";
+import {  toastSuccess } from "../../service/ToastService";
 import { HiEye, HiEyeSlash } from "react-icons/hi2";
-import FormButtons from "../buttons/FormButtons";
-import { toastError, toastSuccess } from "../../service/ToastService";
-
-interface UserFormProps {
-  title: Title;
-  description: Description;
-}
-type UsersPageContext = {
-  triggerRefresh: () => void;
-};
+import ReadOnlyInput from "../inputs/ReadOnlyInput";
+import { getAllRolesNames} from "../../service/RoleService";
 
 type Title = "Créer un nouvel utilisateur" | "Modifier un utilisateur";
 type Description =
   | "Complétez les informations ci-dessous pour créer un nouvel utilisateur."
-  | "Mettez à jour les détails de l'utilisateur ci-dessous.";
+  | "Modifiez les détails de l'utilisateur ci-dessous.";
 
-
-
-const UserForm = ({ title, description }: UserFormProps) => {
+export const UserForm = ({
+  title,
+  description,
+}: {
+  title: Title;
+  description: Description;
+  }) => {
+  const DEFAULT_ROLE_NAME = "default"
+  
   const { id } = useParams();
+  const [userInfo, setUserInfo] = useState<User | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const [rolesNames, setRolesNames] = useState<string[]>([])
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     username: "",
     password: "",
-    roleName: "",
+    roleName: DEFAULT_ROLE_NAME,
     active: null as boolean | null,
   });
 
-  const [formError, setFormError] = useState<string | null>(null);
 
-  const [showPassword, setShowPassword] = useState(false);
-  const { triggerRefresh } = useOutletContext<UsersPageContext>();
 
-  const navigate = useNavigate();
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+const fetchAllRolesNames = async () => {
+  try {
+    const data = await getAllRolesNames();
+    setRolesNames(data|| [DEFAULT_ROLE_NAME]);
+  } catch (err) {
+    console.error("Erreur lors de la récupération des rôles", err);
+  }
+};
+    
+  
+    useEffect(() => {
+      
+        fetchAllRolesNames();
+      
+  
+     
+    }, []);
 
   useEffect(() => {
     if (id) {
       getUserById(parseInt(id)).then((user) => {
-        const { password, ...rest } = user; // remove hashed password
-        setFormData({
-          ...rest,
-          password: "",
-        });
+        setUserInfo(user);
+        const { password, ...rest } = user;
+        setFormData({ ...rest, password: "" });
       });
     }
   }, [id]);
 
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   const handleCancel = () => {
-    navigate("/admin/users"); 
+    navigate("/admin/users");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-    !formData.firstName.trim() ||
-    !formData.lastName.trim() ||
-    !formData.email.trim() ||
-    !formData.username.trim() ||
-    (!id && !formData.password.trim()) || 
-    formData.active === null 
-  ) {
-    setFormError("Veuillez remplir tous les champs requis et sélectionner un statut.");
-    return;
-    }
-    if (id && (!formData.roleName || formData.roleName.trim() === "")) {
-    setFormError("Veuillez sélectionner un rôle pour l'utilisateur.");
-    return;
-  }
 
+    setFormError("")
+
+
+   
+
+    if (
+      !formData.firstName.trim() ||
+      !formData.lastName.trim() ||
+      !formData.email.trim() ||
+      !formData.username.trim() ||
+      (!id && !formData.password.trim()) ||
+      formData.active === null
+    ) {
+      console.log("Veuillez remplir tous les champs requis et sélectionner un statut.")
+      setFormError(
+        "Veuillez remplir tous les champs requis et sélectionner un statut."
+      );
+      return;
+    }
+
+    if (id && (!formData.roleName || formData.roleName.trim() === "")) {
+      setFormError("Veuillez sélectionner un rôle pour l'utilisateur.");
+      console.log("Veuillez sélectionner un rôle pour l'utilisateur.");
+      return;
+    }
 
     const basePayload: any = {
-  firstName: formData.firstName,
-  lastName: formData.lastName,
-  email: formData.email,
-  username: formData.username,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      username: formData.username,
       roleName: formData.roleName.trim() === "" ? null : formData.roleName,
-  
-};
+    };
 
-if (formData.active !== null) {
-  basePayload.active = formData.active;
+    if (formData.active !== null) {
+      basePayload.active = formData.active;
     }
-  
-
 
     try {
       if (id) {
-  
         const updatePayload = {
           ...basePayload,
           password: formData.password.trim() === "" ? null : formData.password,
         };
 
-        
-
         await updateUser(parseInt(id), updatePayload);
-        toastSuccess(`L'utilisateur ${updatePayload.username} a été modifié avec succés`)
+        toastSuccess(
+          `L'utilisateur ${updatePayload.username} a été modifié avec succés`
+        );
       } else {
         if (formData.password.trim() === "") {
           throw new Error("Password is required to create a new user.");
@@ -115,236 +139,243 @@ if (formData.active !== null) {
         };
 
         await createUser(createPayload);
-         toastSuccess(`L'utilisateur ${createPayload.username} a été créé avec succés`)
+        toastSuccess(
+          `L'utilisateur ${createPayload.username} a été créé avec succés`
+        );
+       
       }
-       triggerRefresh()
-
-      navigate("/admin/users");
+       navigate("/admin/users");
     } catch (error: any) {
-      toastError("Erreur lors de la soumission du formulaire" )
-  console.error("Erreur lors de la soumission du formulaire :", error);
-  
-
-  const message =
-    error?.response?.data?.error || 
-    error?.message ||                
-    "Une erreur est survenue.";     
-
-  setFormError(message);
-
-
+      const message =
+        error?.response?.data?.error ||
+        error?.message ||
+        "Une erreur est survenue.";
+      setFormError(message);
+      console.error("Erreur lors de la soumission du formulaire :", error);
     }
   };
 
+  const userEditableInfo = [
+    { label: "Prénom", name: "firstName", value: formData.firstName },
+    { label: "Nom", name: "lastName", value: formData.lastName },
+    { label: "Nom d’utilisateur", name: "username", value: formData.username },
+    { label: "Email", name: "email", value: formData.email },
+    {
+      label: "Mot de passe",
+      name: "password",
+      value: formData.password,
+      type: "password",
+    },
+  ];
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 p-4">
-      <div
-        aria-labelledby="modal-title"
-        aria-modal="true"
-        className="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[95vh] overflow-y-auto"
-        role="dialog"
-      >
-        <div className="p-6">
-          <header className="text-center mb-4">
-            <h2 className="text-2xl font-bold text-gray-800" id="modal-title">
-              {title}
-            </h2>
-            <p className="text-gray-500 text-sm mt-1">{description}</p>
-          </header>
-
-          <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
-              <div>
-                <label
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                  htmlFor="first-name"
-                >
-                  Prénom
-                </label>
-                <input
-                  className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={formData.firstName}
-                  id="first-name"
-                  onChange={(e) =>
-                    setFormData({ ...formData, firstName: e.target.value })
-                  }
-                  placeholder="ex: Jean"
-                  type="text"
-                  required
-                />
-              </div>
-
-              <div>
-                <label
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                  htmlFor="last-name"
-                >
-                  Nom
-                </label>
-                <input
-                  className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={formData.lastName}
-                  id="last-name"
-                  onChange={(e) =>
-                    setFormData({ ...formData, lastName: e.target.value })
-                  }
-                  placeholder="ex: Dupont"
-                  type="text"
-                  required
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                  htmlFor="email"
-                >
-                  Adresse Email
-                </label>
-                <input
-                  className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={formData.email}
-                  id="email"
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  placeholder="ex: jean.dupont@mail.com"
-                  type="email"
-                  required
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                  htmlFor="username"
-                >
-                  Username
-                </label>
-                <input
-                  className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={formData.username}
-                  id="username"
-                  onChange={(e) =>
-                    setFormData({ ...formData, username: e.target.value })
-                  }
-                  placeholder="ex: jeandupont"
-                  type="text"
-                  required
-                />
-              </div>
-
-             <div className="md:col-span-2 relative">
-                <label
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                  htmlFor="password"
-                >
-                  Mot de passe
-                </label>
-                <input
-                  className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  id="password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  placeholder="••••••••••••••••"
-                  type={showPassword ? "text" : "password"}
+    <form onSubmit={handleSubmit}>
+      <div className="flex flex-col min-h-screen bg-gray-50">
+        <main className="flex-grow">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
+              <p className="mt-1 text-sm text-gray-600">{description}</p>
               
-                />
-                <button
-                  type="button"
-                  onClick={togglePasswordVisibility}
-                  className="absolute cursor-pointer top-8 right-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors duration-200 focus:outline-none focus:text-blue-600"
-                >
-                  {showPassword ? (
-                    <HiEyeSlash size={20} />
-                  ) : (
-                    <HiEye size={20} />
-                  )}
-                </button>
-              </div>
-              <div className="md:col-span-2">
-                <label
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                  htmlFor="role"
-                >
-                  Rôle (optionnel)
-                </label>
-                <input
-                  className="form-input w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={formData.roleName}
-                  id="role"
-                  onChange={(e) =>
-                    setFormData({ ...formData, roleName: e.target.value })
-                  }
-                  placeholder="ex: administrateur"
-                  type="text"
-                />
-              </div>
+            </div>
 
-              <div className="md:col-span-2">
-                <label className="text-sm font-medium text-gray-700 mb-1 block">
-                  Statut
-                </label>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  {/* Active Radio Button */}
-                  <label
-                    htmlFor="active"
-                    className="flex items-center cursor-pointer"
-                  >
-                    <input
-                      type="radio"
-                      name="status"
-                      id="active"
-                      value="active"
-                      className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
-                      checked={formData.active === true}
-                      onChange={() =>
-                        setFormData({ ...formData, active: true })
-                      }
-                    />
-                    <span className="ml-2 flex items-center text-sm text-gray-700">
-                      <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                      Actif
-                    </span>
-                  </label>
+            <div className="bg-white shadow-sm rounded-lg">
+              <div className="p-6 space-y-6">
+                {id && (
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      Infos sur l'utilisateur
+                    </h2>
+                    <div className="mt-1 grid grid-cols-1 md:grid-cols-5 gap-6">
+                      <ReadOnlyInput label="ID" value={id} name="user-id" />
+                      <ReadOnlyInput
+                        label="Créé par"
+                        value={userInfo?.createdBy}
+                        name="createdBy"
+                      />
+                      <ReadOnlyInput
+                        label="Date création"
+                        value={userInfo?.createdAt}
+                        name="createdAt"
+                      />
+                      <ReadOnlyInput
+                        label="Modifié par"
+                        value={userInfo?.updatedBy}
+                        name="updatedBy"
+                      />
+                      <ReadOnlyInput
+                        label="Date dernière modification"
+                        value={userInfo?.updatedAt}
+                        name="updatedAt"
+                      />
+                    </div>
+                  </div>
+                )}
 
-                  {/* Inactive Radio Button */}
-                  <label
-                    htmlFor="inactive"
-                    className="flex items-center cursor-pointer"
-                  >
-                    <input
-                      type="radio"
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Détails de l'utilisateur
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+                  {userEditableInfo.map((field) => {
+                    if (field.name === "password") {
+                      return (
+                        <div
+                          key={field.name}
+                          className="md:col-span-1 relative"
+                        >
+                          <label
+                            htmlFor={field.name}
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                          >
+                            {field.label}
+                          </label>
+                          <input
+                            className="form-input w-full rounded-lg border border-gray-300 px-3 py-1 pr-10 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            id={field.name}
+                            value={formData.password}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                password: e.target.value,
+                              })
+                            }
+                            placeholder="••••••••••••••••"
+                            type={showPassword ? "text" : "password"}
+                          />
+                          <button
+                            type="button"
+                            onClick={togglePasswordVisibility}
+                            className="absolute cursor-pointer top-7.5 right-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors duration-200 focus:outline-none focus:text-blue-600"
+                          >
+                            {showPassword ? (
+                              <HiEyeSlash size={20} />
+                            ) : (
+                              <HiEye size={20} />
+                            )}
+                          </button>
+                        </div>
+                      );
+                    }
+                  
+                    return (
+                      <div key={field.name}>
+                        <label
+                          htmlFor={field.name}
+                          className="block text-sm font-medium text-gray-900"
+                        >
+                          {field.label}
+                        </label>
+                        <input
+                          id={field.name}
+                          name={field.name}
+                          type={field.type || "text"}
+                          value={field.value}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              [field.name]: e.target.value,
+                            }))
+                          }
+                          placeholder={field.label}
+                          className="mt-1 block w-full border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm rounded-lg border px-3 py-1 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2"
+                        />
+                      </div>
+                    );
+                  })}
+
+                  <div className="md:col-span-1">
+                    <label
+                      htmlFor="status"
+                      className="block text-sm font-medium text-gray-900 mb-1"
+                    >
+                      Statut
+                    </label>
+                    <select
+                      id="status"
                       name="status"
-                      id="inactive"
-                      value="inactive"
-                      className="h-4 w-4 text-red-600 border-gray-300 focus:ring-red-500"
-                      onChange={() =>
-                        setFormData({ ...formData, active: false })
+                      value={
+                        formData.active === null
+                          ? ""
+                          : formData.active
+                          ? "active"
+                          : "inactive"
                       }
-                      checked={formData.active === false}
-                    />
-                    <span className="ml-2 flex items-center text-sm text-gray-700">
-                      <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                      Inactif
-                    </span>
-                  </label>
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          active: e.target.value === "active" ? true : false,
+                        })
+                      }
+                      className="mt-1 block w-full border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm rounded-lg border px-3 py-1 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2"
+                    >
+                      <option value="">-- Sélectionnez un statut --</option>
+                      <option value="active">Actif</option>
+                      <option value="inactive">Inactif</option>
+                    </select>
+
+                  </div>
+                    <div className="md:col-span-1">
+  <label
+    htmlFor="roleName"
+    className="block text-sm font-medium text-gray-900 mb-1"
+  >
+    Rôle (facultatif)
+  </label>
+  <select
+    id="roleName"
+    name="roleName"
+    value={formData.roleName}
+    onChange={(e) =>
+      setFormData({
+        ...formData,
+        roleName: e.target.value,
+      })
+    }
+    className="mt-1 block w-full border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm rounded-lg border px-3 py-1 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2"
+  >
+  
+    {rolesNames?.map((roleName,index) => (
+      <option key={index} value={roleName}>
+        {roleName}
+      </option>
+    ))}
+  </select>
+</div>
+
+
                 </div>
               </div>
             </div>
             {formError && (
-  <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md text-sm border border-red-300">
+  <div className="mb-4 rounded-md bg-red-50 p-3 text-red-700 border border-red-400">
     {formError}
   </div>
 )}
+          </div>
+          
+        </main>
 
-            <FormButtons onCancel={handleCancel}/>
-          </form>
-        </div>
+        <footer className="sticky bottom-0 bg-gray-100 border-t border-gray-300 shadow-inner">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-end items-center py-4 space-x-3">
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="cursor-pointer px-4 py-2 text-sm font-medium rounded-md shadow-sm text-gray-900 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 border border-gray-300 transition"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+              className="cursor-pointer px-4 py-2 inline-flex justify-center text-sm font-medium text-white border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:ring-offset-2 transition bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:scale-[1.01] active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform "
+              >
+                Sauvegarder
+              </button>
+            </div>
+          </div>
+        </footer>
       </div>
-    </div>
+    </form>
   );
 };
 

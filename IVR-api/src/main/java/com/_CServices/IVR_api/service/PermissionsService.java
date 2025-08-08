@@ -14,11 +14,7 @@ public interface PermissionsService {
                                                               String sortBy,
                                                               String sortDir);
     PermissionsResponse getPermissionById(Long id);
-    PermissionsResponse getPermissionByName(String name);
-    PermissionsResponse getPermissionByDescription(String description);
     PermissionsResponse createPermission(PermissionsRequest permissionsRequest);
     void deletePermissionById(Long id);
-    void deletePermissionByName(String permissionName);
-
     List<PermissionsResponse> getAllPermissions();
 }

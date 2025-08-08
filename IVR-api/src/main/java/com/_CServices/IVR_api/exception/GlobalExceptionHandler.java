@@ -45,4 +45,15 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(ActionNotAllowedException.class)
+    public ResponseEntity<ErrorResponse> handleActionNotAllowedException(ActionNotAllowedException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message("Cette Action est Strictement Interdite")
+                .status(HttpStatus.FORBIDDEN.value())
+                .error(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
 }
