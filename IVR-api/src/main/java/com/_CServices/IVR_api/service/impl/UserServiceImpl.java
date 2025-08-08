@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID " + id + " not found"));
 
         if(isSystemUser(userToDelete.getUsername())){
-            throw new ActionNotAllowedException("Cette action est strictement interdite");
+            throw new ActionNotAllowedException("Suppression du user: "+userToDelete.getUsername()+" est strictement interdite");
         }
 
         Long userToDeleteId = userToDelete.getId();
@@ -183,7 +183,14 @@ public class UserServiceImpl implements UserService {
         User userToUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         if(isSystemUser(userToUpdate.getUsername())){
-            throw new ActionNotAllowedException("Cette action est strictement interdite");
+            if(request.getRoleName()!= userToUpdate.getRole().getName() ||
+            request.getFirstName() != userToUpdate.getFirstName() ||
+            request.getLastName() != userToUpdate.getLastName() ||
+            request.getActive() != userToUpdate.getActive() ||
+            request.getUsername() != userToUpdate.getUsername()) {
+                throw new ResourceAlreadyExistsException("La modification du user : " + request.getUsername() + " est strictement interdit");
+
+            }
         }
 
         if (request.getEmail() != null && !request.getEmail().equals(userToUpdate.getEmail())) {
@@ -239,10 +246,11 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    
+
 
     private boolean isSystemUser(String username) {
         return username.equals(SYSTEM_USERNAME);
-
     }
 
 
