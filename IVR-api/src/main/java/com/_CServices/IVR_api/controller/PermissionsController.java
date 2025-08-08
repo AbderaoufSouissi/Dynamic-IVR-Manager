@@ -6,7 +6,6 @@ import com._CServices.IVR_api.dto.response.PermissionsResponse;
 import com._CServices.IVR_api.filter.PermissionsFilter;
 import com._CServices.IVR_api.service.PermissionsService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -66,15 +65,7 @@ public class PermissionsController {
 
     }
 
-    @GetMapping("/name")
-    public ResponseEntity<PermissionsResponse> getPermissionByName(@RequestParam @NotBlank String name) {
-        return ResponseEntity.ok(permissionsService.getPermissionByName(name));
 
-    }
-    @GetMapping("/description")
-    public ResponseEntity<PermissionsResponse> getPermissionByDescription(@RequestParam @NotBlank String description) {
-        return ResponseEntity.ok(permissionsService.getPermissionByDescription(description));
-    }
 
     @PostMapping
     public ResponseEntity<PermissionsResponse> createPermission(@RequestBody @Valid PermissionsRequest permissionsRequest) {
@@ -87,12 +78,7 @@ public class PermissionsController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/name")
-    public ResponseEntity<Void> deletePermissionByName(@RequestParam @NotBlank String name) {
-        permissionsService.deletePermissionByName(name);
-        return ResponseEntity.noContent().build();
 
-    }
 
 
 
