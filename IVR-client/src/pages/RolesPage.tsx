@@ -7,7 +7,7 @@ import { getRoles } from "../service/RoleService";
 import type { Role } from "../types/types";
 import { HiShieldCheck } from "react-icons/hi2";
 import { HiX } from "react-icons/hi";
-import PageHeader from "../components/header/PageHeader";
+import PageHeader from "../components/headers/PageHeader";
 import AddButton from "../components/buttons/AddButton";
 
 const RolesPage = () => {

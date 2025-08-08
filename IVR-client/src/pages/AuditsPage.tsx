@@ -7,7 +7,7 @@ import type { Audit } from "../types/types";
 import { HiX } from "react-icons/hi";
 import { HiDocumentText } from "react-icons/hi2";
 import { useSearchParams } from "react-router-dom";
-import PageHeader from "../components/header/PageHeader";
+import PageHeader from "../components/headers/PageHeader";
 
 const AuditsPage = () => {
   const [filters, setFilters] = useState({

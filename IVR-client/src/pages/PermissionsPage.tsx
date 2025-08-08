@@ -7,7 +7,7 @@ import type { Permission } from "../types/types";
 import { HiKey, HiOutlineKey } from "react-icons/hi2";
 import { HiX } from "react-icons/hi";
 import AddButton from "../components/buttons/AddButton";
-import PageHeader from "../components/header/PageHeader";
+import PageHeader from "../components/headers/PageHeader";
 
 const PermissionsPage = () => {
   const [filters, setFilters] = useState({

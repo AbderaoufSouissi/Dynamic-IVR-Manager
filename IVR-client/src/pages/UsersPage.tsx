@@ -7,7 +7,7 @@ import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
 import { getUsers } from "../service/UserService";
 import type { User } from "../types/types";
 import AddButton from "../components/buttons/AddButton";
-import PageHeader from "../components/header/PageHeader";
+import PageHeader from "../components/headers/PageHeader";
 
 const UsersPage = () => {
   const [filters, setFilters] = useState({

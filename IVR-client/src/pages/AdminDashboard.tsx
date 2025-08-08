@@ -1,6 +1,6 @@
 // adjust path if needed
 import { Outlet } from "react-router-dom";
-import DashboardHeader from "../components/header/DashboardHeader";
+import DashboardHeader from "../components/headers/DashboardHeader";
 import Sidebar from "../components/sideBar/SideBar";
 
 const AdminDashboard = () => {
