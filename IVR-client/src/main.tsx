@@ -49,7 +49,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "admin/roles/view/:id",
+        path: "roles/view/:id",
         element: <RoleDetailsPage />,
       },
       {
@@ -66,8 +66,7 @@ const router = createBrowserRouter([
       {
         path: "users/edit/:id",
         element: (
-          <UserForm
-            title={"Modifier un utilisateur"}
+          <UserForm title={"Modifier un utilisateur"}
             description={"Modifiez les détails de l'utilisateur ci-dessous."}
           />
         ),
