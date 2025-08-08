@@ -1,0 +1,43 @@
+<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Blue gradient for outer container -->
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2563EB;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Blue gradient for inner square -->
+    <linearGradient id="innerBlueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2563EB;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Shadow filter -->
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="2" result="offset" />
+      <feFlood flood-color="#000000" flood-opacity="0.25"/>
+      <feComposite in2="offset" operator="in"/>
+      <feMerge> 
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/> 
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Outer rounded rectangle (equivalent to the outer div) -->
+  <rect x="2" y="2" width="36" height="36" 
+        rx="8" ry="8" 
+        fill="url(#blueGradient)" 
+        filter="url(#dropShadow)"/>
+  
+  <!-- White rounded square (equivalent to the white inner div) -->
+  <rect x="8" y="8" width="24" height="24" 
+        rx="4" ry="4" 
+        fill="white"/>
+  
+  <!-- Blue inner square (equivalent to the innermost div) -->
+  <rect x="14.5" y="14.5" width="11" height="11" 
+        rx="2" ry="2" 
+        fill="url(#innerBlueGradient)"/>
+</svg>
