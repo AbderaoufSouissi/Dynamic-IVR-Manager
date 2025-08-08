@@ -91,10 +91,29 @@ BEGIN
              SELECT 'read:permissions'         AS p_name, 'Consulter la liste des roles'              AS p_desc FROM DUAL UNION ALL
              SELECT 'create:permissions'   AS p_name, 'Créer des permissions'             AS p_desc FROM DUAL UNION ALL
              SELECT 'delete:permissions'   AS p_name, 'Supprimer des permissions'         AS p_desc FROM DUAL UNION ALL
+             SELECT 'verify:msisdn'  AS p_name, 'Vérifier si un MSISDN est Blacklisté'            AS p_desc FROM DUAL UNION ALL
              SELECT 'blacklist:msisdn'  AS p_name, 'Blacklister un MSISDN'            AS p_desc FROM DUAL UNION ALL
              SELECT 'whitelist:msisdn'  AS p_name, 'Whitelister un MSISDN'            AS p_desc FROM DUAL UNION ALL
              SELECT 'reset:msisdn' AS p_name, 'Réinitialiser le nombre d’appels d’un MSISDN' AS p_desc FROM DUAL
          );
+
+
+    INSERT INTO ROLES (
+        ROLE_ID,
+        role_name,
+        created_at,
+        updated_at,
+        CREATED_BY_ID,
+        UPDATED_BY_ID
+    )
+    VALUES (
+               SHARED_ID_SEQ.NEXTVAL,
+               'default',
+               SYSTIMESTAMP,
+               SYSTIMESTAMP,
+               system_user_id,
+               system_user_id
+           );
 
     -- Assign all permissions to SYSTEM_ROLE
     INSERT INTO ROLE_PERMISSIONS (ROLE_ID, PERMISSION_ID)
