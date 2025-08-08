@@ -171,12 +171,13 @@ public class RoleServiceImpl implements RoleService {
 
         Role roleToUpdate = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " not found"));
-        if(isSystemRole(roleToUpdate.getName()) || isDefaultRole(roleToUpdate.getName())){
+        if (isSystemRole(roleToUpdate.getName()) || isDefaultRole(roleToUpdate.getName())) {
             throw new ActionNotAllowedException("Cette Action est Strictement Interdite");
         }
 
-        if(roleRepository.findByName(roleToUpdate.getName()) != null){
-            throw new ResourceAlreadyExistsException("Role : "+roleToUpdate.getName()+" existe déjà");
+        Role existingRole = roleRepository.findByName(roleDto.getName());
+        if (existingRole != null && !existingRole.getId().equals(id)) {
+            throw new ResourceAlreadyExistsException("Role : " + roleDto.getName() + " existe déjà");
         }
 
         roleToUpdate.setName(roleDto.getName());
@@ -196,7 +197,6 @@ public class RoleServiceImpl implements RoleService {
 
         Role updatedRole = roleRepository.save(roleToUpdate);
 
-
         auditLoggingService.logAction(
                 ActionType.UPDATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
@@ -206,6 +206,7 @@ public class RoleServiceImpl implements RoleService {
 
         return roleMapper.toDto(updatedRole);
     }
+
     @Transactional
     @Override
     public void deleteRoleById(Long id) {
