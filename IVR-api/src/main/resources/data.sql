@@ -88,13 +88,17 @@ BEGIN
              SELECT 'read:roles'         AS p_name, 'Consulter la liste des roles'              AS p_desc FROM DUAL UNION ALL
              SELECT 'update:roles'         AS p_name, 'Modifer des rôles'            AS p_desc FROM DUAL UNION ALL
              SELECT 'delete:roles'         AS p_name, 'Supprimer les rôles'                AS p_desc FROM DUAL UNION ALL
-             SELECT 'read:permissions'         AS p_name, 'Consulter la liste des roles'              AS p_desc FROM DUAL UNION ALL
+             SELECT 'read:permissions'         AS p_name, 'Consulter la liste des permissions'              AS p_desc FROM DUAL UNION ALL
              SELECT 'create:permissions'   AS p_name, 'Créer des permissions'             AS p_desc FROM DUAL UNION ALL
              SELECT 'delete:permissions'   AS p_name, 'Supprimer des permissions'         AS p_desc FROM DUAL UNION ALL
+             SELECT 'read:audits' AS p_name, 'Consulter la liste d’audits ' AS p_desc FROM DUAL UNION ALL
              SELECT 'verify:msisdn'  AS p_name, 'Vérifier si un MSISDN est Blacklisté'            AS p_desc FROM DUAL UNION ALL
              SELECT 'blacklist:msisdn'  AS p_name, 'Blacklister un MSISDN'            AS p_desc FROM DUAL UNION ALL
              SELECT 'whitelist:msisdn'  AS p_name, 'Whitelister un MSISDN'            AS p_desc FROM DUAL UNION ALL
+
              SELECT 'reset:msisdn' AS p_name, 'Réinitialiser le nombre d’appels d’un MSISDN' AS p_desc FROM DUAL
+
+
          );
 
 

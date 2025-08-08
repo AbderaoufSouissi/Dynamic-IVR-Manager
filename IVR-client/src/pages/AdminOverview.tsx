@@ -160,7 +160,7 @@ const AdminOverview = () => {
         </section>
 
         {/* Recent Actions */}
-        <section className="rounded-xl shadow border border-gray-200 p-3 sm:p-4 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:bg-white flex-1 min-h-0 flex flex-col">
+       <section className="rounded-xl shadow border border-gray-200 p-3 sm:p-4 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:bg-white flex flex-col h-auto">
   <div className="border-b border-slate-200/50 pb-2 sm:pb-3 mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
     <div>
       <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-0 leading-tight">
@@ -177,7 +177,7 @@ const AdminOverview = () => {
     </button>
   </div>
 
-  <div className="divide-y divide-slate-200/50 flex-1 overflow-y-auto">
+  <div className="divide-y divide-slate-200/50 overflow-y-auto">
     {recentAudits.length > 0 ? (
       recentAudits.map((audit, index) => (
         <div
@@ -230,7 +230,8 @@ const AdminOverview = () => {
       <p className="p-4 text-center text-slate-500 text-sm">Aucune activité récente</p>
     )}
   </div>
-</section>      </div>
+</section>
+      </div>
     </main>
 
     );
