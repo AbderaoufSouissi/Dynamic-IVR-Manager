@@ -98,17 +98,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/email")
-    public ResponseEntity<Void> deleteUserByEmail(@RequestParam @NotBlank String email) {
-        userService.deleteUserByEmail(email);
-        return ResponseEntity.noContent().build();
-    }
 
-    @DeleteMapping("/username")
-    public ResponseEntity<Void> deleteUserByUsername(@RequestParam @NotBlank String username) {
-        userService.deleteUserByUsername(username);
-        return ResponseEntity.noContent().build();
-    }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUserById(@PathVariable Long id, @RequestBody @Valid UpdateUserRequest userRequest) {

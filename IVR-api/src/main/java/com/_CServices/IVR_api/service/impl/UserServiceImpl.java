@@ -1,6 +1,6 @@
 package com._CServices.IVR_api.service.impl;
 
-import com._CServices.IVR_api.dto.response.PermissionsResponse;
+
 import com._CServices.IVR_api.entity.Permissions;
 import com._CServices.IVR_api.exception.ActionNotAllowedException;
 import com._CServices.IVR_api.repository.roles.RoleRepository;
@@ -24,7 +24,6 @@ import com._CServices.IVR_api.service.UserService;
 import com._CServices.IVR_api.utils.SortUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -163,51 +162,9 @@ public class UserServiceImpl implements UserService {
         );
     }
 
-    @Override
-    @Transactional
-    public void deleteUserByEmail(String email) {
-        log.info("inside deleteUserByEmail()");
 
-        User userToDelete = Optional.ofNullable(userRepository.findByEmail(email))
-                .orElseThrow(() -> new ResourceNotFoundException("User with Email : "+email+" Not Found"));
 
-        if(isSystemUser(userToDelete.getUsername())){
-            throw new ActionNotAllowedException("Cette action est strictement interdite");
-        }
 
-        Long userToDeleteId = userToDelete.getId();
-
-        userRepository.delete(userToDelete);
-
-        auditLoggingService.logAction(
-                ActionType.DELETE_USER.toString(),
-                EntityType.USER.toString(),
-                userToDeleteId,
-                null
-        );
-    }
-
-    @Override
-    @Transactional
-    public void deleteUserByUsername(String username) {
-        log.info("inside deleteUserByUsername()");
-        User userToDelete = Optional.ofNullable(userRepository.findByUsername(username))
-                .orElseThrow(() -> new ResourceNotFoundException("User with Username : "+username+" Not Found"));
-        if(isSystemUser(username)){
-            throw new ActionNotAllowedException("Cette action est strictement interdite");
-        }
-
-        Long userToDeleteId = userToDelete.getId();
-        userRepository.delete(userToDelete);
-
-        auditLoggingService.logAction(
-                ActionType.DELETE_USER.toString(),
-                EntityType.USER.toString(),
-                userToDeleteId,
-                null
-        );
-
-    }
 
     @Override
     public List<String> getUserPermissions(String username) {
