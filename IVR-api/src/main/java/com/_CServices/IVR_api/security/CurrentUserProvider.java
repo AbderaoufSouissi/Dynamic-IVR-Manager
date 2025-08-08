@@ -18,6 +18,8 @@ public class CurrentUserProvider {
     private final UserRepository userRepository;
 
     public User getCurrentLoggedInUser() {
+
+        log.info("inside getCurrentLoggedInUser()");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null ||
@@ -31,6 +33,16 @@ public class CurrentUserProvider {
         if (!(principal instanceof User)) {
             throw new IllegalStateException("Principal is not an instance of User");
         }
+
+
+
+
+        authentication.getAuthorities().forEach(auth ->
+                log.info("Authority: {}", auth.getAuthority())
+        );
+
+
+
 
         return userRepository.findById(((User) principal).getId())
                 .orElseThrow(() -> new IllegalStateException("User not found in DB"));

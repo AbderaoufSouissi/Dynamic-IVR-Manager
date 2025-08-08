@@ -9,6 +9,7 @@ import com._CServices.IVR_api.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ public class RoleController {
 
 
     @GetMapping
+    @PreAuthorize("hasAuthority('read:roles')")
     public ResponseEntity<PagedResponse<RoleResponse>> getRoles(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String name,
@@ -59,23 +61,27 @@ public class RoleController {
 
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('read:roles')")
     public ResponseEntity<RoleResponse> getRoleById(@PathVariable Long id) {
         return ResponseEntity.ok(roleService.getRoleById(id));
 
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('create:roles')")
     public ResponseEntity<RoleResponse> createRole(@RequestBody RoleRequest roleRequest) {
         return ResponseEntity.ok(roleService.createRole(roleRequest));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('update:roles')")
     public ResponseEntity<RoleResponse> updateRoleById(@PathVariable Long id, @RequestBody RoleRequest roleRequest) {
         return ResponseEntity.ok(roleService.updateRoleById(id, roleRequest));
     }
 
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('delete:roles')")
     public ResponseEntity<RoleResponse> deleteRoleById(@PathVariable Long id) {
         roleService.deleteRoleById(id);
         return ResponseEntity.noContent().build();

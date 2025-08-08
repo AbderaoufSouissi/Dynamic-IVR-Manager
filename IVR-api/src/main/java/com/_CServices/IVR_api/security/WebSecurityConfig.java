@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,6 +24,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 @RequiredArgsConstructor
 public class WebSecurityConfig {
@@ -73,7 +75,13 @@ public class WebSecurityConfig {
                 )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationEntryPoint())
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"Forbidden\"}");
+                        })
                 )
+
                 .sessionManagement(session -> session
                         .maximumSessions(1)
                 )

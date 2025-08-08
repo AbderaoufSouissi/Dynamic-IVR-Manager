@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ public class PermissionsController {
     private final PermissionsService permissionsService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('read:permissions')")
     public ResponseEntity<PagedResponse<PermissionsResponse>> getPermissions(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String name,
@@ -60,6 +62,7 @@ public class PermissionsController {
 
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('read:permissions')")
     public ResponseEntity<PermissionsResponse> getPermissionById(@PathVariable Long id) {
         return ResponseEntity.ok(permissionsService.getPermissionById(id));
 
@@ -68,11 +71,13 @@ public class PermissionsController {
 
 
     @PostMapping
+    @PreAuthorize("hasAuthority('create:permissions')")
     public ResponseEntity<PermissionsResponse> createPermission(@RequestBody @Valid PermissionsRequest permissionsRequest) {
         return ResponseEntity.ok(permissionsService.createPermission(permissionsRequest));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('delete:permissions')")
     public ResponseEntity<Void> deletePermissionById(@PathVariable @NotNull Long id) {
         permissionsService.deletePermissionById(id);
         return ResponseEntity.noContent().build();
