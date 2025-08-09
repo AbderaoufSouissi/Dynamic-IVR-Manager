@@ -20,7 +20,7 @@ const ProtectedRoute = ({ requiredPermissions }: ProtectedRouteProps) => {
   }
 
   // If specific permissions are required
-  if (requiredPermissions && !requiredPermissions.every(hasPermission)) {
+  if (requiredPermissions && !requiredPermissions.some((perm) => hasPermission(perm))) {
     return <Navigate to="/403" replace />; // Unauthorized page
   }
 

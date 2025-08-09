@@ -1,4 +1,3 @@
-// components/Sidebar.tsx
 import type { IconType } from 'react-icons';
 import { FaUserAlt, FaShieldAlt } from "react-icons/fa";
 import { HiOutlineKey } from "react-icons/hi2";
@@ -19,7 +18,7 @@ interface NavItem {
   label: string;
   icon: IconType;
   route?: string;
-   requiredPermission?: string | string[];
+  requiredPermission?: string | string[];
 }
 
 const navItems: NavItem[] = [
@@ -32,10 +31,10 @@ const navItems: NavItem[] = [
 ];
 
 const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
-  const { hasPermission } = useAuth(); 
+  const { hasPermission } = useAuth();
 
-   const canAccess = (requiredPermission?: string | string[]) => {
-    if (!requiredPermission) return true; // no permission required, show by default
+  const canAccess = (requiredPermission?: string | string[]) => {
+    if (!requiredPermission) return true; // Pas de permission requise, on affiche
 
     if (Array.isArray(requiredPermission)) {
       return requiredPermission.some(perm => hasPermission(perm));
@@ -44,11 +43,8 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
   };
 
   const location = useLocation();
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // 👈 Track modal visibility
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-
-
-  // Function to check if current route matches the nav item
   const isRouteActive = (route: string | undefined) => {
     if (!route) return false;
     return location.pathname === route || location.pathname.startsWith(route);
@@ -56,12 +52,9 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
 
   return (
     <>
-    <aside className="flex flex-col w-[15%] bg-white border-r border-gray-200 min-h-screen shadow-lg">
-  
-
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
-         {navItems
+      <aside className="flex flex-col w-[15%] bg-white border-r border-gray-200 min-h-screen shadow-lg">
+        <nav className="flex-1 p-4 space-y-2">
+          {navItems
             .filter(({ requiredPermission }) => canAccess(requiredPermission))
             .map(({ id, label, icon: Icon, route }) => {
               const isActive = isRouteActive(route) || activeTab === id;
@@ -92,14 +85,14 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
                   {isActive && id !== 'logout' && (
                     <div className="absolute left-0 top-0 w-1 h-full bg-blue-600 rounded-r-md"></div>
                   )}
-                  <Icon 
-                    size={20} 
+                  <Icon
+                    size={20}
                     className={`
                       transition-all duration-200 z-10
                       ${id === 'logout'
                         ? 'group-hover:text-red-600'
-                        : isActive 
-                          ? 'text-white drop-shadow-sm' 
+                        : isActive
+                          ? 'text-white drop-shadow-sm'
                           : 'group-hover:text-blue-600 group-hover:scale-110'
                       }
                     `}
@@ -108,8 +101,8 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
                     text-sm font-medium transition-all duration-200 z-10
                     ${id === 'logout'
                       ? 'group-hover:text-red-600'
-                      : isActive 
-                        ? 'text-white font-semibold' 
+                      : isActive
+                        ? 'text-white font-semibold'
                         : 'group-hover:text-blue-600'
                     }
                   `}>
@@ -124,15 +117,10 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
                 </NavLink>
               );
             })}
-      </nav>
-
-
-    </aside>
-    {showLogoutModal && (
-        <LogoutModal  onClose={() => setShowLogoutModal(false)}/>
-  )
-  }
-  </>
+        </nav>
+      </aside>
+      {showLogoutModal && <LogoutModal onClose={() => setShowLogoutModal(false)} />}
+    </>
   );
 };
 

@@ -22,6 +22,7 @@ import RoleForm from "./components/forms/RoleForm.tsx";
 import UserForm from "./components/forms/UserForm.tsx";
 import PermissionForm from "./components/forms/PermissionForm.tsx";
 import PermissionDetailsPage from "./pages/PermissionDetailsPage.tsx";
+import ForbiddenPage from "./pages/ForbiddenPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -214,6 +215,10 @@ const router = createBrowserRouter([
     path: "/reset-password",
     element: <ResetPasswordPage />,
   },
+  {
+  path: "/403",
+  element: <ForbiddenPage />,
+},
 
   {
     path: "*",
