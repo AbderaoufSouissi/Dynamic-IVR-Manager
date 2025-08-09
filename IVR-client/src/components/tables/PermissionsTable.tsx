@@ -10,6 +10,7 @@ import { formatTimestamp } from "../../api/Api";
 import { HiChevronDown } from "react-icons/hi";
 import { BsTrash3 } from "react-icons/bs";
 import { FaEye } from "react-icons/fa";
+import { useAuth } from "../../hooks/useAuth";
 
 interface PermissionsTableProps {
   permissions: Permission[];
@@ -46,6 +47,9 @@ const PermissionsTable = ({
   onRowsPerPageChange,
   rowsPerPage,
 }: PermissionsTableProps) => {
+
+  const { hasPermission } = useAuth()
+
   const navigate = useNavigate();
 
   const totalPages = Math.ceil(totalCount / rowsPerPage);
@@ -169,7 +173,7 @@ const PermissionsTable = ({
             >
               <FaEye size={20} />
             </button>
-            <button
+            {hasPermission("delete:permissions") && <button
               onClick={() =>
                 navigate(
                   `/admin/permissions/delete/${permission.permissionId}`,
@@ -179,7 +183,8 @@ const PermissionsTable = ({
               className="text-red-600 hover:text-red-800 transition cursor-pointer"
             >
               <BsTrash3 size={20} />
-            </button>
+            </button> }
+            
           </div>
         </td>
       </tr>

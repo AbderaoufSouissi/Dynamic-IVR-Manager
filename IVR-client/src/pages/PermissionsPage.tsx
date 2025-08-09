@@ -8,8 +8,13 @@ import { HiKey, HiOutlineKey } from "react-icons/hi2";
 import { HiX } from "react-icons/hi";
 import AddButton from "../components/buttons/AddButton";
 import PageHeader from "../components/headers/PageHeader";
+import { useAuth } from "../hooks/useAuth";
 
 const PermissionsPage = () => {
+
+    const { hasPermission } = useAuth()
+  
+
   const [filters, setFilters] = useState({
     id: "",
     name: "",
@@ -181,8 +186,8 @@ const PermissionsPage = () => {
     {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
   </button>
 
-
-          <AddButton onClick={() => navigate("/admin/permissions/create")} icon={HiOutlineKey} label={"Créer Nouveau"}/>
+      {hasPermission("create:users") && <AddButton onClick={() => navigate("/admin/permissions/create")} icon={HiOutlineKey} label={"Créer Nouveau"}/> }
+          
 </div>
 
         {showFilters && (

@@ -9,8 +9,12 @@ import { HiShieldCheck } from "react-icons/hi2";
 import { HiX } from "react-icons/hi";
 import PageHeader from "../components/headers/PageHeader";
 import AddButton from "../components/buttons/AddButton";
+import { useAuth } from "../hooks/useAuth";
 
 const RolesPage = () => {
+
+  const { hasPermission } = useAuth()
+
   const [filters, setFilters] = useState({
     id: "",
     name: "",
@@ -196,8 +200,8 @@ const RolesPage = () => {
     {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
   </button>
 
-
-          <AddButton onClick={() => navigate("/admin/roles/create")} icon={MdAdminPanelSettings} label={"Créer Nouveau"}/>
+    {hasPermission("create:roles")  &&  <AddButton onClick={() => navigate("/admin/roles/create")} icon={MdAdminPanelSettings} label={"Créer Nouveau"}/> }
+         
 </div>
 
         {showFilters && (

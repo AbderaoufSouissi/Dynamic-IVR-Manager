@@ -78,31 +78,8 @@ public class AuthController {
 
         User user = (User) principal;
 
-        Set<String> permissions = user.getRole().getPermissions().stream()
-                .map(perm -> perm.getName())
-                .collect(Collectors.toSet());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        Map<String, Object> authenticatedUser = new HashMap<>();
-        authenticatedUser.put("userId", user.getId());
-        authenticatedUser.put("firstName", user.getFirstName());
-        authenticatedUser.put("lastName", user.getLastName());
-        authenticatedUser.put("username", user.getUsername());
-        authenticatedUser.put("email", user.getEmail());
-        authenticatedUser.put("active", user.getActive());
-        authenticatedUser.put("roleName", user.getRole().getName());
-        authenticatedUser.put("permissions", permissions);
-        authenticatedUser.put("createdAt", user.getCreatedAt().format(formatter));
-        authenticatedUser.put("createdBy", user.getCreatedBy().getUsername());
-        authenticatedUser.put("updatedAt", user.getUpdatedAt().format(formatter));
-        authenticatedUser.put("updatedBy", user.getUpdatedBy().getUsername());
-
-
-
-
-
-        return ResponseEntity.ok(authenticatedUser);
+        return ResponseEntity.ok(userService.getUserById(user.getId()));
     }
 
 }

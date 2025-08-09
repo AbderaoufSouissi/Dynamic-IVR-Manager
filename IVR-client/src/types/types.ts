@@ -6,6 +6,7 @@ export interface User {
     email: string;
     password: string;
     roleName: string;
+    permissions: string[]
     createdAt: string;
     createdBy: string;
     updatedAt: string;

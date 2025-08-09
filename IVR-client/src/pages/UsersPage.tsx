@@ -8,6 +8,7 @@ import { getUsers } from "../service/UserService";
 import type { User } from "../types/types";
 import AddButton from "../components/buttons/AddButton";
 import PageHeader from "../components/headers/PageHeader";
+import { useAuth } from "../hooks/useAuth";
 
 const UsersPage = () => {
   const [filters, setFilters] = useState({
@@ -35,6 +36,9 @@ const UsersPage = () => {
     updatedAt: "",
     roleName: "",
   });
+
+
+  const { hasPermission } = useAuth();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const sortBy = searchParams.get("sortBy") || "user_id";
@@ -208,11 +212,16 @@ const UsersPage = () => {
             {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
           </button>
 
-          <AddButton
+          {
+            hasPermission("create:users") &&
+            <AddButton
             onClick={() => navigate("/admin/users/create")}
             icon={HiOutlineUserAdd}
             label={"Créer Nouveau"}
           />
+          }
+
+          
         </div>
 
         {showFilters && (

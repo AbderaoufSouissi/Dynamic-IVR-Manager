@@ -9,6 +9,7 @@ import ToggleSwitch from "../buttons/ToggleSwitch";
 import { updateUser } from "../../service/UserService";
 import { toastError, toastSuccess } from "../../service/ToastService";
 import { FaEye, FaPencil } from "react-icons/fa6";
+import { useAuth } from "../../hooks/useAuth";
 
 interface UsersTableProps {
   itemsPerPage?: number;
@@ -49,6 +50,10 @@ const UsersTable = ({
   onRowsPerPageChange,
   rowsPerPage,
 }: UsersTableProps) => {
+
+
+  const { hasPermission } = useAuth();
+
   const totalPages = Math.ceil(totalCount / rowsPerPage);
 
   const navigate = useNavigate();
@@ -194,12 +199,19 @@ const UsersTable = ({
           {user.updatedBy}
         </td>
         <td className="px-1 py-1 whitespace-nowrap text-center">
+
+         {hasPermission("update:users") ? (
   <div className="flex justify-center">
     <ToggleSwitch
       checked={user.active}
       onToggle={() => handleToggleStatus(user.userId, !user.active)}
     />
+    
   </div>
+) : (
+  user.active ? "Actif" : "Inactif"
+)}
+  
 </td>
         <td className="px-4 py-2 text-center">
           <div className="flex items-center justify-center gap-3">
@@ -215,7 +227,9 @@ const UsersTable = ({
             >
               <FaEye size={20} />
             </button>
-            <button
+
+            {
+              hasPermission("update:users") &&  <button
               onClick={() =>
                 navigate(`/admin/users/edit/${user.userId}`, { replace: true })
               }
@@ -223,6 +237,8 @@ const UsersTable = ({
             >
               <FaPencil size={20} />
             </button>
+            }
+           
           </div>
         </td>
       </tr>

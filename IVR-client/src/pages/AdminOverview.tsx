@@ -7,8 +7,11 @@ import { useNavigate } from "react-router-dom";
 import type { Audit } from "../types/types";
 import { getAudits } from "../service/AuditService";
 import { formatTimestamp } from "../api/Api";
+import { useAuth } from "../hooks/useAuth";
 
 const AdminOverview = () => {
+
+  const { hasPermission } = useAuth();
   const [activeUserCount, setActiveUserCount] = useState<number>(0);
   const [inactiveUserCount, setInactiveUserCount] = useState<number>(0);
   const [roleCount, setRoleCount] = useState<number>(0);
@@ -102,7 +105,7 @@ const AdminOverview = () => {
 
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-5 flex-shrink-0">
           {/* Users Card */}
-          <div
+          {hasPermission("read:users") && <div
             role="button"
             tabIndex={0}
             onClick={() => navigate("/admin/users")}
@@ -132,10 +135,12 @@ const AdminOverview = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </div>}
 
           {/* Roles Card */}
-          <div
+
+          {
+            hasPermission("read:roles")  &&    <div
             role="button"
             tabIndex={0}
             onClick={() => navigate("/admin/roles")}
@@ -157,10 +162,12 @@ const AdminOverview = () => {
               </div>
             </div>
           </div>
+          }
+       
         </section>
 
         {/* Recent Actions */}
-       <section className="rounded-xl shadow border border-gray-200 p-3 sm:p-4 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:bg-white flex flex-col h-auto">
+        {hasPermission("read:audits") &&    <section className="rounded-xl shadow border border-gray-200 p-3 sm:p-4 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:bg-white flex flex-col h-auto">
   <div className="border-b border-slate-200/50 pb-2 sm:pb-3 mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
     <div>
       <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-0 leading-tight">
@@ -230,7 +237,10 @@ const AdminOverview = () => {
       <p className="p-4 text-center text-slate-500 text-sm">Aucune activité récente</p>
     )}
   </div>
-</section>
+        </section> }
+   
+        
+          
       </div>
     </main>
 

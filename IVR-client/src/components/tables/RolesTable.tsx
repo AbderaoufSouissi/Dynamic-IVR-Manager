@@ -6,6 +6,7 @@ import { formatTimestamp } from "../../api/Api";
 import { FaPencil } from "react-icons/fa6";
 import { BsTrash3 } from "react-icons/bs";
 import { FaEye } from "react-icons/fa";
+import { useAuth } from "../../hooks/useAuth";
 
 interface RolesTableProps {
   roles: Role[];
@@ -33,6 +34,8 @@ const roleTableHeads = [
     ]
 
 const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageChange, totalCount, onRowsPerPageChange, rowsPerPage }: RolesTableProps) => {
+
+  const { hasPermission } = useAuth()
   const totalPages = Math.ceil(totalCount / rowsPerPage);
   const navigate = useNavigate()
  
@@ -170,7 +173,8 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
             >
               <FaEye size={20} />
             </button>
-            <button
+            
+            {hasPermission("update:roles") && <button
               onClick={() =>
                 navigate({
                   pathname: `/admin/roles/edit/${role.roleId}`,
@@ -181,8 +185,9 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
               title="Modifier"
             >
               <FaPencil size={20} />
-            </button>
-            <button
+            </button>}
+            
+            {hasPermission("delete:roles") &&<button
               onClick={() =>
                 navigate({
                   pathname: `/admin/roles/delete/${role.roleId}`,
@@ -193,7 +198,8 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
               title="Supprimer"
             >
               <BsTrash3 size={20} />
-            </button>
+            </button> }
+            
           </div>
         </td>
       </tr>

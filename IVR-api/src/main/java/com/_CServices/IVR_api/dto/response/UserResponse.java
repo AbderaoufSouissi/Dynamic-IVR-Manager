@@ -8,6 +8,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
@@ -37,4 +41,6 @@ public class UserResponse extends BaseDto {
     private Boolean active;
 
     private String roleName;
+    @Builder.Default
+    private Set<String> permissions = new HashSet<>();
 }
