@@ -31,17 +31,19 @@ const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <App />, // Admin layout/dashboard wrapper with Sidebar + Outlet
+        element: <App />, // Admin layout/dashboard wrapper
         children: [
           // Users section
           {
             path: "users",
             element: <ProtectedRoute requiredPermissions={["read:users"]} />,
             children: [
-              { index: true, element: <UsersPage /> },
               {
-                path: "delete/:id",
-                element: <DeleteEntityModal />,
+                element: <UsersPage />, // UsersPage wraps <Outlet context={{ triggerRefresh }} />
+                children: [
+                  { index: true, element: null }, // table inside UsersPage itself
+                  { path: "delete/:id", element: <DeleteEntityModal /> },
+                ],
               },
             ],
           },
@@ -53,8 +55,8 @@ const router = createBrowserRouter([
                 index: true,
                 element: (
                   <UserForm
-                    title={"Créer un nouvel utilisateur"}
-                    description={"Complétez les informations ci-dessous pour créer un nouvel utilisateur."}
+                    title="Créer un nouvel utilisateur"
+                    description="Complétez les informations ci-dessous pour créer un nouvel utilisateur."
                   />
                 ),
               },
@@ -68,8 +70,8 @@ const router = createBrowserRouter([
                 index: true,
                 element: (
                   <UserForm
-                    title={"Modifier un utilisateur"}
-                    description={"Modifiez les détails de l'utilisateur ci-dessous."}
+                    title="Modifier un utilisateur"
+                    description="Modifiez les détails de l'utilisateur ci-dessous."
                   />
                 ),
               },
@@ -86,10 +88,12 @@ const router = createBrowserRouter([
             path: "roles",
             element: <ProtectedRoute requiredPermissions={["read:roles"]} />,
             children: [
-              { index: true, element: <RolesPage /> },
               {
-                path: "delete/:id",
-                element: <DeleteEntityModal />,
+                element: <RolesPage />,
+                children: [
+                  { index: true, element: null },
+                  { path: "delete/:id", element: <DeleteEntityModal /> },
+                ],
               },
             ],
           },
@@ -101,8 +105,8 @@ const router = createBrowserRouter([
                 index: true,
                 element: (
                   <RoleForm
-                    title={"Créer un nouveau role"}
-                    description={"Complétez les informations ci-dessous pour créer un nouveau role."}
+                    title="Créer un nouveau role"
+                    description="Complétez les informations ci-dessous pour créer un nouveau role."
                   />
                 ),
               },
@@ -116,8 +120,8 @@ const router = createBrowserRouter([
                 index: true,
                 element: (
                   <RoleForm
-                    title={"Modifier un role"}
-                    description={"Modifiez les détails du role ci-dessous."}
+                    title="Modifier un role"
+                    description="Modifiez les détails du role ci-dessous."
                   />
                 ),
               },
@@ -134,10 +138,12 @@ const router = createBrowserRouter([
             path: "permissions",
             element: <ProtectedRoute requiredPermissions={["read:permissions"]} />,
             children: [
-              { index: true, element: <PermissionsPage /> },
               {
-                path: "delete/:id",
-                element: <DeleteEntityModal />,
+                element: <PermissionsPage />,
+                children: [
+                  { index: true, element: null },
+                  { path: "delete/:id", element: <DeleteEntityModal /> },
+                ],
               },
             ],
           },
@@ -157,7 +163,7 @@ const router = createBrowserRouter([
             children: [{ index: true, element: <PermissionDetailsPage /> }],
           },
 
-          // MSISDN section (example multiple permissions)
+          // MSISDN section
           {
             path: "msisdn",
             element: (
@@ -180,17 +186,11 @@ const router = createBrowserRouter([
             children: [{ index: true, element: <AuditsPage /> }],
           },
 
-          // Profile (any logged-in user)
-          {
-            path: "profile",
-            element: <ProfilePage />,
-          },
+          // Profile
+          { path: "profile", element: <ProfilePage /> },
 
-          // Admin Overview (dashboard home)
-          {
-            index: true,
-            element: <AdminOverview />,
-          },
+          // Admin Overview
+          { index: true, element: <AdminOverview /> },
         ],
       },
     ],

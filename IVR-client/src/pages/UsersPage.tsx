@@ -39,7 +39,6 @@ const UsersPage = () => {
 
 
   const { hasPermission } = useAuth();
-
   const [searchParams, setSearchParams] = useSearchParams();
   const sortBy = searchParams.get("sortBy") || "user_id";
   const rawSortDir = searchParams.get("sortDir") || "desc";
