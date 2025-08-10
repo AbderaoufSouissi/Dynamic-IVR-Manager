@@ -8,8 +8,10 @@ import { HiChevronDown } from "react-icons/hi";
 import ToggleSwitch from "../buttons/ToggleSwitch";
 import { updateUser } from "../../service/UserService";
 import { toastError, toastSuccess } from "../../service/ToastService";
-import { FaEye, FaPencil } from "react-icons/fa6";
+import { FaEye} from "react-icons/fa6";
+
 import { useAuth } from "../../hooks/useAuth";
+import { FaRegEdit } from "react-icons/fa";
 
 interface UsersTableProps {
   itemsPerPage?: number;
@@ -235,7 +237,7 @@ const UsersTable = ({
               }
               className="text-blue-600 hover:text-blue-800 transition cursor-pointer"
             >
-              <FaPencil size={20} />
+              <FaRegEdit  size={20} />
             </button>
             }
            

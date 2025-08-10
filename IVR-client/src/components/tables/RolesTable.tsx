@@ -3,7 +3,7 @@ import { MdArrowDropDown, MdArrowDropUp, MdKeyboardArrowLeft, MdKeyboardArrowRig
 import { HiChevronDown } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { formatTimestamp } from "../../api/Api";
-import { FaPencil } from "react-icons/fa6";
+import { FaRegEdit } from "react-icons/fa";
 import { BsTrash3 } from "react-icons/bs";
 import { FaEye } from "react-icons/fa";
 import { useAuth } from "../../hooks/useAuth";
@@ -184,7 +184,7 @@ const RolesTable = ({ roles, sortBy, sortDir, onSortChange, currentPage, onPageC
               className="cursor-pointer text-blue-600 hover:text-blue-800 transition"
               title="Modifier"
             >
-              <FaPencil size={20} />
+              <FaRegEdit size={20} />
             </button>}
             
             {hasPermission("delete:roles") &&<button
