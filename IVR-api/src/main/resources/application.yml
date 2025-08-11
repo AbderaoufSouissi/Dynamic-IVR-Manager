@@ -3,7 +3,7 @@ spring:
   application:
     name: IVR-api
   profiles:
-    active: ${SPRING_PROFILE_ACTIVE:dev}
+    active: ${SPRING_PROFILE_ACTIVE:prod}
 
   datasource:
     url: ${SPRING_DATASOURCE_URL}
