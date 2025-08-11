@@ -40,13 +40,12 @@ const LoginPage = () => {
    <>
   {/* Back Link */}
   <NavLink
-    to="/"
-    className="absolute top-4 left-4 flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors z-10"
-  >
-    <IoIosArrowRoundBack size={20} />
-    <span>Retour à l'accueil</span>
-  </NavLink>
-
+  to="/about"
+  className="absolute top-4 left-4 flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors z-10"
+>
+  <IoIosArrowRoundBack size={20} />
+  <span>À propos</span>
+</NavLink>
   {/* Background Wrapper */}
   <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 relative flex items-center justify-center px-4 py-12 overflow-hidden">
     

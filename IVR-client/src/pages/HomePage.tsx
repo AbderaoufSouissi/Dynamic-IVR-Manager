@@ -112,7 +112,7 @@ const HomePage = () => {
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
               <NavLink
-                to={"/login"}
+                to={"/"}
                 className="inline-flex items-center justify-center bg-gradient-to-r from-blue-600 to-blue-600 text-white font-semibold py-3 px-6 rounded-xl shadow-xl hover:from-blue-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl group"
               >
                 <span>Commencer maintenant</span>

@@ -222,7 +222,7 @@ const hasAnyAccess =
                     <span className="text-slate-700">
                       {actionTypeLabels[audit.actionType]} {audit.msisdn}
                     </span>
-                    <span className="ml-1 text-blue-700 font-semibold">{audit.entityId}</span>
+                    {/* <span className="ml-1 text-blue-700 font-semibold">{audit.entityId}</span> */}
                   </>
                 ) : (
                   <>
