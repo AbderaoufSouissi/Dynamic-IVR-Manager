@@ -10,23 +10,31 @@ Cette application permet de gérer *les utilisateurs*, *les rôles*, *les permis
 
 ## 🚀 Fonctionnalités principales
 
-### **Authentification utilisateur**
+### Authentification utilisateur
 - Connexion via identifiants (nom d'utilisateur et mot de passe)
 - Fonctionnalité "mot de passe oublié" et "réinitialiser mot de passe"
 
-### **Gestion des utilisateurs**
-- Création et modification des utilisateurs
+### Contrôle d’accès basé sur les rôles et permissions (RBAC)
+- Accès aux fonctionnalités et ressources conditionné par les rôles et permissions attribués
+- Autorisation granulaire permettant de limiter l’accès selon les droits utilisateur
+
+### Contrôle d’accès basé sur les rôles et permissions (RBAC)
+- Accès aux fonctionnalités et ressources conditionné par les rôles et permissions attribués
+- Autorisation granulaire permettant de limiter l’accès selon les droits utilisateur
+
+### Gestion des utilisateurs
+- Création et modification et désactivation des utilisateurs
 - Attribution de rôles
 
-### **Gestion des rôles et permissions**
+### Gestion des rôles et permissions
 - Création, modification et suppression des rôles
 - Un rôle regroupe plusieurs permissions
 - Attribution de permissions aux rôles
 
-### **Audit**
+### Audit
 - Historique des actions réalisées (ex : mot de passe oublié, réinitialisation mot de passe, modification, suppression...)
 
-### **MSISDN**
+### MSISDN
 - Vérifier si un **MSISDN** est blacklisté
 - Blacklister / Whitelister un **MSISDN**
 - Réinitialiser le nombre d'appels pour un **MSISDN**
@@ -35,13 +43,13 @@ Cette application permet de gérer *les utilisateurs*, *les rôles*, *les permis
 
 ## 🛠️ Technologies utilisées
 
-### **Frontend**
+### Frontend
 - React + TypeScript
 
-### **Backend**
+### Backend
 - Spring Boot (Java/J2EE)
 
-### **Base de données**
+### Base de données
 - Oracle
 
 ---
@@ -142,17 +150,23 @@ VITE_BACKEND_URL=http://localhost:8080
 
 Après avoir cloné le dépôt, suivez ces étapes pour lancer l'application :
 
-### 1. Backend
+
+### 1. Frontend
+```bash
+cd IVR-client
+cp .env.example .env       # Créez votre fichier .env avec les variables d'environnement 
+npm install                # Installez les dépendances frontend
+npm run build
+xcopy /E /I /Y dist\* ..\IVR-api\src\main\resources\static\   
+```
+
+### 2. Backend
 
 ```bash
 cd IVR-api
 cp .env.example .env       # Créez votre fichier .env avec les variables d'environnement nécessaires
 mvn clean install          # Compile et package l'application backend
 java -jar target/mon-app.jar  # Lancez l'application backend
+```
 
-### 2. Frontend
 
-cd IVR-client
-cp .env.example .env       # Créez votre fichier .env avec les variables d'environnement 
-npm install                # Installez les dépendances frontend
-npm run dev   

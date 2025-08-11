@@ -7,7 +7,7 @@ import { BiLogOut } from 'react-icons/bi';
 import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import LogoutModal from '../modal/LogoutModal';
-import { HiMenuAlt3, HiX } from 'react-icons/hi';
+import { HiX } from 'react-icons/hi';
 
 interface SidebarProps {
   activeTab: string;

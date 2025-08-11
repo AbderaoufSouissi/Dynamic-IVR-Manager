@@ -54,8 +54,9 @@ public class WebSecurityConfig {
                                 "/webjars/**",
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/forget-password",
+                                "/forget-password",
                                 "/api/v1/auth/reset-password",
-                                "reset-password"
+                                "/reset-password"
                         )
                         .permitAll()
                         .anyRequest().authenticated()
