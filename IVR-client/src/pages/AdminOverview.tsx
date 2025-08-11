@@ -8,6 +8,7 @@ import type { Audit } from "../types/types";
 import { getAudits } from "../service/AuditService";
 import { formatTimestamp } from "../api/Api";
 import { useAuth } from "../hooks/useAuth";
+import PermissionDeniedPage from "./PermissionDeniedPage";
 
 const AdminOverview = () => {
 
@@ -94,14 +95,25 @@ const AdminOverview = () => {
   }, []);
 
 
+const hasAnyAccess =
+  hasPermission("read:users") ||
+  hasPermission("read:roles") ||
+  hasPermission("read:audits");
+  
+
+
   return (
+    hasAnyAccess ? 
+         
+
         <main className="flex-1 text-slate-800 min-h-screen bg-slate-50 max-h-screen overflow-hidden">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 flex flex-col h-screen">
-        <header className="mb-3 sm:mb-4 flex-shrink-0">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 tracking-tight leading-snug">
-            Vue d'ensemble de votre système
-          </h2>
-        </header>
+  <header className="mb-3 sm:mb-4 flex-shrink-0">
+    <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 tracking-tight leading-snug">
+      Vue d'ensemble de votre système
+    </h2>
+  </header>
+
 
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-5 flex-shrink-0">
           {/* Users Card */}
@@ -242,9 +254,10 @@ const AdminOverview = () => {
         
           
       </div>
-    </main>
+    </main > : <PermissionDeniedPage/>
 
     );
+    
 };
 
 export default AdminOverview;
