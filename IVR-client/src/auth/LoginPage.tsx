@@ -58,10 +58,10 @@ const LoginPage = () => {
 
     {/* Centered card */}
     <div className="w-full max-w-md">
-      <div className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-lg border border-white/20 space-y-8 hover:shadow-2xl transition-all duration-300">
+      <div className="bg-white/80 backdrop-blur-sm p-6 rounded-3xl shadow-lg border border-white/20 space-y-8 hover:shadow-2xl transition-all duration-300">
         
         {/* Icon + Title */}
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-0">
           <div className="flex justify-center">
             <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-3 rounded-2xl shadow-lg">
               <FaCircleUser className="text-white" size={40} />
@@ -76,7 +76,7 @@ const LoginPage = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleLogin} className="space-y-6">
+        <form onSubmit={handleLogin} className="space-y-2">
           <div className="space-y-5">
             {/* Username */}
             <div className="space-y-2">
@@ -91,7 +91,7 @@ const LoginPage = () => {
                 placeholder="Entrez votre nom d'utilisateur"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 transition-all duration-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 transition-all duration-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
               />
             </div>
 
@@ -110,7 +110,7 @@ const LoginPage = () => {
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3.5 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 transition-all duration-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
+                  className="w-full px-4 py-2 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 transition-all duration-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
                 />
                 <button
                   type="button"
