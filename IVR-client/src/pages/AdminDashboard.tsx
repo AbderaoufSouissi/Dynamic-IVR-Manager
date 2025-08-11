@@ -1,25 +1,16 @@
-// adjust path if needed
 import { Outlet, useNavigate } from "react-router-dom";
 import DashboardHeader from "../components/headers/DashboardHeader";
 import Sidebar from "../components/sideBar/SideBar";
 import { useAuth } from "../hooks/useAuth";
 import { useEffect, useState } from "react";
 
-
-
-
-    
 const AdminDashboard = () => {
+  const { hasPermission } = useAuth();
+  const [activeTab, setActiveTab] = useState("");
+  const [mobileOpen, setMobileOpen] = useState(false); // NEW
+  const navigate = useNavigate();
 
-
-
-  const { hasPermission } = useAuth()
-
-const [activeTab, setActiveTab] = useState("");
-
-const navigate = useNavigate()
-
-const hasAdminPanelAccess =
+  const hasAdminPanelAccess =
     hasPermission("read:users") ||
     hasPermission("read:permissions") ||
     hasPermission("read:roles");
@@ -30,28 +21,28 @@ const hasAdminPanelAccess =
     hasPermission("blacklist:msisdn") ||
     hasPermission("whitelist:msisdn");
 
-
-useEffect(() => {
+  useEffect(() => {
     if (hasAdminPanelAccess) {
       setActiveTab("admin");
-    
     } else if (hasMsisdnAccess) {
       setActiveTab("msisdn");
       navigate("/admin/msisdn");
     }
   }, [hasAdminPanelAccess, hasMsisdnAccess, navigate]);
+
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex min-h-screen w-full bg-slate-50">
+      <Sidebar
+        activeTab={activeTab}
+        onTabChange={() => {}}
+        mobileOpen={mobileOpen}       
+        setMobileOpen={setMobileOpen} 
+      />
 
-      
-      
-    
-      <DashboardHeader/>
-      
-      <div className="flex flex-1">
-        <Sidebar activeTab={activeTab} onTabChange={() => { }} />
-
-        <main className="flex-1 overflow-auto p-2 bg-slate-50">
+      <div className="flex flex-1 flex-col">
+        {/* Pass toggle to header */}
+        <DashboardHeader setMobileOpen={setMobileOpen} />
+        <main className="flex-1 p-6">
           <Outlet />
         </main>
       </div>

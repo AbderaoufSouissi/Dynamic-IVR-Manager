@@ -37,7 +37,6 @@ const UsersPage = () => {
     roleName: "",
   });
 
-
   const { hasPermission } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const sortBy = searchParams.get("sortBy") || "user_id";
@@ -203,24 +202,20 @@ const UsersPage = () => {
       <div>
         <PageHeader title={"Gestion des utilisateurs"} />
 
-        <div className="flex justify-between items-center mb-2 gap-2">
+<div className="flex flex-col sm:flex-row justify-between items-center mb-2 gap-2">          {" "}
           <button
             onClick={() => setShowFilters((prev) => !prev)}
             className=" cursor-pointer px-2 py-1 text-sm font-semibold rounded-lg border transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg bg-gray-100 text-gray-800 hover:scale-[1.01] active:scale-[0.98] border-gray-300 hover:bg-gray-200"
           >
             {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
           </button>
-
-          {
-            hasPermission("create:users") &&
+          {hasPermission("create:users") && (
             <AddButton
-            onClick={() => navigate("/admin/users/create")}
-            icon={HiOutlineUserAdd}
-            label={"Créer Nouveau"}
-          />
-          }
-
-          
+              onClick={() => navigate("/admin/users/create")}
+              icon={HiOutlineUserAdd}
+              label={"Créer Nouveau"}
+            />
+          )}
         </div>
 
         {showFilters && (

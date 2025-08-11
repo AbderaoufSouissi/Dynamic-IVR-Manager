@@ -45,7 +45,7 @@ const ProfilePage = () => {
             </div>
             <div>
               <h2 className="text-xl font-semibold text-white">
-                {user.firstName} {user.lastName}
+                {user.username}
               </h2>
               <p className="text-blue-100">{user.email}</p>
               <div className="flex items-center mt-1">
@@ -62,7 +62,7 @@ const ProfilePage = () => {
             
             {/* Personal Information Section */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                 <HiOutlineUser size={30} className="text-blue-600 mr-2" />
                 Informations Personnelles
               </h3>
@@ -76,7 +76,7 @@ const ProfilePage = () => {
 
             {/* System Information Section */}
             <div className="border-t border-gray-200 pt-1">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                 <HiOutlineClock size={30} className=" text-blue-600 mr-2" />
                 Informations Système
               </h3>
@@ -106,7 +106,7 @@ const ProfilePage = () => {
 
             {/* Role & Permissions Section */}
             <div className="border-t border-gray-200 pt-2">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center">
+              <h3 className="text-lg font-semibold text-gray-900  flex items-center">
                 <HiOutlineShieldCheck size={30} className="text-blue-600 mr-2" />
                 Rôle & Permissions
               </h3>

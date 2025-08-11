@@ -9,44 +9,49 @@ const HomePage = () => {
   const features = [
     {
       title: "Gestion des Utilisateurs",
-      description: "Créez et gérez facilement les utilisateurs pour un contrôle optimal de votre plateforme.",
-      icon: <HiOutlineUserAdd size={28} />
+      description:
+        "Créez et gérez facilement les utilisateurs pour un contrôle optimal de votre plateforme.",
+      icon: <HiOutlineUserAdd size={28} />,
     },
     {
       title: "Gestion des Rôles",
-      description: "Définissez clairement les rôles et les responsabilités pour chaque utilisateur afin d'assurer une gouvernance efficace.",
-      icon: <MdOutlineSecurity size={28} />
+      description:
+        "Définissez clairement les rôles et les responsabilités pour chaque utilisateur afin d'assurer une gouvernance efficace.",
+      icon: <MdOutlineSecurity size={28} />,
     },
     {
       title: "Gestion des Permissions",
-      description: "Attribuez ou retirez des permissions de façon précise pour un contrôle d'accès granulaire et sécurisé.",
-      icon: <FaKey size={28} />
+      description:
+        "Attribuez ou retirez des permissions de façon précise pour un contrôle d'accès granulaire et sécurisé.",
+      icon: <FaKey size={28} />,
     },
     {
       title: "Gestion des MSISDN",
-      description: "Blacklistez, whitelistez ou réinitialisez les quotas d'appels des MSISDNs en toute simplicité.",
-      icon: <FiPhoneCall size={28} />
+      description:
+        "Blacklistez, whitelistez ou réinitialisez les quotas d'appels des MSISDNs en toute simplicité.",
+      icon: <FiPhoneCall size={28} />,
     },
     {
       title: "Suivi des Activités",
-      description: "Consultez l'historique des actions des utilisateurs et surveillez les accès pour une traçabilité renforcée.",
-      icon: <FaFileAlt size={28} />
+      description:
+        "Consultez l'historique des actions des utilisateurs et surveillez les accès pour une traçabilité renforcée.",
+      icon: <FaFileAlt size={28} />,
     },
   ];
 
-  const scrollToFeatures = (e: { preventDefault: () => void; }) => {
+  const scrollToFeatures = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    const featuresSection = document.getElementById('features-section');
+    const featuresSection = document.getElementById("features-section");
     if (featuresSection) {
-      featuresSection.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
+      featuresSection.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
       });
     }
   };
-  
+
   return (
-     <div className="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <div className="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
       <header className="bg-gradient-to-r from-white via-blue-50/30 to-white backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-gray-100/50">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-0 left-1/4 w-32 h-32 bg-blue-200/10 rounded-full blur-2xl"></div>
@@ -98,9 +103,11 @@ const HomePage = () => {
             </h1>
 
             <p className="mt-4 text-lg md:text-xl text-gray-600 leading-relaxed px-2 md:px-0">
-              Gérez sans effort les utilisateurs, les rôles et les MSISDN avec notre système intuitif.
+              Gérez sans effort les utilisateurs, les rôles et les MSISDN avec
+              notre système intuitif.
               <br className="hidden md:block" />
-              Simplifiez l'administration et améliorez la sécurité de votre plateforme.
+              Simplifiez l'administration et améliorez la sécurité de votre
+              plateforme.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
@@ -136,8 +143,9 @@ const HomePage = () => {
                 Tout ce dont vous avez besoin
               </h2>
               <p className="mt-4 text-lg md:text-xl text-gray-600 leading-relaxed px-2 md:px-0">
-                Une suite complète d'outils pour prendre le contrôle de votre administration utilisateur,
-                le tout dans une interface intuitive et moderne.
+                Une suite complète d'outils pour prendre le contrôle de votre
+                administration utilisateur, le tout dans une interface intuitive
+                et moderne.
               </p>
             </div>
 
