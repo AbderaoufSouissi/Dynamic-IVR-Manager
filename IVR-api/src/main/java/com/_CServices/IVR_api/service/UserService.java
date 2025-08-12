@@ -18,7 +18,5 @@ public interface UserService {
     UserResponse updateUser(UpdateUserRequest userRequest, Long id);
     long getUsersByActive(int active);
     void deleteUserById(Long id);
-    void deleteUserByEmail(String email);
-    void deleteUserByUsername(String username);
     List<String> getUserPermissions(String username);
 }

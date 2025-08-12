@@ -7,6 +7,7 @@ import com._CServices.IVR_api.service.AuditService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ public class AuditController {
     private final AuditService auditService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('read:audits')")
     public ResponseEntity<PagedResponse<AuditResponse>> getAudits(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) Long userId,
@@ -49,7 +51,7 @@ public class AuditController {
     }
 
 
-
+    @PreAuthorize("hasAuthority('read:audits')")
     @GetMapping("/{id}")
     public ResponseEntity<AuditResponse> getAuditById(@PathVariable Long id) {
         return ResponseEntity.ok(auditService.getAuditById(id));

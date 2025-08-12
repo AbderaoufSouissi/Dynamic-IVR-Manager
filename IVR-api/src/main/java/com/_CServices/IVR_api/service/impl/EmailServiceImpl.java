@@ -51,7 +51,7 @@ public class EmailServiceImpl implements EmailService {
                 "Bonjour %s,\n\n" +
                         "Vous avez demandé la réinitialisation du mot de passe de votre compte.\n\n" +
                         "Veuillez cliquer sur le lien ci-dessous pour accéder au formulaire de réinitialisation :\n" +
-                        "%s?token=%s\n\n" +
+                        "%s/reset-password?token=%s\n\n" +
                         "Ce lien expirera dans 15 minutes.\n\n" +
                         "Si vous n'avez pas fait cette demande, vous pouvez ignorer cet e-mail.\n\n" +
                         "Cordialement,\n" +

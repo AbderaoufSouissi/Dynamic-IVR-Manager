@@ -6,6 +6,7 @@ export interface User {
     email: string;
     password: string;
     roleName: string;
+    permissions: string[]
     createdAt: string;
     createdBy: string;
     updatedAt: string;
@@ -46,6 +47,7 @@ export interface Role {
     roleId: number
     name: string
     permissions: string[]
+    permissionCount: number
     createdAt: string; 
     createdBy: string
     updatedAt: string;

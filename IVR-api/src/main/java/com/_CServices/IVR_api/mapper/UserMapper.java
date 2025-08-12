@@ -4,6 +4,10 @@ import com._CServices.IVR_api.dto.response.UserResponse;
 import com._CServices.IVR_api.entity.User;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Component
 public class UserMapper {
 
@@ -23,6 +27,14 @@ public class UserMapper {
         if(user.getUpdatedAt() != null) userResponse.setUpdatedAt(user.getUpdatedAt());
         if(user.getCreatedBy() != null) userResponse.setCreatedBy(user.getCreatedBy().getUsername());
         if(user.getUpdatedBy() != null) userResponse.setUpdatedBy(user.getUpdatedBy().getUsername());
+        assert user.getRole() != null;
+        if(user.getRole().getPermissions() != null) {
+            Set<String> permissions = user.getRole().getPermissions().stream()
+                    .map(perm -> perm.getName())
+                    .collect(Collectors.toSet());
+            userResponse.setPermissions(permissions);
+        }
+
         return userResponse;
     }
 

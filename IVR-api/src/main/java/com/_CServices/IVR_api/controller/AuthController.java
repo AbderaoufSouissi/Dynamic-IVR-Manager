@@ -21,6 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -70,6 +77,7 @@ public class AuthController {
         }
 
         User user = (User) principal;
+
 
         return ResponseEntity.ok(userService.getUserById(user.getId()));
     }

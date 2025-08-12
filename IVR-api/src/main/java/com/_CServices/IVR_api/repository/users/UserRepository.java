@@ -25,5 +25,7 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
 
     @Query("SELECT p FROM User u JOIN u.role r JOIN r.permissions p WHERE u.username = :username")
     List<Permissions> getUserPermissions(@Param("username") String username);
+
+
 }
 

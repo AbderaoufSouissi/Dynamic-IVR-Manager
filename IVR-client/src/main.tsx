@@ -7,34 +7,52 @@ import UsersPage from "./pages/UsersPage.tsx";
 import RolesPage from "./pages/RolesPage.tsx";
 import PermissionsPage from "./pages/PermissionsPage.tsx";
 import MsisdnPage from "./pages/MsisdnPage.tsx";
-import UserForm from "./components/forms/UserForm.tsx";
 import HomePage from "./pages/HomePage.tsx";
 import ResetPasswordPage from "./auth/ResetPasswordPage.tsx";
 import ProtectedRoute from "./route/ProtectedRoute.tsx";
 import NotFoundPage from "./pages/NotFound.tsx";
 import DeleteEntityModal from "./components/modal/DeleteEntityModal.tsx";
-import RoleForm from "./components/forms/RoleForm.tsx";
 import AdminOverview from "./pages/AdminOverview.tsx";
-import PermissionForm from "./components/forms/PermissionForm.tsx";
 import AuditsPage from "./pages/AuditsPage.tsx";
 import App from "./App.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
+import RoleDetailsPage from "./pages/RoleDetailsPage.tsx";
+import UserDetailsPage from "./pages/UserDetailsPage.tsx";
+import RoleForm from "./components/forms/RoleForm.tsx";
+import UserForm from "./components/forms/UserForm.tsx";
+import PermissionForm from "./components/forms/PermissionForm.tsx";
+import PermissionDetailsPage from "./pages/PermissionDetailsPage.tsx";
+import ForbiddenPage from "./pages/ForbiddenPage.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/admin",
-    element: <ProtectedRoute />, // Protect the admin section
+    element: <ProtectedRoute />, // Just login required here
     children: [
       {
         path: "",
         element: <App />, // Admin layout/dashboard wrapper
         children: [
+          // Users section
           {
             path: "users",
-            element: <UsersPage />,
+            element: <ProtectedRoute requiredPermissions={["read:users"]} />,
             children: [
               {
-                path: "create",
+                element: <UsersPage />, // UsersPage wraps <Outlet context={{ triggerRefresh }} />
+                children: [
+                  { index: true, element: null }, // table inside UsersPage itself
+                  { path: "delete/:id", element: <DeleteEntityModal /> },
+                ],
+              },
+            ],
+          },
+          {
+            path: "users/create",
+            element: <ProtectedRoute requiredPermissions={["create:users"]} />,
+            children: [
+              {
+                index: true,
                 element: (
                   <UserForm
                     title="Créer un nouvel utilisateur"
@@ -42,110 +60,166 @@ const router = createBrowserRouter([
                   />
                 ),
               },
+            ],
+          },
+          {
+            path: "users/edit/:id",
+            element: <ProtectedRoute requiredPermissions={["update:users"]} />,
+            children: [
               {
-                path: "update/:id",
+                index: true,
                 element: (
                   <UserForm
                     title="Modifier un utilisateur"
-                    description="Mettez à jour les détails de l'utilisateur ci-dessous."
+                    description="Modifiez les détails de l'utilisateur ci-dessous."
                   />
                 ),
               },
-              {
-                path: "delete/:id",
-                element: <DeleteEntityModal />,
-              },
             ],
           },
+          {
+            path: "users/view/:id",
+            element: <ProtectedRoute requiredPermissions={["read:users"]} />,
+            children: [{ index: true, element: <UserDetailsPage /> }],
+          },
+
+          // Roles section
           {
             path: "roles",
-            element: <RolesPage />,
+            element: <ProtectedRoute requiredPermissions={["read:roles"]} />,
             children: [
               {
-                path: "delete/:id",
-                element: <DeleteEntityModal />,
+                element: <RolesPage />,
+                children: [
+                  { index: true, element: null },
+                  { path: "delete/:id", element: <DeleteEntityModal /> },
+                ],
               },
+            ],
+          },
+          {
+            path: "roles/create",
+            element: <ProtectedRoute requiredPermissions={["create:roles"]} />,
+            children: [
               {
-                path: "create",
+                index: true,
                 element: (
                   <RoleForm
-                    title={"Créer un nouveau role"}
-                    description={
-                      "Complétez les informations ci-dessous pour créer un nouveau role."
-                    }
-                  />
-                ),
-              },
-              {
-                path: "update/:id",
-                element: (
-                  <RoleForm
-                    title={"Modifier un role"}
-                    description={
-                      "Mettez à jour les détails du role ci-dessous."
-                    }
+                    title="Créer un nouveau role"
+                    description="Complétez les informations ci-dessous pour créer un nouveau role."
                   />
                 ),
               },
             ],
           },
+          {
+            path: "roles/edit/:id",
+            element: <ProtectedRoute requiredPermissions={["update:roles"]} />,
+            children: [
+              {
+                index: true,
+                element: (
+                  <RoleForm
+                    title="Modifier un role"
+                    description="Modifiez les détails du role ci-dessous."
+                  />
+                ),
+              },
+            ],
+          },
+          {
+            path: "roles/view/:id",
+            element: <ProtectedRoute requiredPermissions={["read:roles"]} />,
+            children: [{ index: true, element: <RoleDetailsPage /> }],
+          },
+
+          // Permissions section
           {
             path: "permissions",
-            element: <PermissionsPage />,
+            element: <ProtectedRoute requiredPermissions={["read:permissions"]} />,
             children: [
               {
-                path: "create",
-                element: (
-                  <PermissionForm
-                    title={"Créer une nouvelle permission"}
-                    description={
-                      "Complétez les informations ci-dessous pour créer une nouvelle permission"
-                    }
-                  />
-                ),
-              },
-              {
-                path: "delete/:id",
-                element: <DeleteEntityModal />,
+                element: <PermissionsPage />,
+                children: [
+                  { index: true, element: null },
+                  { path: "delete/:id", element: <DeleteEntityModal /> },
+                ],
               },
             ],
           },
           {
-            path: "msisdn",
-            element: <MsisdnPage />,
+            path: "permissions/create",
+            element: <ProtectedRoute requiredPermissions={["create:permissions"]} />,
+            children: [
+              {
+                index: true,
+                element: <PermissionForm />,
+              },
+            ],
           },
+          {
+            path: "permissions/view/:id",
+            element: <ProtectedRoute requiredPermissions={["read:permissions"]} />,
+            children: [{ index: true, element: <PermissionDetailsPage /> }],
+          },
+
+          // MSISDN section
+          {
+            path: "msisdn",
+            element: (
+              <ProtectedRoute
+                requiredPermissions={[
+                  "verify:msisdn",
+                  "blacklist:msisdn",
+                  "whitelist:msisdn",
+                  "reset:msisdn",
+                ]}
+              />
+            ),
+            children: [{ index: true, element: <MsisdnPage /> }],
+          },
+
+          // Audit Logs
           {
             path: "auditLogs",
-            element: <AuditsPage />,
+            element: <ProtectedRoute requiredPermissions={["read:audits"]} />,
+            children: [{ index: true, element: <AuditsPage /> }],
           },
-          {
-            path: "profile",
-            element: <ProfilePage />,
-          },
-          {
-            index: true,
-            element: <AdminOverview />,
-          },
+
+          // Profile
+          { path: "profile", element: <ProfilePage /> },
+
+          // Admin Overview
+          { index: true, element: <AdminOverview /> },
         ],
       },
     ],
   },
+
   {
-    path: "/",
+    path: "/about",
     element: <HomePage />,
   },
+
   {
-    path: "/login",
+    path: "/",
     element: <LoginPage />,
   },
+
   {
     path: "/forget-password",
     element: <ForgetPasswordPage />,
   },
+
   {
     path: "/reset-password",
     element: <ResetPasswordPage />,
   },
+  {
+  path: "/403",
+  element: <ForbiddenPage />,
+},
+
   {
     path: "*",
     element: <NotFoundPage />,
@@ -153,7 +227,5 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  // <StrictMode>
   <RouterProvider router={router} />
-  // </StrictMode>
 );

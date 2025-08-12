@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,6 +24,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 @RequiredArgsConstructor
 public class WebSecurityConfig {
@@ -30,14 +32,6 @@ public class WebSecurityConfig {
     private final UserDetailsService userDetailsService;
     private final CorsConfigurationSource corsConfigurationSource;
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .csrf(csrf -> csrf.disable())// Define this bean separately
-//                .authorizeHttpRequests(auth -> auth
-//                        .anyRequest().permitAll() // <-- Allow everything
-//                ).build();
-//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -46,6 +40,11 @@ public class WebSecurityConfig {
                 .cors(cors-> cors.configurationSource(corsConfigurationSource))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/",
+                                "/index.html",           // main HTML
+                                "/static/**",            // static resources
+                                "/assets/**",            // Vite assets folder
+                                "/api/public/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/v2/api-docs/**",
@@ -55,7 +54,9 @@ public class WebSecurityConfig {
                                 "/webjars/**",
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/forget-password",
-                                "/api/v1/auth/reset-password"
+                                "/forget-password",
+                                "/api/v1/auth/reset-password",
+                                "/reset-password"
                         )
                         .permitAll()
                         .anyRequest().authenticated()
@@ -75,7 +76,13 @@ public class WebSecurityConfig {
                 )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationEntryPoint())
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"Forbidden\"}");
+                        })
                 )
+
                 .sessionManagement(session -> session
                         .maximumSessions(1)
                 )

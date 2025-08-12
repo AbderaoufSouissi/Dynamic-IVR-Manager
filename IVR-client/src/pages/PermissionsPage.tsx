@@ -6,8 +6,15 @@ import { getPermissions } from "../service/PermissionService";
 import type { Permission } from "../types/types";
 import { HiKey, HiOutlineKey } from "react-icons/hi2";
 import { HiX } from "react-icons/hi";
+import AddButton from "../components/buttons/AddButton";
+import PageHeader from "../components/headers/PageHeader";
+import { useAuth } from "../hooks/useAuth";
 
 const PermissionsPage = () => {
+
+    const { hasPermission } = useAuth()
+  
+
   const [filters, setFilters] = useState({
     id: "",
     name: "",
@@ -16,6 +23,16 @@ const PermissionsPage = () => {
     createdBy: "",
     updatedBy: "",
   });
+
+ const [appliedFilters, setAppliedFilters] = useState({
+    id: "",
+    name: "",
+    createdAt: "",
+    updatedAt: "",
+    createdBy: "",
+    updatedBy: "",
+  });
+
   const [searchParams, setSearchParams] = useSearchParams();
   const sortBy = searchParams.get("sortBy") || "permission_id";
   const rawSortDir = searchParams.get("sortDir") || "desc";
@@ -33,18 +50,23 @@ const PermissionsPage = () => {
 
   const [totalElements, setTotalElements] = useState(0);
   const [permissions, setPermissions] = useState<Permission[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+  
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
   const resetFilters = () => {
-    setFilters({
+    const emptyFilters ={
       id: "",
       name: "",
       createdBy: "",
       updatedBy: "",
       createdAt: "",
       updatedAt: "",
-    });
+    };
+    setFilters(emptyFilters);
+    setAppliedFilters(emptyFilters);
+    setPage(0);
   };
 
   const isNumeric = (value: string) => /^[0-9]+$/.test(value);
@@ -77,7 +99,7 @@ const PermissionsPage = () => {
   );
 
   const fetchPermissions = async () => {
-    const validatedFilters = validateFilters(filters);
+    const validatedFilters = validateFilters(appliedFilters);
     if (validatedFilters === null) {
       return;
     }
@@ -104,7 +126,7 @@ const PermissionsPage = () => {
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [filters, refreshTrigger, searchParams, page, pageSize, sortBy, sortDir]);
+  }, [appliedFilters, refreshTrigger, searchParams, page, pageSize, sortBy, sortDir]);
 
   const handleSortChange = (field: string) => {
     const isSameField = field === sortBy;
@@ -144,27 +166,37 @@ const PermissionsPage = () => {
       [name]: value,
     }));
   };
+
+
+ const handleApplyFilters = () => {
+    setAppliedFilters({ ...filters });
+    setPage(0); // Reset to first page when applying new filters
+  };
+
   return (
     <>
       <div>
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-3xl font-bold text-slate-900">
-            Gestion des permissions ici.
-          </p>
-          <button
-            className="cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl min-h-[50px] flex items-center justify-center"
-            onClick={() => navigate("/admin/permissions/create")}
-          >
-            <HiOutlineKey size={25} className="mr-2" />
-            Ajouter une permission
-          </button>
-        </div>
+        <PageHeader title={"Gestion des permissions"}/>
 
-        <PermissionFilter
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onResetFilters={resetFilters}
-        />
+        <div className="flex justify-between items-center mb-2 gap-2">
+  <button
+    onClick={() => setShowFilters((prev) => !prev)}
+    className=" cursor-pointer px-2 py-1 text-sm font-semibold rounded-lg border transition-all duration-200 flex items-center justify-center shadow-md hover:shadow-lg bg-gray-100 text-gray-800 hover:scale-[1.01] active:scale-[0.98] border-gray-300 hover:bg-gray-200"
+  >
+    {showFilters ? "Masquer les filtres" : "Afficher les filtres"}
+  </button>
+
+      {hasPermission("create:users") && <AddButton onClick={() => navigate("/admin/permissions/create")} icon={HiOutlineKey} label={"Créer Nouveau"}/> }
+          
+</div>
+
+        {showFilters && (
+          <PermissionFilter
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onResetFilters={resetFilters} onApplyFilters={handleApplyFilters}          />
+        )}
+
         {permissions.length != 0 ? (
           <PermissionsTable
             permissions={permissions}

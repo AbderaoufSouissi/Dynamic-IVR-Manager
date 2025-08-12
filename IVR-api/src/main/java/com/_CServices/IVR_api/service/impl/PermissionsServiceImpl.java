@@ -77,23 +77,9 @@ public class PermissionsServiceImpl implements PermissionsService {
         return permissionsMapper.toDto(permissions);
     }
 
-    @Override
-    public PermissionsResponse getPermissionByName(String name) {
-        log.info("inside getPermissionByName()");
 
-        Permissions permissions = Optional.ofNullable(permissionsRepository.findByName(name))
-                .orElseThrow(()-> new ResourceNotFoundException("Permission with name : "+name+" Not found"));
-        return permissionsMapper.toDto(permissions);
-    }
 
-    @Override
-    public PermissionsResponse getPermissionByDescription(String description) {
-        log.info("inside getPermissionByDescription()");
-        Permissions permissions = Optional.ofNullable(permissionsRepository.findByDescription(description))
-                .orElseThrow(()-> new ResourceNotFoundException("Permission with description : "+description+" Not found"));
 
-        return permissionsMapper.toDto(permissions);
-    }
 
     @Override
     public PermissionsResponse createPermission(PermissionsRequest permissionsRequest) {
@@ -152,24 +138,6 @@ public class PermissionsServiceImpl implements PermissionsService {
         );
     }
 
-    @Override
-    public void deletePermissionByName(String permissionName) {
-        log.info("inside deleteByName()");
-
-        Permissions permissionToDelete = Optional.ofNullable(permissionsRepository.findByName(permissionName))
-                .orElseThrow(()-> new ResourceNotFoundException("Permission : "+permissionName+" not found"));
-
-        permissionsRepository.delete(permissionToDelete);
-
-        auditLoggingService.logAction(
-                ActionType.DELETE_PERMISSION.toString(),
-                EntityType.PERMISSION.toString(),
-                permissionToDelete.getId(),
-                null
-        );
-
-
-    }
 
     @Override
     public List<PermissionsResponse> getAllPermissions() {

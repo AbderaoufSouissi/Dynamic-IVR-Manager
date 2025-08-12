@@ -38,14 +38,14 @@ const ProfilePage = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         
         {/* User Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-2">
           <div className="flex items-center space-x-4">
             <div className="h-16 w-16 rounded-full bg-white/20 flex items-center justify-center">
               <HiOutlineUser className="h-8 w-8 text-white" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-white">
-                {user.firstName} {user.lastName}
+                {user.username}
               </h2>
               <p className="text-blue-100">{user.email}</p>
               <div className="flex items-center mt-1">
@@ -57,16 +57,16 @@ const ProfilePage = () => {
         </div>
 
         {/* Profile Information */}
-        <div className="p-8">
-          <div className="space-y-8">
+        <div className="p-6 ">
+          <div className="space-y-4">
             
             {/* Personal Information Section */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                 <HiOutlineUser size={30} className="text-blue-600 mr-2" />
                 Informations Personnelles
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <ProfileInput label="Prénom" value={user?.firstName} id="first-name" />
                 <ProfileInput label="Nom" value={user?.lastName} id="last-name" />
                 <ProfileInput label="Nom d'utilisateur" value={user?.username} id="username" />
@@ -75,12 +75,12 @@ const ProfilePage = () => {
             </div>
 
             {/* System Information Section */}
-            <div className="border-t border-gray-200 pt-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <div className="border-t border-gray-200 pt-1">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                 <HiOutlineClock size={30} className=" text-blue-600 mr-2" />
                 Informations Système
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <ProfileInput 
                   label="Date de création" 
                   value={formatTimestamp(user?.createdAt)} 
@@ -105,12 +105,12 @@ const ProfilePage = () => {
             </div>
 
             {/* Role & Permissions Section */}
-            <div className="border-t border-gray-200 pt-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <div className="border-t border-gray-200 pt-2">
+              <h3 className="text-lg font-semibold text-gray-900  flex items-center">
                 <HiOutlineShieldCheck size={30} className="text-blue-600 mr-2" />
                 Rôle & Permissions
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <ProfileInput label="Rôle" value={user?.roleName} id="role" />
                 
                 </div>

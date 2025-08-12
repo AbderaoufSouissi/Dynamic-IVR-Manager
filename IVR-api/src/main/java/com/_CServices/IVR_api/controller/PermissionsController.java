@@ -6,11 +6,11 @@ import com._CServices.IVR_api.dto.response.PermissionsResponse;
 import com._CServices.IVR_api.filter.PermissionsFilter;
 import com._CServices.IVR_api.service.PermissionsService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -24,6 +24,7 @@ public class PermissionsController {
     private final PermissionsService permissionsService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('read:permissions')")
     public ResponseEntity<PagedResponse<PermissionsResponse>> getPermissions(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String name,
@@ -61,38 +62,28 @@ public class PermissionsController {
 
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('read:permissions')")
     public ResponseEntity<PermissionsResponse> getPermissionById(@PathVariable Long id) {
         return ResponseEntity.ok(permissionsService.getPermissionById(id));
 
     }
 
-    @GetMapping("/name")
-    public ResponseEntity<PermissionsResponse> getPermissionByName(@RequestParam @NotBlank String name) {
-        return ResponseEntity.ok(permissionsService.getPermissionByName(name));
 
-    }
-    @GetMapping("/description")
-    public ResponseEntity<PermissionsResponse> getPermissionByDescription(@RequestParam @NotBlank String description) {
-        return ResponseEntity.ok(permissionsService.getPermissionByDescription(description));
-    }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('create:permissions')")
     public ResponseEntity<PermissionsResponse> createPermission(@RequestBody @Valid PermissionsRequest permissionsRequest) {
         return ResponseEntity.ok(permissionsService.createPermission(permissionsRequest));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('delete:permissions')")
     public ResponseEntity<Void> deletePermissionById(@PathVariable @NotNull Long id) {
         permissionsService.deletePermissionById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/name")
-    public ResponseEntity<Void> deletePermissionByName(@RequestParam @NotBlank String name) {
-        permissionsService.deletePermissionByName(name);
-        return ResponseEntity.noContent().build();
 
-    }
 
 
 

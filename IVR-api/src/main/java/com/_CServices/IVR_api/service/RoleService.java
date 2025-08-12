@@ -4,19 +4,15 @@ import com._CServices.IVR_api.dto.request.RoleRequest;
 import com._CServices.IVR_api.dto.response.PagedResponse;
 import com._CServices.IVR_api.dto.response.RoleResponse;
 import com._CServices.IVR_api.filter.RoleFilter;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDate;
+import java.util.List;
 
 public interface RoleService {
     PagedResponse<RoleResponse> getRolesWithFilters(RoleFilter filter, int page, int size, String sortBy, String sortDir);
-
+    List<String> getAllRolesNames();
     RoleResponse getRoleById(Long id);
     RoleResponse createRole(RoleRequest roleRequest);
     RoleResponse updateRoleById(Long id ,RoleRequest roleRequest);
-    RoleResponse updateRoleByName(String roleName, RoleRequest roleRequest);
     void deleteRoleById(Long id);
-    void deleteRoleByName(String roleName);
 
 }

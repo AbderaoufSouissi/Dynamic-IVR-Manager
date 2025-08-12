@@ -2,18 +2,18 @@ package com._CServices.IVR_api.controller;
 
 import com._CServices.IVR_api.dto.request.RoleRequest;
 import com._CServices.IVR_api.dto.response.PagedResponse;
+
 import com._CServices.IVR_api.dto.response.RoleResponse;
 import com._CServices.IVR_api.filter.RoleFilter;
 import com._CServices.IVR_api.service.RoleService;
-import com._CServices.IVR_api.utils.SortUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-
+import java.util.List;
 
 
 @RestController
@@ -24,6 +24,7 @@ public class RoleController {
 
 
     @GetMapping
+    @PreAuthorize("hasAuthority('read:roles')")
     public ResponseEntity<PagedResponse<RoleResponse>> getRoles(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String name,
@@ -51,41 +52,42 @@ public class RoleController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<String>> getAllRolesNames() {
+        List<String> rolesNames = roleService.getAllRolesNames();
+        return ResponseEntity.ok(rolesNames);
+    }
+
 
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('read:roles')")
     public ResponseEntity<RoleResponse> getRoleById(@PathVariable Long id) {
         return ResponseEntity.ok(roleService.getRoleById(id));
 
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('create:roles')")
     public ResponseEntity<RoleResponse> createRole(@RequestBody RoleRequest roleRequest) {
         return ResponseEntity.ok(roleService.createRole(roleRequest));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('update:roles')")
     public ResponseEntity<RoleResponse> updateRoleById(@PathVariable Long id, @RequestBody RoleRequest roleRequest) {
         return ResponseEntity.ok(roleService.updateRoleById(id, roleRequest));
     }
 
-    @PutMapping
-    public ResponseEntity<RoleResponse> updateRoleByName(@RequestParam String name, @RequestBody RoleRequest roleRequest) {
-        return ResponseEntity.ok(roleService.updateRoleByName(name, roleRequest));
-
-    }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('delete:roles')")
     public ResponseEntity<RoleResponse> deleteRoleById(@PathVariable Long id) {
         roleService.deleteRoleById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/name")
-    public ResponseEntity<RoleResponse> deleteRoleByName(@RequestParam String name) {
-        roleService.deleteRoleByName(name);
-        return ResponseEntity.noContent().build();
-    }
+
 
 
 

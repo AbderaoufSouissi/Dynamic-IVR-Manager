@@ -1,5 +1,6 @@
 package com._CServices.IVR_api.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -15,10 +16,10 @@ import java.util.List;
 public class CorsConfig {
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource( @Value("${cors.allowed-origin}") String allowedOrigin) {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(Collections.singletonList("http://localhost:5173"));
+        config.setAllowedOriginPatterns(Collections.singletonList(allowedOrigin));
         config.setAllowedHeaders(Collections.singletonList("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setExposedHeaders(List.of("Authorization", "Content-Type", "Set-Cookie"));

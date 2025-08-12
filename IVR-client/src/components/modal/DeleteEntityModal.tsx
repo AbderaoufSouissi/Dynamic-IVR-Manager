@@ -88,11 +88,17 @@ const DeleteEntityModal = () => {
       }
       triggerRefresh();
 
-      navigate(`/admin/${entityType}s`);
-    } catch (error) {
+      
+    } catch (error: any) {
+       const backendMessage =
+    error?.response?.data?.message || // try backend-provided message
+    error?.response?.data?.error ||   // fallback to "error" field
+    error.message ||                  // fallback to generic error message
+    "Une erreur est survenue";
       console.error(`Erreur lors de la suppression du ${entityType} :`, error);
-      toastError(`Erreur lors de la suppression du ${entityType} ${entityName}`)
+      toastError(backendMessage)
     }
+    navigate(`/admin/${entityType}s`);
   };
 
   return (

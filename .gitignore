@@ -2,7 +2,7 @@
 
 # Ignore .env files
 IVR-api/.env
-IVR-api/.env.*
+
 
 # Ignore environment-specific configs
 IVR-api/src/main/resources/application-*.yml
@@ -24,7 +24,7 @@ IVR-client/.vite/
 
 # Local environment variables
 IVR-client/.env
-IVR-client/.env.*
+
 
 # npm debug logs
 IVR-client/npm-debug.log*

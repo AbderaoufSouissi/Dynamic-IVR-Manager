@@ -1,5 +1,6 @@
 package com._CServices.IVR_api.service.impl;
 
+import com._CServices.IVR_api.exception.ActionNotAllowedException;
 import com._CServices.IVR_api.repository.permissions.PermissionsRepository;
 import com._CServices.IVR_api.dto.response.PagedResponse;
 import com._CServices.IVR_api.filter.RoleFilter;
@@ -21,12 +22,16 @@ import com._CServices.IVR_api.service.RoleService;
 import com._CServices.IVR_api.utils.SortUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static com._CServices.IVR_api.constant.Constants.DEFAULT_ROLE_NAME;
+import static com._CServices.IVR_api.constant.Constants.SYSTEM_ROLE_NAME;
 
 
 @Service
@@ -50,7 +55,7 @@ public class RoleServiceImpl implements RoleService {
                 SortUtils.getAllowedRoleFields(),
                 "role_id"
         );
-        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);;
+        String sanitizedSortDir = SortUtils.sanitizeSortDirection(sortDir);
 
         List<RoleResponse> roles = roleRepository.findRolesWithFilters(filter, offset, size, sanitizedSortBy, sanitizedSortDir);
         int totalElements = roleRepository.countRolesWithFilters(filter);
@@ -65,8 +70,14 @@ public class RoleServiceImpl implements RoleService {
 
     }
 
-
-
+    @Override
+    public List<String> getAllRolesNames() {
+        List<Role> roles = roleRepository.findAll();
+        List<String> rolesNames = roles.stream()
+                .map(role -> role.getName())
+                .collect(Collectors.toList());
+        return rolesNames;
+    }
 
 
     @Override
@@ -120,53 +131,37 @@ public class RoleServiceImpl implements RoleService {
 
 
 
-    @Override
-    public RoleResponse updateRoleByName(String roleName, RoleRequest roleRequest) {
-        log.info("inside updateRoleByName()");
-
-        Role roleToUpdate = Optional.ofNullable(roleRepository.findByName(roleName))
-                .orElseThrow(() -> new ResourceNotFoundException("Role with name: " + roleName + " not found"));
-
-
-        roleToUpdate.setName(roleRequest.getName());
-
-
-        Set<Permissions> newPermissions = new HashSet<>();
-
-        if (roleRequest.getPermissions() != null && !roleRequest.getPermissions().isEmpty()) {
-            roleRequest.getPermissions().forEach(permissionName -> {
-                Permissions permission = Optional.ofNullable(permissionsRepository.findByName(permissionName))
-                        .orElseThrow(() -> new ResourceNotFoundException("Permission with name: " + permissionName + " doesn't exist"));
-                newPermissions.add(permission);
-            });
-        }
-
-
-        roleToUpdate.clearPermissions();
-        roleToUpdate.setPermissions(newPermissions);
-
-
-        Role updatedRole = roleRepository.save(roleToUpdate);
-
-
-
-        auditLoggingService.logAction(
-                ActionType.UPDATE_ROLE.toString(),
-                EntityType.ROLE.toString(),
-                updatedRole.getId(),
-                null
-        );
-
-        return roleMapper.toDto(updatedRole);
-    }
-
 
     @Override
     public RoleResponse updateRoleById(Long id, RoleRequest roleDto) {
         log.info("inside updateRoleById()");
 
+
+
         Role roleToUpdate = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " not found"));
+        boolean isSystemRole = isSystemRole(roleToUpdate.getName());
+        boolean isDefaultRole = isDefaultRole(roleToUpdate.getName());
+
+
+        if(isDefaultRole){
+            throw new ActionNotAllowedException("La modification de ce role est strictement interdite");
+
+        }
+        if (isSystemRole){
+            if(!Objects.equals(roleDto.getName(), roleToUpdate.getName())){
+                throw new ActionNotAllowedException("La modification du nom de ce role est strictement interdite");
+
+            }
+        }
+
+
+
+
+        Role existingRole = roleRepository.findByName(roleDto.getName());
+        if (existingRole != null && !existingRole.getId().equals(id)) {
+            throw new ResourceAlreadyExistsException("Role : " + roleDto.getName() + " existe déjà");
+        }
 
         roleToUpdate.setName(roleDto.getName());
 
@@ -185,7 +180,6 @@ public class RoleServiceImpl implements RoleService {
 
         Role updatedRole = roleRepository.save(roleToUpdate);
 
-
         auditLoggingService.logAction(
                 ActionType.UPDATE_ROLE.toString(),
                 EntityType.ROLE.toString(),
@@ -195,23 +189,28 @@ public class RoleServiceImpl implements RoleService {
 
         return roleMapper.toDto(updatedRole);
     }
+
     @Transactional
     @Override
     public void deleteRoleById(Long id) {
         log.info("Starting deletion of role with id: {}", id);
 
-        // 1. Find the role to delete
+
         Role roleToDelete = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role with id: " + id + " not found"));
 
-        // 2. Find the default role (must exist)
-        Role defaultRole = Optional.ofNullable(roleRepository.findByName("DEFAULT_ROLE"))
+
+    if(isDefaultRole(roleToDelete.getName()) || isSystemRole(roleToDelete.getName())){
+        throw new ActionNotAllowedException("Suppression du role:" +roleToDelete.getName()+ " est strictement interdite");
+    }
+
+        Role defaultRole = Optional.ofNullable(roleRepository.findByName(DEFAULT_ROLE_NAME))
                 .orElseThrow(() -> new IllegalStateException("DEFAULT_ROLE must exist in the system"));
 
-        // 3. Reassign users to DEFAULT_ROLE
+
         List<User> usersWithRole = userRepository.findUsersWithRole(id);
         if (!usersWithRole.isEmpty()) {
-            log.info("Reassigning {} users from role {} to DEFAULT_ROLE",
+            log.info("Reassigning {} users from role {} to default",
                     usersWithRole.size(), roleToDelete.getName());
 
             usersWithRole.forEach(user -> {
@@ -245,25 +244,13 @@ public class RoleServiceImpl implements RoleService {
         );
     }
 
-    @Override
-    public void deleteRoleByName(String roleName) {
-        log.info("inside deleteRoleByName()");
 
-        Role roleToDelete = Optional.ofNullable(roleRepository.findByName(roleName))
-                        .orElseThrow(()-> new ResourceNotFoundException("Role with name : "+roleName+" not found"));
+    private boolean isSystemRole(String name) {
+        return name.equals(SYSTEM_ROLE_NAME);
+    }
 
-        Long roleToDeleteId = roleToDelete.getId();
-
-        roleRepository.delete(roleToDelete);
-
-        auditLoggingService.logAction(
-                ActionType.DELETE_ROLE.toString(),
-                EntityType.ROLE.toString(),
-                roleToDeleteId,
-                null
-        );
-
-
+    private boolean isDefaultRole(String name) {
+        return name.equals(DEFAULT_ROLE_NAME);
     }
 
 
